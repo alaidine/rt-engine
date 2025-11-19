@@ -20,7 +20,7 @@ jobs:
 
     env:
       PROJECT_NAME: ${{ github.event.repository.name }}
-      PROJECT_BUILD_PATH: build/${{ github.event.repository.name }}
+      PROJECT_BUILD_PATH: ${{ github.event.repository.name }}/build
       PROJECT_RELEASE_PATH: ${{ github.event.repository.name }}_dev_linux_x64
       PROJECT_RESOURCES_PATH: src/resources
 
@@ -59,10 +59,17 @@ jobs:
       - name: Generate Artifacts
         run: |
           ls ${{ env.PROJECT_BUILD_PATH }}
-          cp ${{ env.PROJECT_BUILD_PATH }}/${{ env.PROJECT_NAME }} ${{ env.PROJECT_RELEASE_PATH }}
-          cp -r ${{ env.PROJECT_NAME }}/${{ env.PROJECT_RESOURCES_PATH }} ${{ env.PROJECT_RELEASE_PATH }}
-          cp ${{ env.PROJECT_NAME }}/README.md ${{ env.PROJECT_RELEASE_PATH }}
-          cp ${{ env.PROJECT_NAME }}/LICENSE ${{ env.PROJECT_RELEASE_PATH }}
+          ls ${{ env.PROJECT_BUILD_PATH }}/${{ env.PROJECT_NAME }}
+          mkdir -p ${{ env.PROJECT_RELEASE_PATH }}
+          cp ${{ env.PROJECT_BUILD_PATH }}/${{ env.PROJECT_NAME }}/${{ env.PROJECT_NAME }}_client ${{ env.PROJECT_RELEASE_PATH }}/${{ env.PROJECT_NAME }}_client
+          cp ${{ env.PROJECT_BUILD_PATH }}/${{ env.PROJECT_NAME }}/${{ env.PROJECT_NAME }}_server ${{ env.PROJECT_RELEASE_PATH }}/${{ env.PROJECT_NAME }}_server
+          if [ -d "${{ env.PROJECT_NAME }}/${{ env.PROJECT_RESOURCES_PATH }}" ]; then
+            cp -r ${{ env.PROJECT_NAME }}/${{ env.PROJECT_RESOURCES_PATH }} ${{ env.PROJECT_RELEASE_PATH }}/
+          else
+            echo "No resources folder found, skipping..."
+          fi
+          cp ${{ env.PROJECT_NAME }}/README.md ${{ env.PROJECT_RELEASE_PATH }}/
+          cp ${{ env.PROJECT_NAME }}/LICENSE ${{ env.PROJECT_RELEASE_PATH }}/
           ls ${{ env.PROJECT_RELEASE_PATH }}
           7z a ./${{ env.PROJECT_RELEASE_PATH }}.zip ./${{ env.PROJECT_RELEASE_PATH }}
 
