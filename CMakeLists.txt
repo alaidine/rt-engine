@@ -6,6 +6,8 @@ include(FetchContent)
 set(CLIENT r-type_client)
 set(SERVER r-type_server)
 
+set(CMAKE_CXX_STANDARD 20)
+
 # Generate compile_commands.json
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
@@ -43,3 +45,15 @@ add_custom_command(
 
 #set(raylib_VERBOSE 1)
 target_link_libraries(${CLIENT} raylib)
+target_link_libraries(${SERVER} raylib)
+
+# Platform-specific libraries
+if(WIN32)
+    # Windows-specific libraries (Winsock for networking)
+    target_link_libraries(${CLIENT} ws2_32)
+    target_link_libraries(${SERVER} ws2_32)
+elseif(UNIX AND NOT APPLE)
+    # Linux-specific libraries
+    target_link_libraries(${CLIENT} pthread)
+    target_link_libraries(${SERVER} pthread)
+endif()

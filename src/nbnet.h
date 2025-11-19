@@ -81,7 +81,7 @@ typedef uint32_t NBN_ConnectionHandle;
 
 typedef struct NBN_ConnectionVector
 {
-    NBN_Connection **connections;
+    NBN_Connection** connections;
     unsigned int count;
     unsigned int capacity;
 } NBN_ConnectionVector;
@@ -92,7 +92,7 @@ typedef struct NBN_ConnectionVector
 
 typedef struct NBN_ConnectionTable
 {
-    NBN_Connection **connections;
+    NBN_Connection** connections;
     unsigned int capacity;
     unsigned int count;
     float load_factor;
@@ -115,16 +115,16 @@ enum
 
 typedef struct NBN_MemPoolFreeBlock
 {
-    struct NBN_MemPoolFreeBlock *next;
+    struct NBN_MemPoolFreeBlock* next;
 } NBN_MemPoolFreeBlock;
 
 typedef struct NBN_MemPool
 {
-    uint8_t **blocks;
+    uint8_t** blocks;
     size_t block_size;
     unsigned int block_count;
     unsigned int block_idx;
-    NBN_MemPoolFreeBlock *free;
+    NBN_MemPoolFreeBlock* free;
 } NBN_MemPool;
 
 typedef struct NBN_MemoryManager
@@ -182,14 +182,14 @@ typedef uint32_t Word;
 typedef struct NBN_BitReader
 {
     unsigned int size;
-    uint8_t *buffer;
+    uint8_t* buffer;
     uint64_t scratch;
     unsigned int scratch_bits_count;
     unsigned int byte_cursor;
 } NBN_BitReader;
 
-void NBN_BitReader_Init(NBN_BitReader *, uint8_t *, unsigned int);
-int NBN_BitReader_Read(NBN_BitReader *, Word *, unsigned int);
+void NBN_BitReader_Init(NBN_BitReader*, uint8_t*, unsigned int);
+int NBN_BitReader_Read(NBN_BitReader*, Word*, unsigned int);
 
 #pragma endregion /* NBN_BitReader */
 
@@ -198,15 +198,15 @@ int NBN_BitReader_Read(NBN_BitReader *, Word *, unsigned int);
 typedef struct NBN_BitWriter
 {
     unsigned int size;
-    uint8_t *buffer;
+    uint8_t* buffer;
     uint64_t scratch;
     unsigned int scratch_bits_count;
     unsigned int byte_cursor;
 } NBN_BitWriter;
 
-void NBN_BitWriter_Init(NBN_BitWriter*, uint8_t *, unsigned int);
-int NBN_BitWriter_Write(NBN_BitWriter *, Word, unsigned int);
-int NBN_BitWriter_Flush(NBN_BitWriter *);
+void NBN_BitWriter_Init(NBN_BitWriter*, uint8_t*, unsigned int);
+int NBN_BitWriter_Write(NBN_BitWriter*, Word, unsigned int);
+int NBN_BitWriter_Flush(NBN_BitWriter*);
 
 #pragma endregion /* NBN_BitWriter */
 
@@ -214,13 +214,13 @@ int NBN_BitWriter_Flush(NBN_BitWriter *);
 
 typedef struct NBN_Stream NBN_Stream;
 
-typedef int (*NBN_Stream_SerializeUInt)(NBN_Stream *, unsigned int *, unsigned int, unsigned int);
-typedef int (*NBN_Stream_SerializeUInt64)(NBN_Stream *, uint64_t *);
-typedef int (*NBN_Stream_SerializeInt)(NBN_Stream *, int *, int, int);
-typedef int (*NBN_Stream_SerializeFloat)(NBN_Stream *, float *, float, float, int);
-typedef int (*NBN_Stream_SerializeBool)(NBN_Stream *, bool *);
-typedef int (*NBN_Stream_SerializePadding)(NBN_Stream *);
-typedef int (*NBN_Stream_SerializeBytes)(NBN_Stream *, uint8_t *, unsigned int);
+typedef int (*NBN_Stream_SerializeUInt)(NBN_Stream*, unsigned int*, unsigned int, unsigned int);
+typedef int (*NBN_Stream_SerializeUInt64)(NBN_Stream*, uint64_t*);
+typedef int (*NBN_Stream_SerializeInt)(NBN_Stream*, int*, int, int);
+typedef int (*NBN_Stream_SerializeFloat)(NBN_Stream*, float*, float, float, int);
+typedef int (*NBN_Stream_SerializeBool)(NBN_Stream*, bool*);
+typedef int (*NBN_Stream_SerializePadding)(NBN_Stream*);
+typedef int (*NBN_Stream_SerializeBytes)(NBN_Stream*, uint8_t*, unsigned int);
 
 typedef enum NBN_StreamType
 {
@@ -251,14 +251,14 @@ typedef struct NBN_ReadStream
     NBN_BitReader bit_reader;
 } NBN_ReadStream;
 
-void NBN_ReadStream_Init(NBN_ReadStream *, uint8_t *, unsigned int);
-int NBN_ReadStream_SerializeUint(NBN_ReadStream *, unsigned int *, unsigned int, unsigned int);
-int NBN_ReadStream_SerializeUint64(NBN_ReadStream *read_stream, uint64_t *value);
-int NBN_ReadStream_SerializeInt(NBN_ReadStream *, int *, int, int);
-int NBN_ReadStream_SerializeFloat(NBN_ReadStream *, float *, float, float, int);
-int NBN_ReadStream_SerializeBool(NBN_ReadStream *, bool *);
-int NBN_ReadStream_SerializePadding(NBN_ReadStream *);
-int NBN_ReadStream_SerializeBytes(NBN_ReadStream *, uint8_t *, unsigned int);
+void NBN_ReadStream_Init(NBN_ReadStream*, uint8_t*, unsigned int);
+int NBN_ReadStream_SerializeUint(NBN_ReadStream*, unsigned int*, unsigned int, unsigned int);
+int NBN_ReadStream_SerializeUint64(NBN_ReadStream* read_stream, uint64_t* value);
+int NBN_ReadStream_SerializeInt(NBN_ReadStream*, int*, int, int);
+int NBN_ReadStream_SerializeFloat(NBN_ReadStream*, float*, float, float, int);
+int NBN_ReadStream_SerializeBool(NBN_ReadStream*, bool*);
+int NBN_ReadStream_SerializePadding(NBN_ReadStream*);
+int NBN_ReadStream_SerializeBytes(NBN_ReadStream*, uint8_t*, unsigned int);
 
 #pragma endregion /* NBN_ReadStream */
 
@@ -270,15 +270,15 @@ typedef struct NBN_WriteStream
     NBN_BitWriter bit_writer;
 } NBN_WriteStream;
 
-void NBN_WriteStream_Init(NBN_WriteStream *, uint8_t *, unsigned int);
-int NBN_WriteStream_SerializeUint(NBN_WriteStream *, unsigned int *, unsigned int, unsigned int);
-int NBN_WriteStream_SerializeUint64(NBN_WriteStream *write_stream, uint64_t *value);
-int NBN_WriteStream_SerializeInt(NBN_WriteStream *, int *, int, int);
-int NBN_WriteStream_SerializeFloat(NBN_WriteStream *, float *, float, float, int);
-int NBN_WriteStream_SerializeBool(NBN_WriteStream *, bool *);
-int NBN_WriteStream_SerializePadding(NBN_WriteStream *);
-int NBN_WriteStream_SerializeBytes(NBN_WriteStream *, uint8_t *, unsigned int);
-int NBN_WriteStream_Flush(NBN_WriteStream *);
+void NBN_WriteStream_Init(NBN_WriteStream*, uint8_t*, unsigned int);
+int NBN_WriteStream_SerializeUint(NBN_WriteStream*, unsigned int*, unsigned int, unsigned int);
+int NBN_WriteStream_SerializeUint64(NBN_WriteStream* write_stream, uint64_t* value);
+int NBN_WriteStream_SerializeInt(NBN_WriteStream*, int*, int, int);
+int NBN_WriteStream_SerializeFloat(NBN_WriteStream*, float*, float, float, int);
+int NBN_WriteStream_SerializeBool(NBN_WriteStream*, bool*);
+int NBN_WriteStream_SerializePadding(NBN_WriteStream*);
+int NBN_WriteStream_SerializeBytes(NBN_WriteStream*, uint8_t*, unsigned int);
+int NBN_WriteStream_Flush(NBN_WriteStream*);
 
 #pragma endregion /* NBN_WriteStream */
 
@@ -290,15 +290,15 @@ typedef struct NBN_MeasureStream
     unsigned int number_of_bits;
 } NBN_MeasureStream;
 
-void NBN_MeasureStream_Init(NBN_MeasureStream *);
-int NBN_MeasureStream_SerializeUint(NBN_MeasureStream *, unsigned int *, unsigned int, unsigned int);
-int NBN_MeasureStream_SerializeUint64(NBN_MeasureStream *measure_stream, unsigned int *value);
-int NBN_MeasureStream_SerializeInt(NBN_MeasureStream *, int *, int, int);
-int NBN_MeasureStream_SerializeFloat(NBN_MeasureStream *, float *, float, float, int);
-int NBN_MeasureStream_SerializeBool(NBN_MeasureStream *, bool *);
-int NBN_MeasureStream_SerializePadding(NBN_MeasureStream *);
-int NBN_MeasureStream_SerializeBytes(NBN_MeasureStream *, uint8_t *, unsigned int);
-void NBN_MeasureStream_Reset(NBN_MeasureStream *);
+void NBN_MeasureStream_Init(NBN_MeasureStream*);
+int NBN_MeasureStream_SerializeUint(NBN_MeasureStream*, unsigned int*, unsigned int, unsigned int);
+int NBN_MeasureStream_SerializeUint64(NBN_MeasureStream* measure_stream, unsigned int* value);
+int NBN_MeasureStream_SerializeInt(NBN_MeasureStream*, int*, int, int);
+int NBN_MeasureStream_SerializeFloat(NBN_MeasureStream*, float*, float, float, int);
+int NBN_MeasureStream_SerializeBool(NBN_MeasureStream*, bool*);
+int NBN_MeasureStream_SerializePadding(NBN_MeasureStream*);
+int NBN_MeasureStream_SerializeBytes(NBN_MeasureStream*, uint8_t*, unsigned int);
+void NBN_MeasureStream_Reset(NBN_MeasureStream*);
 
 #pragma endregion /* NBN_MeasureStream */
 
@@ -311,9 +311,9 @@ void NBN_MeasureStream_Reset(NBN_MeasureStream *);
 #define NBN_MAX_MESSAGE_TYPES 255 /* Maximum value of uint8_t, see message header */
 #define NBN_MESSAGE_RESEND_DELAY 0.1 /* Number of seconds before a message is resent (reliable messages redundancy) */
 
-typedef int (*NBN_MessageSerializer)(void *, NBN_Stream *);
-typedef void *(*NBN_MessageBuilder)(void);
-typedef void (*NBN_MessageDestructor)(void *);
+typedef int (*NBN_MessageSerializer)(void*, NBN_Stream*);
+typedef void* (*NBN_MessageBuilder)(void);
+typedef void (*NBN_MessageDestructor)(void*);
 
 typedef struct NBN_MessageHeader
 {
@@ -329,15 +329,15 @@ typedef struct NBN_OutgoingMessage
 {
     uint8_t type;
     unsigned int ref_count;
-    void *data;
+    void* data;
 } NBN_OutgoingMessage;
 
 typedef struct NBN_Message
 {
     NBN_MessageHeader header;
-    NBN_Connection *sender;
-    NBN_OutgoingMessage *outgoing_msg; /* NULL for incoming messages */
-    void *data;
+    NBN_Connection* sender;
+    NBN_OutgoingMessage* outgoing_msg; /* NULL for incoming messages */
+    void* data;
 } NBN_Message;
 
 /**
@@ -352,19 +352,19 @@ typedef struct NBN_MessageInfo
     uint8_t channel_id;
 
     /** Message's data */
-    void *data;
+    void* data;
 
     /**
      * The message's sender.
-     * 
+     *
      * On the client side, it will always be 0 (all received messages come from the game server).
     */
     NBN_ConnectionHandle sender;
 } NBN_MessageInfo;
 
-int NBN_Message_SerializeHeader(NBN_MessageHeader *, NBN_Stream *);
-int NBN_Message_Measure(NBN_Message *, NBN_MeasureStream *, NBN_MessageSerializer);
-int NBN_Message_SerializeData(NBN_Message *, NBN_Stream *, NBN_MessageSerializer);
+int NBN_Message_SerializeHeader(NBN_MessageHeader*, NBN_Stream*);
+int NBN_Message_Measure(NBN_Message*, NBN_MeasureStream*, NBN_MessageSerializer);
+int NBN_Message_SerializeData(NBN_Message*, NBN_Stream*, NBN_MessageSerializer);
 
 #pragma endregion /* NBN_Message */
 
@@ -430,10 +430,10 @@ typedef struct NBN_RPC
 
 #pragma region NBN_Packet
 
-/*  
+/*
  * Maximum allowed packet size (including header) in bytes.
  * The 1400 value has been chosen based on this statement:
- * 
+ *
  * With the IPv4 header being 20 bytes and the UDP header being 8 bytes, the payload
  * of a UDP packet should be no larger than 1500 - 20 - 8 = 1472 bytes to avoid fragmentation.
  */
@@ -442,7 +442,7 @@ typedef struct NBN_RPC
 
 #define NBN_PACKET_HEADER_SIZE sizeof(NBN_PacketHeader)
 
-/* Maximum size of packet's data (NBN_PACKET_MAX_DATA_SIZE + NBN_PACKET_HEADER_SIZE = NBN_PACKET_MAX_SIZE) */
+ /* Maximum size of packet's data (NBN_PACKET_MAX_DATA_SIZE + NBN_PACKET_HEADER_SIZE = NBN_PACKET_MAX_SIZE) */
 #define NBN_PACKET_MAX_DATA_SIZE (NBN_PACKET_MAX_SIZE - NBN_PACKET_HEADER_SIZE)
 
 enum
@@ -464,14 +464,14 @@ typedef struct NBN_PacketHeader
     uint16_t seq_number;
     uint16_t ack;
     uint32_t ack_bits;
-    uint8_t messages_count; 
+    uint8_t messages_count;
 } NBN_PacketHeader;
 
 typedef struct NBN_Packet
 {
     NBN_PacketHeader header;
     NBN_PacketMode mode;
-    struct NBN_Connection *sender; /* not serialized, fill by the network driver upon reception */
+    struct NBN_Connection* sender; /* not serialized, fill by the network driver upon reception */
     uint8_t buffer[NBN_PACKET_MAX_SIZE];
     unsigned int size; /* in bytes */
     bool sealed;
@@ -482,11 +482,11 @@ typedef struct NBN_Packet
     NBN_MeasureStream m_stream;
 } NBN_Packet;
 
-void NBN_Packet_InitWrite(NBN_Packet *, uint32_t, uint16_t, uint16_t, uint32_t);
-int NBN_Packet_InitRead(NBN_Packet *, NBN_Connection *, uint8_t[NBN_PACKET_MAX_SIZE], unsigned int);
+void NBN_Packet_InitWrite(NBN_Packet*, uint32_t, uint16_t, uint16_t, uint32_t);
+int NBN_Packet_InitRead(NBN_Packet*, NBN_Connection*, uint8_t[NBN_PACKET_MAX_SIZE], unsigned int);
 uint32_t NBN_Packet_ReadProtocolId(uint8_t[NBN_PACKET_MAX_SIZE], unsigned int);
-int NBN_Packet_WriteMessage(NBN_Packet *, NBN_Message *, NBN_MessageSerializer);
-int NBN_Packet_Seal(NBN_Packet *, NBN_Connection *);
+int NBN_Packet_WriteMessage(NBN_Packet*, NBN_Message*, NBN_MessageSerializer);
+int NBN_Packet_Seal(NBN_Packet*, NBN_Connection*);
 
 #pragma endregion /* NBN_Packet */
 
@@ -503,12 +503,12 @@ typedef struct NBN_MessageChunk
     uint8_t id;
     uint8_t total;
     uint8_t data[NBN_MESSAGE_CHUNK_SIZE];
-    NBN_OutgoingMessage *outgoing_msg;
+    NBN_OutgoingMessage* outgoing_msg;
 } NBN_MessageChunk;
 
-NBN_MessageChunk *NBN_MessageChunk_Create(void);
-void NBN_MessageChunk_Destroy(NBN_MessageChunk *);
-int NBN_MessageChunk_Serialize(NBN_MessageChunk *, NBN_Stream *);
+NBN_MessageChunk* NBN_MessageChunk_Create(void);
+void NBN_MessageChunk_Destroy(NBN_MessageChunk*);
+int NBN_MessageChunk_Serialize(NBN_MessageChunk*, NBN_Stream*);
 
 #pragma endregion /* NBN_MessageChunk */
 
@@ -521,9 +521,9 @@ typedef struct NBN_ClientClosedMessage
     int code;
 } NBN_ClientClosedMessage;
 
-NBN_ClientClosedMessage *NBN_ClientClosedMessage_Create(void);
-void NBN_ClientClosedMessage_Destroy(NBN_ClientClosedMessage *);
-int NBN_ClientClosedMessage_Serialize(NBN_ClientClosedMessage *, NBN_Stream *);
+NBN_ClientClosedMessage* NBN_ClientClosedMessage_Create(void);
+void NBN_ClientClosedMessage_Destroy(NBN_ClientClosedMessage*);
+int NBN_ClientClosedMessage_Serialize(NBN_ClientClosedMessage*, NBN_Stream*);
 
 #pragma endregion /* NBN_ClientClosedMessage */
 
@@ -539,9 +539,9 @@ typedef struct NBN_ClientAcceptedMessage
     uint8_t data[NBN_SERVER_DATA_MAX_SIZE];
 } NBN_ClientAcceptedMessage;
 
-NBN_ClientAcceptedMessage *NBN_ClientAcceptedMessage_Create(void);
-void NBN_ClientAcceptedMessage_Destroy(NBN_ClientAcceptedMessage *);
-int NBN_ClientAcceptedMessage_Serialize(NBN_ClientAcceptedMessage *, NBN_Stream *);
+NBN_ClientAcceptedMessage* NBN_ClientAcceptedMessage_Create(void);
+void NBN_ClientAcceptedMessage_Destroy(NBN_ClientAcceptedMessage*);
+int NBN_ClientAcceptedMessage_Serialize(NBN_ClientAcceptedMessage*, NBN_Stream*);
 
 #pragma endregion /* NBN_ClientAcceptedMessage */
 
@@ -556,9 +556,9 @@ typedef struct NBN_ByteArrayMessage
     unsigned int length;
 } NBN_ByteArrayMessage;
 
-NBN_ByteArrayMessage *NBN_ByteArrayMessage_Create(void);
-void NBN_ByteArrayMessage_Destroy(NBN_ByteArrayMessage *);
-int NBN_ByteArrayMessage_Serialize(NBN_ByteArrayMessage *, NBN_Stream *);
+NBN_ByteArrayMessage* NBN_ByteArrayMessage_Create(void);
+void NBN_ByteArrayMessage_Destroy(NBN_ByteArrayMessage*);
+int NBN_ByteArrayMessage_Serialize(NBN_ByteArrayMessage*, NBN_Stream*);
 
 #pragma endregion /* NBN_ByteArrayMessage */
 
@@ -566,9 +566,9 @@ int NBN_ByteArrayMessage_Serialize(NBN_ByteArrayMessage *, NBN_Stream *);
 
 #define NBN_DISCONNECTION_MESSAGE_TYPE (NBN_MAX_MESSAGE_TYPES - 7) /* Reserved message type */
 
-void *NBN_DisconnectionMessage_Create(void);
-void NBN_DisconnectionMessage_Destroy(void *);
-int NBN_DisconnectionMessage_Serialize(void *, NBN_Stream *);
+void* NBN_DisconnectionMessage_Create(void);
+void NBN_DisconnectionMessage_Destroy(void*);
+int NBN_DisconnectionMessage_Serialize(void*, NBN_Stream*);
 
 #pragma endregion /* NBN_DisconnectionMessage */
 
@@ -582,9 +582,9 @@ typedef struct NBN_ConnectionRequestMessage
     uint8_t data[NBN_CONNECTION_DATA_MAX_SIZE];
 } NBN_ConnectionRequestMessage;
 
-NBN_ConnectionRequestMessage *NBN_ConnectionRequestMessage_Create(void);
-void NBN_ConnectionRequestMessage_Destroy(NBN_ConnectionRequestMessage *);
-int NBN_ConnectionRequestMessage_Serialize(NBN_ConnectionRequestMessage *, NBN_Stream *);
+NBN_ConnectionRequestMessage* NBN_ConnectionRequestMessage_Create(void);
+void NBN_ConnectionRequestMessage_Destroy(NBN_ConnectionRequestMessage*);
+int NBN_ConnectionRequestMessage_Serialize(NBN_ConnectionRequestMessage*, NBN_Stream*);
 
 #pragma endregion /* NBN_ConnectionRequestMessage */
 
@@ -599,9 +599,9 @@ typedef struct NBN_RPC_Message
     NBN_RPC_Param params[NBN_RPC_MAX_PARAM_COUNT];
 } NBN_RPC_Message;
 
-void *NBN_RPC_Message_Create(void);
-void NBN_RPC_Message_Destroy(NBN_RPC_Message *);
-int NBN_RPC_Message_Serialize(NBN_RPC_Message *, NBN_Stream *);
+void* NBN_RPC_Message_Create(void);
+void NBN_RPC_Message_Destroy(NBN_RPC_Message*);
+int NBN_RPC_Message_Serialize(NBN_RPC_Message*, NBN_Stream*);
 
 #pragma endregion /* NBN_RPC_Message */
 
@@ -623,8 +623,8 @@ int NBN_RPC_Message_Serialize(NBN_RPC_Message *, NBN_Stream *);
 /* Library reserved messages channel */
 #define NBN_CHANNEL_RESERVED_LIBRARY_MESSAGES (NBN_MAX_CHANNELS - 3)
 
-typedef NBN_Channel *(*NBN_ChannelBuilder)(void);
-typedef void (*NBN_ChannelDestructor)(NBN_Channel *);
+typedef NBN_Channel* (*NBN_ChannelBuilder)(void);
+typedef void (*NBN_ChannelDestructor)(NBN_Channel*);
 
 typedef struct NBN_MessageSlot
 {
@@ -636,7 +636,7 @@ typedef struct NBN_MessageSlot
 struct NBN_Channel
 {
     uint8_t id;
-    uint8_t *write_chunk_buffer;
+    uint8_t* write_chunk_buffer;
     uint16_t next_outgoing_message_id;
     uint16_t next_recv_message_id;
     unsigned int next_outgoing_message_pool_slot;
@@ -646,28 +646,28 @@ struct NBN_Channel
     unsigned int read_chunk_buffer_size;
     unsigned int next_outgoing_chunked_message;
     int last_received_chunk_id;
-    uint8_t *read_chunk_buffer;
+    uint8_t* read_chunk_buffer;
     NBN_ChannelDestructor destructor;
-    NBN_Connection *connection;
+    NBN_Connection* connection;
     NBN_MessageSlot outgoing_message_slot_buffer[NBN_CHANNEL_BUFFER_SIZE];
     NBN_MessageSlot recved_message_slot_buffer[NBN_CHANNEL_BUFFER_SIZE];
-    NBN_MessageChunk *recv_chunk_buffer[NBN_CHANNEL_CHUNKS_BUFFER_SIZE];
+    NBN_MessageChunk* recv_chunk_buffer[NBN_CHANNEL_CHUNKS_BUFFER_SIZE];
     NBN_OutgoingMessage outgoing_message_pool[NBN_CHANNEL_OUTGOING_MESSAGE_POOL_SIZE];
 
-    bool (*AddReceivedMessage)(NBN_Channel *, NBN_Message *);
-    bool (*AddOutgoingMessage)(NBN_Channel *, NBN_Message *);
-    NBN_Message *(*GetNextRecvedMessage)(NBN_Channel *);
-    NBN_Message *(*GetNextOutgoingMessage)(NBN_Channel *, double);
-    int (*OnOutgoingMessageAcked)(NBN_Channel *, uint16_t);
-    int (*OnOutgoingMessageSent)(NBN_Channel *, NBN_Message *);
+    bool (*AddReceivedMessage)(NBN_Channel*, NBN_Message*);
+    bool (*AddOutgoingMessage)(NBN_Channel*, NBN_Message*);
+    NBN_Message* (*GetNextRecvedMessage)(NBN_Channel*);
+    NBN_Message* (*GetNextOutgoingMessage)(NBN_Channel*, double);
+    int (*OnOutgoingMessageAcked)(NBN_Channel*, uint16_t);
+    int (*OnOutgoingMessageSent)(NBN_Channel*, NBN_Message*);
 };
 
-void NBN_Channel_Destroy(NBN_Channel *);
-bool NBN_Channel_AddChunk(NBN_Channel *, NBN_Message *);
-int NBN_Channel_ReconstructMessageFromChunks(NBN_Channel *, NBN_Connection *, NBN_Message *);
-void NBN_Channel_ResizeWriteChunkBuffer(NBN_Channel *, unsigned int);
-void NBN_Channel_ResizeReadChunkBuffer(NBN_Channel *, unsigned int);
-void NBN_Channel_UpdateMessageLastSendTime(NBN_Channel *, NBN_Message *, double);
+void NBN_Channel_Destroy(NBN_Channel*);
+bool NBN_Channel_AddChunk(NBN_Channel*, NBN_Message*);
+int NBN_Channel_ReconstructMessageFromChunks(NBN_Channel*, NBN_Connection*, NBN_Message*);
+void NBN_Channel_ResizeWriteChunkBuffer(NBN_Channel*, unsigned int);
+void NBN_Channel_ResizeReadChunkBuffer(NBN_Channel*, unsigned int);
+void NBN_Channel_UpdateMessageLastSendTime(NBN_Channel*, NBN_Message*, double);
 
 /*
    Unreliable ordered
@@ -684,7 +684,7 @@ typedef struct NBN_UnreliableOrderedChannel
     unsigned int next_outgoing_message_slot;
 } NBN_UnreliableOrderedChannel;
 
-NBN_UnreliableOrderedChannel *NBN_UnreliableOrderedChannel_Create(void);
+NBN_UnreliableOrderedChannel* NBN_UnreliableOrderedChannel_Create(void);
 
 /*
    Reliable ordered
@@ -700,7 +700,7 @@ typedef struct NBN_ReliableOrderedChannel
     bool ack_buffer[NBN_CHANNEL_BUFFER_SIZE];
 } NBN_ReliableOrderedChannel;
 
-NBN_ReliableOrderedChannel *NBN_ReliableOrderedChannel_Create(void);
+NBN_ReliableOrderedChannel* NBN_ReliableOrderedChannel_Create(void);
 
 #pragma endregion /* NBN_Channel */
 
@@ -744,7 +744,7 @@ typedef struct NBN_ConnectionStats
 #ifdef NBN_DEBUG
 
 typedef struct NBN_ConnectionDebugCallback {
-    void (*OnMessageAddedToRecvQueue)(NBN_Connection *, NBN_Message *);
+    void (*OnMessageAddedToRecvQueue)(NBN_Connection*, NBN_Message*);
 } NBN_ConnectionDebugCallback;
 
 #endif /* NBN_DEBUG */
@@ -758,14 +758,14 @@ struct NBN_Connection
     double last_read_packets_time; /* Last time packets were read from the network driver */
     unsigned int downloaded_bytes; /* Keep track of bytes read from the socket (used for download bandwith calculation) */
     int vector_pos; /* Position of the connection in the connections vector */
-    uint8_t is_accepted     : 1;
-    uint8_t is_stale        : 1;
-    uint8_t is_closed       : 1;
-    struct NBN_Endpoint *endpoint;
-    NBN_Driver *driver; /* Network driver used for that connection */
-    NBN_Channel *channels[NBN_MAX_CHANNELS]; /* Messages channeling (sending & receiving) */
+    uint8_t is_accepted : 1;
+    uint8_t is_stale : 1;
+    uint8_t is_closed : 1;
+    struct NBN_Endpoint* endpoint;
+    NBN_Driver* driver; /* Network driver used for that connection */
+    NBN_Channel* channels[NBN_MAX_CHANNELS]; /* Messages channeling (sending & receiving) */
     NBN_ConnectionStats stats;
-    void *driver_data; /* Data attached to the connection by the underlying driver */
+    void* driver_data; /* Data attached to the connection by the underlying driver */
 
 #ifdef NBN_DEBUG
     NBN_ConnectionDebugCallback debug_callbacks;
@@ -786,18 +786,18 @@ typedef struct NBN_ConnectionListNode NBN_ConnectionListNode;
 /* Linked list of connections */
 struct NBN_ConnectionListNode
 {
-    NBN_Connection *conn;
-    NBN_ConnectionListNode *next;
-    NBN_ConnectionListNode *prev;
+    NBN_Connection* conn;
+    NBN_ConnectionListNode* next;
+    NBN_ConnectionListNode* prev;
 };
 
-NBN_Connection *NBN_Connection_Create(uint32_t, uint32_t, NBN_Endpoint *, NBN_Driver *, void *);
-void NBN_Connection_Destroy(NBN_Connection *);
-int NBN_Connection_ProcessReceivedPacket(NBN_Connection *, NBN_Packet *, double);
-int NBN_Connection_EnqueueOutgoingMessage(NBN_Connection *, NBN_Channel *, NBN_Message *);
-int NBN_Connection_FlushSendQueue(NBN_Connection *, double);
-int NBN_Connection_InitChannel(NBN_Connection *, NBN_Channel *);
-bool NBN_Connection_CheckIfStale(NBN_Connection *, double);
+NBN_Connection* NBN_Connection_Create(uint32_t, uint32_t, NBN_Endpoint*, NBN_Driver*, void*);
+void NBN_Connection_Destroy(NBN_Connection*);
+int NBN_Connection_ProcessReceivedPacket(NBN_Connection*, NBN_Packet*, double);
+int NBN_Connection_EnqueueOutgoingMessage(NBN_Connection*, NBN_Channel*, NBN_Message*);
+int NBN_Connection_FlushSendQueue(NBN_Connection*, double);
+int NBN_Connection_InitChannel(NBN_Connection*, NBN_Channel*);
+bool NBN_Connection_CheckIfStale(NBN_Connection*, double);
 
 #pragma endregion /* NBN_Connection */
 
@@ -810,7 +810,7 @@ bool NBN_Connection_CheckIfStale(NBN_Connection *, double);
 typedef union NBN_EventData
 {
     NBN_MessageInfo message_info;
-    NBN_Connection *connection;
+    NBN_Connection* connection;
     NBN_ConnectionHandle connection_handle;
 } NBN_EventData;
 
@@ -828,11 +828,11 @@ typedef struct NBN_EventQueue
     unsigned int count;
 } NBN_EventQueue;
 
-NBN_EventQueue *NBN_EventQueue_Create(void);
-void NBN_EventQueue_Destroy(NBN_EventQueue *);
-bool NBN_EventQueue_Enqueue(NBN_EventQueue *, NBN_Event);
-bool NBN_EventQueue_Dequeue(NBN_EventQueue *, NBN_Event *);
-bool NBN_EventQueue_IsEmpty(NBN_EventQueue *);
+NBN_EventQueue* NBN_EventQueue_Create(void);
+void NBN_EventQueue_Destroy(NBN_EventQueue*);
+bool NBN_EventQueue_Enqueue(NBN_EventQueue*, NBN_Event);
+bool NBN_EventQueue_Dequeue(NBN_EventQueue*, NBN_Event*);
+bool NBN_EventQueue_IsEmpty(NBN_EventQueue*);
 
 #pragma endregion /* NBN_EventQueue */
 
@@ -865,23 +865,23 @@ typedef struct NBN_PacketSimulatorEntry NBN_PacketSimulatorEntry;
 struct NBN_PacketSimulatorEntry
 {
     NBN_Packet packet;
-    NBN_Connection *receiver;
+    NBN_Connection* receiver;
     double delay;
     double enqueued_at;
-    struct NBN_PacketSimulatorEntry *next;
-    struct NBN_PacketSimulatorEntry *prev;
+    struct NBN_PacketSimulatorEntry* next;
+    struct NBN_PacketSimulatorEntry* prev;
 };
 
 typedef struct NBN_PacketSimulator
 {
-    NBN_Endpoint *endpoint;
-    NBN_PacketSimulatorEntry *head_packet;
-    NBN_PacketSimulatorEntry *tail_packet;
+    NBN_Endpoint* endpoint;
+    NBN_PacketSimulatorEntry* head_packet;
+    NBN_PacketSimulatorEntry* tail_packet;
     unsigned int packet_count;
 
 #ifdef NBNET_WINDOWS
     HANDLE queue_mutex;
-    HANDLE thread; 
+    HANDLE thread;
 #else
     pthread_mutex_t queue_mutex;
     pthread_t thread;
@@ -898,10 +898,10 @@ typedef struct NBN_PacketSimulator
     double jitter;
 } NBN_PacketSimulator;
 
-void NBN_PacketSimulator_Init(NBN_PacketSimulator *, NBN_Endpoint *);
-int NBN_PacketSimulator_EnqueuePacket(NBN_PacketSimulator *, NBN_Packet *, NBN_Connection *);
-void NBN_PacketSimulator_Start(NBN_PacketSimulator *);
-void NBN_PacketSimulator_Stop(NBN_PacketSimulator *);
+void NBN_PacketSimulator_Init(NBN_PacketSimulator*, NBN_Endpoint*);
+int NBN_PacketSimulator_EnqueuePacket(NBN_PacketSimulator*, NBN_Packet*, NBN_Connection*);
+void NBN_PacketSimulator_Start(NBN_PacketSimulator*);
+void NBN_PacketSimulator_Stop(NBN_PacketSimulator*);
 
 #else
 
@@ -966,7 +966,7 @@ enum
 typedef struct NBN_GameClient
 {
     NBN_Endpoint endpoint;
-    NBN_Connection *server_connection;
+    NBN_Connection* server_connection;
     bool is_connected;
     uint8_t server_data[NBN_SERVER_DATA_MAX_SIZE]; /* Data sent by the server when accepting the client's connection */
     unsigned int server_data_len; /* Length of the received server data in bytes */
@@ -985,10 +985,10 @@ extern NBN_GameClient nbn_game_client;
  *
  * @return 0 when successully started, -1 otherwise
  */
-int NBN_GameClient_Start(const char *protocol_name, const char *host, uint16_t port);
+int NBN_GameClient_Start(const char* protocol_name, const char* host, uint16_t port);
 
 /**
- * Same as NBN_GameClient_Start but with additional parameters. 
+ * Same as NBN_GameClient_Start but with additional parameters.
  *
  * @param protocol_name A unique protocol name, the clients and the server must use the same one or they won't be able to communicate
  * @param host Host to connect to
@@ -998,7 +998,7 @@ int NBN_GameClient_Start(const char *protocol_name, const char *host, uint16_t p
  *
  * @return 0 when successully started, -1 otherwise
  */
-int NBN_GameClient_StartEx(const char *protocol_name, const char *host, uint16_t port, uint8_t *data, unsigned int length);
+int NBN_GameClient_StartEx(const char* protocol_name, const char* host, uint16_t port, uint8_t* data, unsigned int length);
 
 /**
  * Disconnect from the server. The client can be restarted by calling NBN_GameClient_Start or NBN_GameClient_StartWithData again.
@@ -1012,12 +1012,12 @@ void NBN_GameClient_Stop(void);
  *
  * @return the length of the server data in bytes
  */
-unsigned int NBN_GameClient_ReadServerData(uint8_t *data);
+unsigned int NBN_GameClient_ReadServerData(uint8_t* data);
 
 /**
  * Register a type of message on the game client, has to be called after NBN_GameClient_Start.
- * 
- * 
+ *
+ *
  * @param msg_type A user defined message type, can be any value from 0 to 245 (245 to 255 are reserved by nbnet).
  * @param msg_builder The function responsible for building the message
  * @param msg_destructor The function responsible for destroying the message (and releasing memory)
@@ -1031,19 +1031,19 @@ void NBN_GameClient_RegisterMessage(
 
 /**
  * Poll game client events.
- * 
+ *
  * This function should be called in a loop until it returns NBN_NO_EVENT.
- * 
+ *
  * @return The code of the polled event or NBN_NO_EVENT when there is no more events.
  */
 int NBN_GameClient_Poll(void);
 
 /**
  * Pack all enqueued messages into packets and send them.
- * 
+ *
  * This should be called at a relatively high frequency, probably at the end of
  * every game tick.
- * 
+ *
  * @return 0 when successful, -1 otherwise
  */
 int NBN_GameClient_SendPackets(void);
@@ -1053,38 +1053,38 @@ int NBN_GameClient_SendPackets(void);
  *
  * It's recommended to use NBN_GameClient_SendUnreliableByteArray or NBN_GameClient_SendReliableByteArray
  * unless you really want to use a specific channel.
- * 
+ *
  * @param bytes The byte array to send
  * @param length The length of the byte array to send
  * @param channel_id The ID of the channel to send the message on
- * 
+ *
  * @return 0 when successful, -1 otherwise
  */
-int NBN_GameClient_SendByteArray(uint8_t *bytes, unsigned int length, uint8_t channel_id);
+int NBN_GameClient_SendByteArray(uint8_t* bytes, unsigned int length, uint8_t channel_id);
 
 /**
  * Send a message to the server on a given channel.
- * 
+ *
  * It's recommended to use NBN_GameClient_SendUnreliableMessage or NBN_GameClient_SendReliableMessage
  * unless you really want to use a specific channel.
- * 
+ *
  * @param msg_type The type of message to send; it needs to be registered (see NBN_GameClient_RegisterMessage)
  * @param channel_id The ID of the channel to send the message on
  * @param msg_data A pointer to the message to send (managed by user code)
- * 
+ *
  * @return 0 when successful, -1 otherwise
  */
-int NBN_GameClient_SendMessage(uint8_t msg_type, uint8_t channel_id, void *msg_data);
+int NBN_GameClient_SendMessage(uint8_t msg_type, uint8_t channel_id, void* msg_data);
 
 /**
  * Send a message to the server, unreliably.
- * 
+ *
  * @param msg_type The type of message to send; it needs to be registered (see NBN_GameClient_RegisterMessage)
  * @param msg_data A pointer to the message to send (managed by user code)
- * 
+ *
  * @return 0 when successful, -1 otherwise
  */
-int NBN_GameClient_SendUnreliableMessage(uint8_t msg_type, void *msg_data);
+int NBN_GameClient_SendUnreliableMessage(uint8_t msg_type, void* msg_data);
 
 /**
  * Send a message to the server, reliably.
@@ -1094,7 +1094,7 @@ int NBN_GameClient_SendUnreliableMessage(uint8_t msg_type, void *msg_data);
  *
  * @return 0 when successful, -1 otherwise
  */
-int NBN_GameClient_SendReliableMessage(uint8_t msg_type, void *msg_data);
+int NBN_GameClient_SendReliableMessage(uint8_t msg_type, void* msg_data);
 
 /*
  * Send a byte array to the server, unreliably.
@@ -1104,45 +1104,45 @@ int NBN_GameClient_SendReliableMessage(uint8_t msg_type, void *msg_data);
  *
  * @return 0 when successful, -1 otherwise
  */
-int NBN_GameClient_SendUnreliableByteArray(uint8_t *bytes, unsigned int length);
+int NBN_GameClient_SendUnreliableByteArray(uint8_t* bytes, unsigned int length);
 
 /*
  * Send a byte array to the server, reliably.
- * 
+ *
  * @param bytes The byte array to send
  * @param length The length of the byte array to send
- * 
+ *
  * @return 0 when successful, -1 otherwise
  */
-int NBN_GameClient_SendReliableByteArray(uint8_t *bytes, unsigned int length);
+int NBN_GameClient_SendReliableByteArray(uint8_t* bytes, unsigned int length);
 
 /**
  * For drivers only! NOT MEANT TO BE USED BY USER CODE.
  */
-NBN_Connection *NBN_GameClient_CreateServerConnection(int driver_id, void *driver_data, uint32_t protocol_id);
+NBN_Connection* NBN_GameClient_CreateServerConnection(int driver_id, void* driver_data, uint32_t protocol_id);
 
 /**
  * Retrieve the info about the last received message.
- * 
+ *
  * Call this function when receiveing a NBN_MESSAGE_RECEIVED event to access
  * information about the message.
- * 
+ *
  * @return A structure containing information about the received message
  */
 NBN_MessageInfo NBN_GameClient_GetMessageInfo(void);
 
 /**
  * Retrieve network stats about the game client.
- * 
+ *
  * @return A structure containing network related stats about the game client
  */
 NBN_ConnectionStats NBN_GameClient_GetStats(void);
 
 /**
  * Retrieve the code sent by the server when closing the connection.
- * 
+ *
  * Call this function when receiving a NBN_DISCONNECTED event.
- * 
+ *
  * @return The code used by the server when closing the connection or -1 (the default code)
  */
 int NBN_GameClient_GetServerCloseCode(void);
@@ -1154,20 +1154,20 @@ bool NBN_GameClient_IsConnected(void);
 
 /**
  * Register a new RPC on the game client.
- * 
+ *
  * The same RPC must be register on both the game server and the game clients.
- * 
+ *
  * @param id User defined RPC ID, must be an integer between 0 and NBN_RPC_MAX
  * @param signature The RPC signature
  * @param func The function to call on the callee end (NULL on the caller end)
- * 
+ *
  * @return true if packet encryption is enabled, false otherwise
  */
 int NBN_GameClient_RegisterRPC(unsigned int id, NBN_RPC_Signature signature, NBN_RPC_Func func);
 
 /**
  * Call a previously registered RPC on the game server.
- * 
+ *
  * @param id The ID of the RPC to execute on the game server (must be a registered ID)
  */
 int NBN_GameClient_CallRPC(unsigned int id, ...);
@@ -1205,9 +1205,9 @@ typedef struct NBN_GameServerStats
 typedef struct NBN_GameServer
 {
     NBN_Endpoint endpoint;
-    NBN_ConnectionVector *clients; /* Vector of clients connections */
-    NBN_ConnectionTable *clients_table; /* Hash table of clients connections */
-    NBN_ConnectionListNode *closed_clients_head;
+    NBN_ConnectionVector* clients; /* Vector of clients connections */
+    NBN_ConnectionTable* clients_table; /* Hash table of clients connections */
+    NBN_ConnectionListNode* closed_clients_head;
     NBN_GameServerStats stats;
     NBN_Event last_event;
     uint8_t last_connection_data[NBN_CONNECTION_DATA_MAX_SIZE];
@@ -1218,13 +1218,13 @@ extern NBN_GameServer nbn_game_server;
 
 /**
  * Start the game server.
- * 
+ *
  * @param protocol_name A unique protocol name, the clients and the server must use the same one or they won't be able to communicate
  * @param port The server's port
  *
  * @return 0 when successfully started, -1 otherwise
  */
-int NBN_GameServer_Start(const char *protocol_name, uint16_t port);
+int NBN_GameServer_Start(const char* protocol_name, uint16_t port);
 
 /**
  * Same as NBN_GameServer_Start but with additional parameters.
@@ -1234,7 +1234,7 @@ int NBN_GameServer_Start(const char *protocol_name, uint16_t port);
  *
  * @return 0 when successfully started, -1 otherwise
  */
-int NBN_GameServer_StartEx(const char *protocol_name, uint16_t port);
+int NBN_GameServer_StartEx(const char* protocol_name, uint16_t port);
 
 /**
  * Stop the game server and clean everything up.
@@ -1243,8 +1243,8 @@ void NBN_GameServer_Stop(void);
 
 /**
  * Register a type of message on the game server, has to be called after NBN_GameServer_Start.
- * 
- * 
+ *
+ *
  * @param msg_type A user defined message type, can be any value from 0 to 245 (245 to 255 are reserved by nbnet).
  * @param msg_builder The function responsible for building the message
  * @param msg_destructor The function responsible for destroying the message (and releasing memory)
@@ -1264,10 +1264,10 @@ int NBN_GameServer_Poll(void);
 
 /**
  * Pack all enqueued messages into packets and send them.
- * 
+ *
  * This should be called at a relatively high frequency, probably at the end of
  * every game tick.
- * 
+ *
  * @return 0 when successful, -1 otherwise
  */
 int NBN_GameServer_SendPackets(void);
@@ -1275,40 +1275,40 @@ int NBN_GameServer_SendPackets(void);
 /**
  * For drivers only! NOT MEANT TO BE USED BY USER CODE.
  */
-NBN_Connection *NBN_GameServer_CreateClientConnection(int, void *, uint32_t, uint32_t);
+NBN_Connection* NBN_GameServer_CreateClientConnection(int, void*, uint32_t, uint32_t);
 
 /**
  * Close a client's connection without a specific code (default code is -1)
  *
  * @param connection_handle The connection to close
- * 
+ *
  * @return 0 when successful, -1 otherwise
  */
 int NBN_GameServer_CloseClient(NBN_ConnectionHandle connection_handle);
 
 /**
  * Close a client's connection with a specific code.
- * 
+ *
  * The code is an arbitrary integer to let the client knows
  * why his connection was closed.
  *
  * @param connection_handle The connection to close
- * 
+ *
  * @return 0 when successful, -1 otherwise
  */
 int NBN_GameServer_CloseClientWithCode(NBN_ConnectionHandle connection_handle, int code);
 
 /**
  * Send a byte array to a client on a given channel.
- * 
+ *
  * @param connection_handle The connection to send the message to
  * @param bytes The byte array to send
  * @param length The length of the byte array to send
  * @param channel_id The ID of the channel to send the message on
- * 
+ *
  * @return 0 when successful, -1 otherwise
  */
-int NBN_GameServer_SendByteArrayTo(NBN_ConnectionHandle connection_handle, uint8_t *bytes, unsigned int length, uint8_t channel_id);
+int NBN_GameServer_SendByteArrayTo(NBN_ConnectionHandle connection_handle, uint8_t* bytes, unsigned int length, uint8_t channel_id);
 
 /**
  * Send a message to a client on a given channel.
@@ -1323,7 +1323,7 @@ int NBN_GameServer_SendByteArrayTo(NBN_ConnectionHandle connection_handle, uint8
  *
  * @return 0 when successful, -1 otherwise
  */
-int NBN_GameServer_SendMessageTo(NBN_ConnectionHandle connection_handle, uint8_t msg_type, uint8_t channel_id, void *msg_data);
+int NBN_GameServer_SendMessageTo(NBN_ConnectionHandle connection_handle, uint8_t msg_type, uint8_t channel_id, void* msg_data);
 
 /**
  * Send a message to a client, unreliably.
@@ -1334,7 +1334,7 @@ int NBN_GameServer_SendMessageTo(NBN_ConnectionHandle connection_handle, uint8_t
  *
  * @return 0 when successful, -1 otherwise
  */
-int NBN_GameServer_SendUnreliableMessageTo(NBN_ConnectionHandle connection_handle, uint8_t msg_type, void *msg_data);
+int NBN_GameServer_SendUnreliableMessageTo(NBN_ConnectionHandle connection_handle, uint8_t msg_type, void* msg_data);
 
 /**
  * Send a message to a client, reliably.
@@ -1345,7 +1345,7 @@ int NBN_GameServer_SendUnreliableMessageTo(NBN_ConnectionHandle connection_handl
  *
  * @return 0 when successful, -1 otherwise
  */
-int NBN_GameServer_SendReliableMessageTo(NBN_ConnectionHandle connection_handle, uint8_t msg_type, void *msg_data);
+int NBN_GameServer_SendReliableMessageTo(NBN_ConnectionHandle connection_handle, uint8_t msg_type, void* msg_data);
 
 /**
  * Send a byte array to a client, unreliably.
@@ -1356,32 +1356,32 @@ int NBN_GameServer_SendReliableMessageTo(NBN_ConnectionHandle connection_handle,
  *
  * @return 0 when successful, -1 otherwise
  */
-int NBN_GameServer_SendUnreliableByteArrayTo(NBN_ConnectionHandle connection_handle, uint8_t *bytes, unsigned int length);
+int NBN_GameServer_SendUnreliableByteArrayTo(NBN_ConnectionHandle connection_handle, uint8_t* bytes, unsigned int length);
 
 /**
  * Send a byte array to a client, reliably.
- * 
+ *
  * @param connection_handle The connection to send the message to
  * @param bytes The byte array to send
  * @param length The length of the byte array to send
- * 
+ *
  * @return 0 when successful, -1 otherwise
  */
-int NBN_GameServer_SendReliableByteArrayTo(NBN_ConnectionHandle connection_handle, uint8_t *bytes, unsigned int length);
+int NBN_GameServer_SendReliableByteArrayTo(NBN_ConnectionHandle connection_handle, uint8_t* bytes, unsigned int length);
 
 /**
  * Accept the last client connection request and send a blob of data to the client.
  * The client can read that data using the NBN_GameClient_ReadServerData function.
  * If you do not wish to send any data to the client upon accepting his connection, use the NBN_GameServer_AcceptIncomingConnection function instead.
- * 
+ *
  * Call this function after receiving a NBN_NEW_CONNECTION event.
  *
  * @param data Data to send
  * @param length Data length in bytes
- * 
+ *
  * @return 0 when successful, -1 otherwise
  */
-int NBN_GameServer_AcceptIncomingConnectionWithData(uint8_t *data, unsigned int length);
+int NBN_GameServer_AcceptIncomingConnectionWithData(uint8_t* data, unsigned int length);
 
 /**
  * Accept the last client connection request.
@@ -1392,30 +1392,30 @@ int NBN_GameServer_AcceptIncomingConnection(void);
 
 /**
  * Reject the last client connection request with a specific code.
- * 
+ *
  * The code is an arbitrary integer to let the client knows why his connection
  * was rejected.
- * 
+ *
  * Call this function after receiving a NBN_NEW_CONNECTION event.
- * 
+ *
  * @return 0 when successful, -1 otherwise
  */
 int NBN_GameServer_RejectIncomingConnectionWithCode(int code);
 
 /**
  * Reject the last client connection request without any specific code (default code is -1)
- * 
+ *
  * Call this function after receiving a NBN_NEW_CONNECTION event.
- * 
+ *
  * @return 0 when successful, -1 otherwise
  */
 int NBN_GameServer_RejectIncomingConnection(void);
 
 /**
  * Retrieve the last connection to the game server.
- * 
+ *
  * Call this function after receiving a NBN_NEW_CONNECTION event.
- * 
+ *
  * @return A NBN_ConnectionHandle for the new connection
  */
 NBN_ConnectionHandle NBN_GameServer_GetIncomingConnection(void);
@@ -1427,50 +1427,50 @@ NBN_ConnectionHandle NBN_GameServer_GetIncomingConnection(void);
  *
  * @return the length in bytes of the connection data
  */
-unsigned int NBN_GameServer_ReadIncomingConnectionData(uint8_t *data);
+unsigned int NBN_GameServer_ReadIncomingConnectionData(uint8_t* data);
 
 /**
  * Return the last disconnected client.
- * 
+ *
  * Call this function after receiving a NBN_CLIENT_DISCONNECTED event.
- * 
+ *
  * @return The last disconnected connection
  */
 NBN_ConnectionHandle NBN_GameServer_GetDisconnectedClient(void);
 
 /**
  * Retrieve the info about the last received message.
- * 
+ *
  * Call this function when receiving a NBN_CLIENT_MESSAGE_RECEIVED event to access
  * information about the message.
- * 
+ *
  * @return A structure containing information about the received message
  */
 NBN_MessageInfo NBN_GameServer_GetMessageInfo(void);
 
 /**
  * Retrieve network stats about the game server.
- * 
+ *
  * @return A structure containing network related stats about the game server
  */
 NBN_GameServerStats NBN_GameServer_GetStats(void);
 
 /**
  * Register a new RPC on the game server.
- * 
+ *
  * The same RPC must be register on both the game server and the game clients.
- * 
+ *
  * @param id User defined RPC ID, must be an integer between 0 and NBN_RPC_MAX
  * @param signature The RPC signature
  * @param func The function to call on the callee end (NULL on the caller end)
- * 
+ *
  * @return true if packet encryption is enabled, false otherwise
  */
 int NBN_GameServer_RegisterRPC(unsigned int id, NBN_RPC_Signature signature, NBN_RPC_Func func);
 
 /**
  * Call a previously registered RPC on a given client.
- * 
+ *
  * @param id The ID of the RPC to execute (must be a registered ID)
  * @param connection_handle The connection on which to call the RPC
  */
@@ -1501,12 +1501,12 @@ typedef enum NBN_DriverEvent
 typedef void (*NBN_Driver_StopFunc)(void);
 typedef int (*NBN_Driver_RecvPacketsFunc)(void);
 
-typedef int (*NBN_Driver_ClientStartFunc)(uint32_t, const char *, uint16_t);
-typedef int (*NBN_Driver_ClientSendPacketFunc)(NBN_Packet *);
+typedef int (*NBN_Driver_ClientStartFunc)(uint32_t, const char*, uint16_t);
+typedef int (*NBN_Driver_ClientSendPacketFunc)(NBN_Packet*);
 
 typedef int (*NBN_Driver_ServerStartFunc)(uint32_t, uint16_t);
-typedef int (*NBN_Driver_ServerSendPacketToFunc)(NBN_Packet *, NBN_Connection *);
-typedef void (*NBN_Driver_ServerRemoveConnection)(NBN_Connection *);
+typedef int (*NBN_Driver_ServerSendPacketToFunc)(NBN_Packet*, NBN_Connection*);
+typedef void (*NBN_Driver_ServerRemoveConnection)(NBN_Connection*);
 
 typedef struct NBN_DriverImplementation
 {
@@ -1527,7 +1527,7 @@ typedef struct NBN_DriverImplementation
 struct NBN_Driver
 {
     int id;
-    const char *name;
+    const char* name;
     NBN_DriverImplementation impl;
 };
 
@@ -1538,7 +1538,7 @@ struct NBN_Driver
  * @param name Name of the driver
  * @param signature Driver implementation (structure containing all driver implementation function pointers)
  */
-void NBN_Driver_Register(int id, const char *name, NBN_DriverImplementation implementation);
+void NBN_Driver_Register(int id, const char* name, NBN_DriverImplementation implementation);
 
 /**
  * Let nbnet know about specific network events happening within a network driver.
@@ -1546,7 +1546,7 @@ void NBN_Driver_Register(int id, const char *name, NBN_DriverImplementation impl
  * @param ev Event type
  * @param data Arbitrary data about the event
 */
-int NBN_Driver_RaiseEvent(NBN_DriverEvent ev, void *data);
+int NBN_Driver_RaiseEvent(NBN_DriverEvent ev, void* data);
 
 #pragma endregion /* Network driver */
 
@@ -1594,11 +1594,11 @@ static unsigned int nbn_driver_count = 0;
 
 #define NBN_CONNECTION_VECTOR_INITIAL_CAPACITY 32
 
-static void NBN_ConnectionVector_Grow(NBN_ConnectionVector *vector, unsigned int new_capacity);
+static void NBN_ConnectionVector_Grow(NBN_ConnectionVector* vector, unsigned int new_capacity);
 
-static NBN_ConnectionVector *NBN_ConnectionVector_Create(void)
+static NBN_ConnectionVector* NBN_ConnectionVector_Create(void)
 {
-    NBN_ConnectionVector *vector = (NBN_ConnectionVector *)NBN_Allocator(sizeof(NBN_ConnectionVector));
+    NBN_ConnectionVector* vector = (NBN_ConnectionVector*)NBN_Allocator(sizeof(NBN_ConnectionVector));
 
     vector->connections = NULL;
     vector->capacity = 0;
@@ -1608,13 +1608,13 @@ static NBN_ConnectionVector *NBN_ConnectionVector_Create(void)
     return vector;
 }
 
-static void NBN_ConnectionVector_Destroy(NBN_ConnectionVector *vector)
+static void NBN_ConnectionVector_Destroy(NBN_ConnectionVector* vector)
 {
     NBN_Deallocator(vector->connections);
     NBN_Deallocator(vector);
 }
 
-static void NBN_ConnectionVector_Add(NBN_ConnectionVector *vector, NBN_Connection *conn)
+static void NBN_ConnectionVector_Add(NBN_ConnectionVector* vector, NBN_Connection* conn)
 {
     assert(conn->vector_pos == -1);
 
@@ -1636,15 +1636,15 @@ static void NBN_ConnectionVector_Add(NBN_ConnectionVector *vector, NBN_Connectio
     vector->count++;
 }
 
-static uint32_t NBN_ConnectionVector_RemoveAt(NBN_ConnectionVector *vector, unsigned int position)
+static uint32_t NBN_ConnectionVector_RemoveAt(NBN_ConnectionVector* vector, unsigned int position)
 {
-    NBN_Connection *conn = vector->connections[position];
+    NBN_Connection* conn = vector->connections[position];
 
     if (conn == NULL) return 0;
 
     // Make sure that connections are stored contiguously in memory
 
-    NBN_Connection *last_conn = vector->connections[vector->count - 1];
+    NBN_Connection* last_conn = vector->connections[vector->count - 1];
 
     vector->connections[position] = last_conn;
     vector->connections[vector->count - 1] = NULL;
@@ -1654,9 +1654,9 @@ static uint32_t NBN_ConnectionVector_RemoveAt(NBN_ConnectionVector *vector, unsi
     return conn->id;
 }
 
-static void NBN_ConnectionVector_Grow(NBN_ConnectionVector *vector, unsigned int new_capacity)
+static void NBN_ConnectionVector_Grow(NBN_ConnectionVector* vector, unsigned int new_capacity)
 {
-    vector->connections = (NBN_Connection **)NBN_Reallocator(vector->connections, sizeof(NBN_Connection *) * new_capacity);
+    vector->connections = (NBN_Connection**)NBN_Reallocator(vector->connections, sizeof(NBN_Connection*) * new_capacity);
 
     if (vector->connections == NULL)
     {
@@ -1677,14 +1677,14 @@ static void NBN_ConnectionVector_Grow(NBN_ConnectionVector *vector, unsigned int
 #define NBN_CONNECTION_TABLE_INITIAL_CAPACITY 32
 #define NBN_CONNECTION_TABLE_LOAD_FACTOR 0.75f
 
-static void NBN_ConnectionTable_InsertEntry(NBN_ConnectionTable *table, unsigned int slot, NBN_Connection *conn);
-static void NBN_ConnectionTable_RemoveEntry(NBN_ConnectionTable *table, unsigned int slot);
+static void NBN_ConnectionTable_InsertEntry(NBN_ConnectionTable* table, unsigned int slot, NBN_Connection* conn);
+static void NBN_ConnectionTable_RemoveEntry(NBN_ConnectionTable* table, unsigned int slot);
 static unsigned int NBN_ConnectionTable_Hash(int hash);
-static void NBN_ConnectionTable_Grow(NBN_ConnectionTable *table, unsigned int new_capacity);
+static void NBN_ConnectionTable_Grow(NBN_ConnectionTable* table, unsigned int new_capacity);
 
-static NBN_ConnectionTable *NBN_ConnectionTable_Create(void)
+static NBN_ConnectionTable* NBN_ConnectionTable_Create(void)
 {
-    NBN_ConnectionTable *table = (NBN_ConnectionTable *)NBN_Allocator(sizeof(NBN_ConnectionTable));
+    NBN_ConnectionTable* table = (NBN_ConnectionTable*)NBN_Allocator(sizeof(NBN_ConnectionTable));
 
     table->connections = NULL;
     table->capacity = 0;
@@ -1697,19 +1697,19 @@ static NBN_ConnectionTable *NBN_ConnectionTable_Create(void)
     return table;
 }
 
-static void NBN_ConnectionTable_Destroy(NBN_ConnectionTable *table)
+static void NBN_ConnectionTable_Destroy(NBN_ConnectionTable* table)
 {
     // Make sure we don't destroy the actual connections as they will be destroyed with the connection vector
     NBN_Deallocator(table->connections);
     NBN_Deallocator(table);
 }
 
-static void NBN_ConnectionTable_Add(NBN_ConnectionTable *table, NBN_Connection *conn)
+static void NBN_ConnectionTable_Add(NBN_ConnectionTable* table, NBN_Connection* conn)
 {
     unsigned int hash = NBN_ConnectionTable_Hash(conn->id);
     unsigned int slot = hash % table->capacity;
 
-    NBN_Connection *entry = table->connections[slot];
+    NBN_Connection* entry = table->connections[slot];
 
     if (entry == NULL)
     {
@@ -1733,11 +1733,11 @@ static void NBN_ConnectionTable_Add(NBN_ConnectionTable *table, NBN_Connection *
     NBN_ConnectionTable_InsertEntry(table, slot, conn);
 }
 
-static bool NBN_ConnectionTable_Remove(NBN_ConnectionTable *table, uint32_t id)
+static bool NBN_ConnectionTable_Remove(NBN_ConnectionTable* table, uint32_t id)
 {
     unsigned int hash = NBN_ConnectionTable_Hash(id);
     unsigned int slot = hash % table->capacity;
-    NBN_Connection *conn = table->connections[slot];
+    NBN_Connection* conn = table->connections[slot];
 
     if (conn && conn->id == id)
     {
@@ -1766,7 +1766,7 @@ static bool NBN_ConnectionTable_Remove(NBN_ConnectionTable *table, uint32_t id)
     return false;
 }
 
-static void NBN_ConnectionTable_InsertEntry(NBN_ConnectionTable *table, unsigned int slot, NBN_Connection *conn)
+static void NBN_ConnectionTable_InsertEntry(NBN_ConnectionTable* table, unsigned int slot, NBN_Connection* conn)
 {
     table->connections[slot] = conn;
     table->count++;
@@ -1778,18 +1778,18 @@ static void NBN_ConnectionTable_InsertEntry(NBN_ConnectionTable *table, unsigned
     }
 }
 
-static void NBN_ConnectionTable_RemoveEntry(NBN_ConnectionTable *table, unsigned int slot)
+static void NBN_ConnectionTable_RemoveEntry(NBN_ConnectionTable* table, unsigned int slot)
 {
     table->connections[slot] = NULL;
     table->count--;
     table->load_factor = (float)table->count / table->capacity;
 }
 
-static NBN_Connection *NBN_ConnectionTable_Get(NBN_ConnectionTable *table, uint32_t id)
+static NBN_Connection* NBN_ConnectionTable_Get(NBN_ConnectionTable* table, uint32_t id)
 {
     unsigned int hash = NBN_ConnectionTable_Hash(id);
     unsigned int slot = hash % table->capacity;
-    NBN_Connection *conn = table->connections[slot];
+    NBN_Connection* conn = table->connections[slot];
 
     if (conn && conn->id == id)
         return conn;
@@ -1823,11 +1823,11 @@ static unsigned int NBN_ConnectionTable_Hash(int hash)
     return hash;
 }
 
-static void NBN_ConnectionTable_Grow(NBN_ConnectionTable *table, unsigned int new_capacity)
+static void NBN_ConnectionTable_Grow(NBN_ConnectionTable* table, unsigned int new_capacity)
 {
     unsigned int old_capacity = table->capacity;
     NBN_Connection** old_connections_array = table->connections;
-    NBN_Connection** new_connections_array = (NBN_Connection **)NBN_Allocator(sizeof(NBN_Connection *) * new_capacity);
+    NBN_Connection** new_connections_array = (NBN_Connection**)NBN_Allocator(sizeof(NBN_Connection*) * new_capacity);
 
     for (unsigned int i = 0; i < new_capacity; i++)
     {
@@ -1862,16 +1862,16 @@ NBN_MemoryManager nbn_mem_manager;
 
 static void MemoryManager_Init(void);
 static void MemoryManager_Deinit(void);
-static void *MemoryManager_Alloc(unsigned int);
-static void MemoryManager_Dealloc(void *, unsigned int);
+static void* MemoryManager_Alloc(unsigned int);
+static void MemoryManager_Dealloc(void*, unsigned int);
 
 #if !defined(NBN_DISABLE_MEMORY_POOLING)
 
-static void MemPool_Init(NBN_MemPool *, size_t, unsigned int);
-static void MemPool_Deinit(NBN_MemPool *);
-static void MemPool_Grow(NBN_MemPool *, unsigned int);
-static void *MemPool_Alloc(NBN_MemPool *);
-static void MemPool_Dealloc(NBN_MemPool *, void *);
+static void MemPool_Init(NBN_MemPool*, size_t, unsigned int);
+static void MemPool_Deinit(NBN_MemPool*);
+static void MemPool_Grow(NBN_MemPool*, unsigned int);
+static void* MemPool_Alloc(NBN_MemPool*);
+static void MemPool_Dealloc(NBN_MemPool*, void*);
 
 #endif /* NBN_DISABLE_MEMORY_POOLING */
 
@@ -1913,7 +1913,7 @@ static void MemoryManager_Deinit(void)
 #endif /* NBN_DISABLE_MEMORY_POOLING */
 }
 
-static void *MemoryManager_Alloc(unsigned int mem_tag)
+static void* MemoryManager_Alloc(unsigned int mem_tag)
 {
 #ifdef NBN_DISABLE_MEMORY_POOLING
     return NBN_Allocator(nbn_mem_manager.mem_sizes[mem_tag]);
@@ -1922,7 +1922,7 @@ static void *MemoryManager_Alloc(unsigned int mem_tag)
 #endif /* NBN_DISABLE_MEMORY_POOLING */
 }
 
-static void MemoryManager_Dealloc(void *ptr, unsigned int mem_tag)
+static void MemoryManager_Dealloc(void* ptr, unsigned int mem_tag)
 {
 #ifdef NBN_DISABLE_MEMORY_POOLING
     (void)mem_tag;
@@ -1935,7 +1935,7 @@ static void MemoryManager_Dealloc(void *ptr, unsigned int mem_tag)
 
 #if !defined(NBN_DISABLE_MEMORY_POOLING)
 
-static void MemPool_Init(NBN_MemPool *pool, size_t block_size, unsigned int initial_block_count)
+static void MemPool_Init(NBN_MemPool* pool, size_t block_size, unsigned int initial_block_count)
 {
     pool->block_size = MAX(block_size, sizeof(NBN_MemPoolFreeBlock));
     pool->block_idx = 0;
@@ -1946,7 +1946,7 @@ static void MemPool_Init(NBN_MemPool *pool, size_t block_size, unsigned int init
     MemPool_Grow(pool, initial_block_count);
 }
 
-static void MemPool_Deinit(NBN_MemPool *pool)
+static void MemPool_Deinit(NBN_MemPool* pool)
 {
     for (unsigned int i = 0; i < pool->block_count; i++)
         NBN_Deallocator(pool->blocks[i]);
@@ -1954,11 +1954,11 @@ static void MemPool_Deinit(NBN_MemPool *pool)
     NBN_Deallocator(pool->blocks);
 }
 
-static void *MemPool_Alloc(NBN_MemPool *pool)
+static void* MemPool_Alloc(NBN_MemPool* pool)
 {
     if (pool->free)
     {
-        void *block = pool->free;
+        void* block = pool->free;
 
         pool->free = pool->free->next;
 
@@ -1968,24 +1968,24 @@ static void *MemPool_Alloc(NBN_MemPool *pool)
     if (pool->block_idx == pool->block_count)
         MemPool_Grow(pool, pool->block_count * 2);
 
-    void *block = pool->blocks[pool->block_idx];
+    void* block = pool->blocks[pool->block_idx];
 
     pool->block_idx++;
 
     return block;
 }
 
-static void MemPool_Dealloc(NBN_MemPool *pool, void *ptr)
+static void MemPool_Dealloc(NBN_MemPool* pool, void* ptr)
 {
-    NBN_MemPoolFreeBlock *free = pool->free;
+    NBN_MemPoolFreeBlock* free = pool->free;
 
     pool->free = (NBN_MemPoolFreeBlock*)ptr;
     pool->free->next = free;
 }
 
-static void MemPool_Grow(NBN_MemPool *pool, unsigned int block_count)
+static void MemPool_Grow(NBN_MemPool* pool, unsigned int block_count)
 {
-    pool->blocks = (uint8_t**)NBN_Reallocator(pool->blocks, sizeof(uint8_t *) * block_count);
+    pool->blocks = (uint8_t**)NBN_Reallocator(pool->blocks, sizeof(uint8_t*) * block_count);
 
     for (unsigned int i = 0; i < block_count - pool->block_count; i++)
         pool->blocks[pool->block_idx + i] = (uint8_t*)NBN_Allocator(pool->block_size);
@@ -2019,9 +2019,9 @@ static unsigned int GetRequiredNumberOfBitsFor(unsigned int v)
 
 #pragma region NBN_BitReader
 
-static void BitReader_ReadFromBuffer(NBN_BitReader *);
+static void BitReader_ReadFromBuffer(NBN_BitReader*);
 
-void NBN_BitReader_Init(NBN_BitReader *bit_reader, uint8_t *buffer, unsigned int size)
+void NBN_BitReader_Init(NBN_BitReader* bit_reader, uint8_t* buffer, unsigned int size)
 {
     bit_reader->size = size;
     bit_reader->buffer = buffer;
@@ -2030,7 +2030,7 @@ void NBN_BitReader_Init(NBN_BitReader *bit_reader, uint8_t *buffer, unsigned int
     bit_reader->byte_cursor = 0;
 }
 
-int NBN_BitReader_Read(NBN_BitReader *bit_reader, Word *word, unsigned int number_of_bits)
+int NBN_BitReader_Read(NBN_BitReader* bit_reader, Word* word, unsigned int number_of_bits)
 {
     *word = 0;
 
@@ -2051,7 +2051,7 @@ int NBN_BitReader_Read(NBN_BitReader *bit_reader, Word *word, unsigned int numbe
     return 0;
 }
 
-static void BitReader_ReadFromBuffer(NBN_BitReader *bit_reader)
+static void BitReader_ReadFromBuffer(NBN_BitReader* bit_reader)
 {
     unsigned int bytes_count = MIN(bit_reader->size - bit_reader->byte_cursor, WORD_BYTES);
     Word word = 0;
@@ -2067,9 +2067,9 @@ static void BitReader_ReadFromBuffer(NBN_BitReader *bit_reader)
 
 #pragma region NBN_BitWriter
 
-static int BitWriter_FlushScratchBits(NBN_BitWriter *, unsigned int);
+static int BitWriter_FlushScratchBits(NBN_BitWriter*, unsigned int);
 
-void NBN_BitWriter_Init(NBN_BitWriter *bit_writer, uint8_t *buffer, unsigned int size)
+void NBN_BitWriter_Init(NBN_BitWriter* bit_writer, uint8_t* buffer, unsigned int size)
 {
     bit_writer->size = size;
     bit_writer->buffer = buffer;
@@ -2078,7 +2078,7 @@ void NBN_BitWriter_Init(NBN_BitWriter *bit_writer, uint8_t *buffer, unsigned int
     bit_writer->byte_cursor = 0;
 }
 
-int NBN_BitWriter_Write(NBN_BitWriter *bit_writer, Word value, unsigned int number_of_bits)
+int NBN_BitWriter_Write(NBN_BitWriter* bit_writer, Word value, unsigned int number_of_bits)
 {
     bit_writer->scratch |= ((uint64_t)value << bit_writer->scratch_bits_count);
 
@@ -2088,12 +2088,12 @@ int NBN_BitWriter_Write(NBN_BitWriter *bit_writer, Word value, unsigned int numb
     return 0;
 }
 
-int NBN_BitWriter_Flush(NBN_BitWriter *bit_writer)
+int NBN_BitWriter_Flush(NBN_BitWriter* bit_writer)
 {
     return BitWriter_FlushScratchBits(bit_writer, bit_writer->scratch_bits_count);
 }
 
-static int BitWriter_FlushScratchBits(NBN_BitWriter *bit_writer, unsigned int number_of_bits)
+static int BitWriter_FlushScratchBits(NBN_BitWriter* bit_writer, unsigned int number_of_bits)
 {
     if (bit_writer->scratch_bits_count < 1)
         return 0;
@@ -2120,7 +2120,7 @@ static int BitWriter_FlushScratchBits(NBN_BitWriter *bit_writer, unsigned int nu
 
 #pragma region NBN_ReadStream
 
-void NBN_ReadStream_Init(NBN_ReadStream *read_stream, uint8_t *buffer, unsigned int size)
+void NBN_ReadStream_Init(NBN_ReadStream* read_stream, uint8_t* buffer, unsigned int size)
 {
     read_stream->base.type = NBN_STREAM_READ;
     read_stream->base.serialize_uint_func = (NBN_Stream_SerializeUInt)NBN_ReadStream_SerializeUint;
@@ -2134,7 +2134,7 @@ void NBN_ReadStream_Init(NBN_ReadStream *read_stream, uint8_t *buffer, unsigned 
     NBN_BitReader_Init(&read_stream->bit_reader, buffer, size);
 }
 
-int NBN_ReadStream_SerializeUint(NBN_ReadStream *read_stream, unsigned int *value, unsigned int min, unsigned int max)
+int NBN_ReadStream_SerializeUint(NBN_ReadStream* read_stream, unsigned int* value, unsigned int min, unsigned int max)
 {
     assert(min <= max);
 
@@ -2153,7 +2153,7 @@ int NBN_ReadStream_SerializeUint(NBN_ReadStream *read_stream, unsigned int *valu
     return 0;
 }
 
-int NBN_ReadStream_SerializeUint64(NBN_ReadStream *read_stream, uint64_t *value)
+int NBN_ReadStream_SerializeUint64(NBN_ReadStream* read_stream, uint64_t* value)
 {
     union uint64_to_bytes
     {
@@ -2169,7 +2169,7 @@ int NBN_ReadStream_SerializeUint64(NBN_ReadStream *read_stream, uint64_t *value)
     return 0;
 }
 
-int NBN_ReadStream_SerializeInt(NBN_ReadStream *read_stream, int *value, int min, int max)
+int NBN_ReadStream_SerializeInt(NBN_ReadStream* read_stream, int* value, int min, int max)
 {
     assert(min <= max);
 
@@ -2182,7 +2182,7 @@ int NBN_ReadStream_SerializeInt(NBN_ReadStream *read_stream, int *value, int min
     if (NBN_ReadStream_SerializeBool(read_stream, &isNegative) < 0)
         return NBN_ERROR;
 
-    if (NBN_ReadStream_SerializeUint(read_stream, (unsigned int *)value, (min < 0 && max > 0) ? 0 : abs_min, abs_max) < 0)
+    if (NBN_ReadStream_SerializeUint(read_stream, (unsigned int*)value, (min < 0 && max > 0) ? 0 : abs_min, abs_max) < 0)
         return NBN_ERROR;
 
     if (isNegative)
@@ -2191,7 +2191,7 @@ int NBN_ReadStream_SerializeInt(NBN_ReadStream *read_stream, int *value, int min
     return 0;
 }
 
-int NBN_ReadStream_SerializeFloat(NBN_ReadStream *read_stream, float *value, float min, float max, int precision)
+int NBN_ReadStream_SerializeFloat(NBN_ReadStream* read_stream, float* value, float min, float max, int precision)
 {
     assert(min <= max);
 
@@ -2208,7 +2208,7 @@ int NBN_ReadStream_SerializeFloat(NBN_ReadStream *read_stream, float *value, flo
     return 0;
 }
 
-int NBN_ReadStream_SerializeBool(NBN_ReadStream *read_stream, bool *value)
+int NBN_ReadStream_SerializeBool(NBN_ReadStream* read_stream, bool* value)
 {
     Word v;
 
@@ -2223,7 +2223,7 @@ int NBN_ReadStream_SerializeBool(NBN_ReadStream *read_stream, bool *value)
     return 0;
 }
 
-int NBN_ReadStream_SerializePadding(NBN_ReadStream *read_stream)
+int NBN_ReadStream_SerializePadding(NBN_ReadStream* read_stream)
 {
     // if we are at the beginning of a new byte, no need to pad
     if (read_stream->bit_reader.scratch_bits_count % 8 == 0)
@@ -2243,7 +2243,7 @@ int NBN_ReadStream_SerializePadding(NBN_ReadStream *read_stream)
     return ret;
 }
 
-int NBN_ReadStream_SerializeBytes(NBN_ReadStream *read_stream, uint8_t *bytes, unsigned int length)
+int NBN_ReadStream_SerializeBytes(NBN_ReadStream* read_stream, uint8_t* bytes, unsigned int length)
 {
     if (length == 0)
         return NBN_ERROR;
@@ -2253,7 +2253,7 @@ int NBN_ReadStream_SerializeBytes(NBN_ReadStream *read_stream, uint8_t *bytes, u
         return NBN_ERROR;
     }
 
-    NBN_BitReader *bit_reader = &read_stream->bit_reader;
+    NBN_BitReader* bit_reader = &read_stream->bit_reader;
 
     // make sure we are at the start of a new byte after applying padding
     assert(bit_reader->scratch_bits_count % 8 == 0);
@@ -2293,7 +2293,7 @@ int NBN_ReadStream_SerializeBytes(NBN_ReadStream *read_stream, uint8_t *bytes, u
 
 #pragma region NBN_WriteStream
 
-void NBN_WriteStream_Init(NBN_WriteStream *write_stream, uint8_t *buffer, unsigned int size)
+void NBN_WriteStream_Init(NBN_WriteStream* write_stream, uint8_t* buffer, unsigned int size)
 {
     write_stream->base.type = NBN_STREAM_WRITE;
     write_stream->base.serialize_uint_func = (NBN_Stream_SerializeUInt)NBN_WriteStream_SerializeUint;
@@ -2308,7 +2308,7 @@ void NBN_WriteStream_Init(NBN_WriteStream *write_stream, uint8_t *buffer, unsign
 }
 
 int NBN_WriteStream_SerializeUint(
-        NBN_WriteStream *write_stream, unsigned int *value, unsigned int min, unsigned int max)
+    NBN_WriteStream* write_stream, unsigned int* value, unsigned int min, unsigned int max)
 {
     assert(min <= max);
     assert(*value >= min && *value <= max);
@@ -2319,7 +2319,7 @@ int NBN_WriteStream_SerializeUint(
     return 0;
 }
 
-int NBN_WriteStream_SerializeUint64(NBN_WriteStream *write_stream, uint64_t *value)
+int NBN_WriteStream_SerializeUint64(NBN_WriteStream* write_stream, uint64_t* value)
 {
     union uint64_to_bytes
     {
@@ -2332,7 +2332,7 @@ int NBN_WriteStream_SerializeUint64(NBN_WriteStream *write_stream, uint64_t *val
     return NBN_WriteStream_SerializeBytes(write_stream, u.bytes, 8);
 }
 
-int NBN_WriteStream_SerializeInt(NBN_WriteStream *write_stream, int *value, int min, int max)
+int NBN_WriteStream_SerializeInt(NBN_WriteStream* write_stream, int* value, int min, int max)
 {
     assert(min <= max);
 
@@ -2347,7 +2347,7 @@ int NBN_WriteStream_SerializeInt(NBN_WriteStream *write_stream, int *value, int 
         return NBN_ERROR;
 
     if (NBN_WriteStream_SerializeUint(
-                write_stream, (unsigned int *)value, (min < 0 && max > 0) ? 0 : abs_min, abs_max) < 0)
+        write_stream, (unsigned int*)value, (min < 0 && max > 0) ? 0 : abs_min, abs_max) < 0)
         return NBN_ERROR;
 
     if (isNegative)
@@ -2356,7 +2356,7 @@ int NBN_WriteStream_SerializeInt(NBN_WriteStream *write_stream, int *value, int 
     return 0;
 }
 
-int NBN_WriteStream_SerializeFloat(NBN_WriteStream *write_stream, float *value, float min, float max, int precision)
+int NBN_WriteStream_SerializeFloat(NBN_WriteStream* write_stream, float* value, float min, float max, int precision)
 {
     assert(min <= max);
 
@@ -2371,7 +2371,7 @@ int NBN_WriteStream_SerializeFloat(NBN_WriteStream *write_stream, float *value, 
     return 0;
 }
 
-int NBN_WriteStream_SerializeBool(NBN_WriteStream *write_stream, bool *value)
+int NBN_WriteStream_SerializeBool(NBN_WriteStream* write_stream, bool* value)
 {
     int v = *value;
 
@@ -2383,10 +2383,10 @@ int NBN_WriteStream_SerializeBool(NBN_WriteStream *write_stream, bool *value)
     return 0;
 }
 
-int NBN_WriteStream_SerializePadding(NBN_WriteStream *write_stream)
+int NBN_WriteStream_SerializePadding(NBN_WriteStream* write_stream)
 {
     // if we are at the beginning of a new byte, no need to pad
-    if (write_stream->bit_writer.scratch_bits_count % 8 == 0) 
+    if (write_stream->bit_writer.scratch_bits_count % 8 == 0)
         return 0;
 
     unsigned int padding = 8 - (write_stream->bit_writer.scratch_bits_count % 8);
@@ -2394,7 +2394,7 @@ int NBN_WriteStream_SerializePadding(NBN_WriteStream *write_stream)
     return NBN_BitWriter_Write(&write_stream->bit_writer, 0, padding);
 }
 
-int NBN_WriteStream_SerializeBytes(NBN_WriteStream *write_stream, uint8_t *bytes, unsigned int length)
+int NBN_WriteStream_SerializeBytes(NBN_WriteStream* write_stream, uint8_t* bytes, unsigned int length)
 {
     if (length == 0)
         return NBN_ERROR;
@@ -2402,7 +2402,7 @@ int NBN_WriteStream_SerializeBytes(NBN_WriteStream *write_stream, uint8_t *bytes
     if (NBN_WriteStream_SerializePadding(write_stream) < 0)
         return NBN_ERROR;
 
-    NBN_BitWriter *bit_writer = &write_stream->bit_writer;
+    NBN_BitWriter* bit_writer = &write_stream->bit_writer;
 
     // make sure we are at the start of a new byte after applying padding
     assert(bit_writer->scratch_bits_count % 8 == 0);
@@ -2423,7 +2423,7 @@ int NBN_WriteStream_SerializeBytes(NBN_WriteStream *write_stream, uint8_t *bytes
     return 0;
 }
 
-int NBN_WriteStream_Flush(NBN_WriteStream *write_stream)
+int NBN_WriteStream_Flush(NBN_WriteStream* write_stream)
 {
     return NBN_BitWriter_Flush(&write_stream->bit_writer);
 }
@@ -2432,7 +2432,7 @@ int NBN_WriteStream_Flush(NBN_WriteStream *write_stream)
 
 #pragma region NBN_MeasureStream
 
-void NBN_MeasureStream_Init(NBN_MeasureStream *measure_stream)
+void NBN_MeasureStream_Init(NBN_MeasureStream* measure_stream)
 {
     measure_stream->base.type = NBN_STREAM_MEASURE;
     measure_stream->base.serialize_uint_func = (NBN_Stream_SerializeUInt)NBN_MeasureStream_SerializeUint;
@@ -2447,7 +2447,7 @@ void NBN_MeasureStream_Init(NBN_MeasureStream *measure_stream)
 }
 
 int NBN_MeasureStream_SerializeUint(
-        NBN_MeasureStream *measure_stream, unsigned int *value, unsigned int min, unsigned int max)
+    NBN_MeasureStream* measure_stream, unsigned int* value, unsigned int min, unsigned int max)
 {
     (void)*value;
 
@@ -2461,14 +2461,14 @@ int NBN_MeasureStream_SerializeUint(
     return number_of_bits;
 }
 
-int NBN_MeasureStream_SerializeUint64(NBN_MeasureStream *measure_stream, unsigned int *value)
+int NBN_MeasureStream_SerializeUint64(NBN_MeasureStream* measure_stream, unsigned int* value)
 {
     (void)value;
 
     return NBN_MeasureStream_SerializeBytes(measure_stream, NULL, 8);
 }
 
-int NBN_MeasureStream_SerializeInt(NBN_MeasureStream *measure_stream, int *value, int min, int max)
+int NBN_MeasureStream_SerializeInt(NBN_MeasureStream* measure_stream, int* value, int min, int max)
 {
     assert(min <= max);
     assert(*value >= min && *value <= max);
@@ -2477,7 +2477,7 @@ int NBN_MeasureStream_SerializeInt(NBN_MeasureStream *measure_stream, int *value
     unsigned int abs_max = MAX(abs(min), abs(max));
     unsigned int abs_value = abs(*value);
     unsigned number_of_bits = NBN_MeasureStream_SerializeUint(
-            measure_stream, &abs_value, (min < 0 && max > 0) ? 0 : abs_min, abs_max);
+        measure_stream, &abs_value, (min < 0 && max > 0) ? 0 : abs_min, abs_max);
 
     measure_stream->number_of_bits++; // +1 for int sign
 
@@ -2485,7 +2485,7 @@ int NBN_MeasureStream_SerializeInt(NBN_MeasureStream *measure_stream, int *value
 }
 
 int NBN_MeasureStream_SerializeFloat(
-        NBN_MeasureStream *measure_stream, float *value, float min, float max, int precision)
+    NBN_MeasureStream* measure_stream, float* value, float min, float max, int precision)
 {
     assert(min <= max);
     assert(*value >= min && *value <= max);
@@ -2498,7 +2498,7 @@ int NBN_MeasureStream_SerializeFloat(
     return NBN_MeasureStream_SerializeInt(measure_stream, &i_val, i_min, i_max);
 }
 
-int NBN_MeasureStream_SerializeBool(NBN_MeasureStream *measure_stream, bool *value)
+int NBN_MeasureStream_SerializeBool(NBN_MeasureStream* measure_stream, bool* value)
 {
     (void)value;
 
@@ -2507,7 +2507,7 @@ int NBN_MeasureStream_SerializeBool(NBN_MeasureStream *measure_stream, bool *val
     return 1;
 }
 
-int NBN_MeasureStream_SerializePadding(NBN_MeasureStream *measure_stream)
+int NBN_MeasureStream_SerializePadding(NBN_MeasureStream* measure_stream)
 {
     if (measure_stream->number_of_bits % 8 == 0)
         return 0;
@@ -2519,7 +2519,7 @@ int NBN_MeasureStream_SerializePadding(NBN_MeasureStream *measure_stream)
     return padding;
 }
 
-int NBN_MeasureStream_SerializeBytes(NBN_MeasureStream *measure_stream, uint8_t *bytes, unsigned int length)
+int NBN_MeasureStream_SerializeBytes(NBN_MeasureStream* measure_stream, uint8_t* bytes, unsigned int length)
 {
     (void)bytes;
 
@@ -2532,7 +2532,7 @@ int NBN_MeasureStream_SerializeBytes(NBN_MeasureStream *measure_stream, uint8_t 
     return bits;
 }
 
-void NBN_MeasureStream_Reset(NBN_MeasureStream *measure_stream)
+void NBN_MeasureStream_Reset(NBN_MeasureStream* measure_stream)
 {
     measure_stream->number_of_bits = 0;
 }
@@ -2543,10 +2543,10 @@ void NBN_MeasureStream_Reset(NBN_MeasureStream *measure_stream)
 
 #pragma region NBN_Packet
 
-static int Packet_SerializeHeader(NBN_PacketHeader *, NBN_Stream *);
+static int Packet_SerializeHeader(NBN_PacketHeader*, NBN_Stream*);
 
 void NBN_Packet_InitWrite(
-        NBN_Packet *packet, uint32_t protocol_id, uint16_t seq_number, uint16_t ack, uint32_t ack_bits)
+    NBN_Packet* packet, uint32_t protocol_id, uint16_t seq_number, uint16_t ack, uint32_t ack_bits)
 {
     packet->header.protocol_id = protocol_id;
     packet->header.messages_count = 0;
@@ -2565,7 +2565,7 @@ void NBN_Packet_InitWrite(
 }
 
 int NBN_Packet_InitRead(
-        NBN_Packet *packet, NBN_Connection *sender, uint8_t buffer[NBN_PACKET_MAX_SIZE], unsigned int size)
+    NBN_Packet* packet, NBN_Connection* sender, uint8_t buffer[NBN_PACKET_MAX_SIZE], unsigned int size)
 {
     packet->mode = NBN_PACKET_MODE_READ;
     packet->sender = sender;
@@ -2578,8 +2578,8 @@ int NBN_Packet_InitRead(
 
     NBN_ReadStream_Init(&header_r_stream, packet->buffer, NBN_PACKET_HEADER_SIZE);
 
-    if (Packet_SerializeHeader(&packet->header, (NBN_Stream *)&header_r_stream) < 0)
-        return NBN_ERROR; 
+    if (Packet_SerializeHeader(&packet->header, (NBN_Stream*)&header_r_stream) < 0)
+        return NBN_ERROR;
 
     NBN_ReadStream_Init(&packet->r_stream, packet->buffer + NBN_PACKET_HEADER_SIZE, packet->size);
 
@@ -2597,13 +2597,13 @@ uint32_t NBN_Packet_ReadProtocolId(uint8_t buffer[NBN_PACKET_MAX_SIZE], unsigned
 
     NBN_PacketHeader header;
 
-    if (Packet_SerializeHeader(&header, (NBN_Stream *)&r_stream) < 0)
+    if (Packet_SerializeHeader(&header, (NBN_Stream*)&r_stream) < 0)
         return 0;
 
     return header.protocol_id;
 }
 
-int NBN_Packet_WriteMessage(NBN_Packet *packet, NBN_Message *message, NBN_MessageSerializer msg_serializer)
+int NBN_Packet_WriteMessage(NBN_Packet* packet, NBN_Message* message, NBN_MessageSerializer msg_serializer)
 {
     if (packet->mode != NBN_PACKET_MODE_WRITE || packet->sealed)
         return NBN_PACKET_WRITE_ERROR;
@@ -2614,18 +2614,18 @@ int NBN_Packet_WriteMessage(NBN_Packet *packet, NBN_Message *message, NBN_Messag
         return NBN_PACKET_WRITE_ERROR;
 
     if (
-            packet->header.messages_count >= NBN_MAX_MESSAGES_PER_PACKET ||
-            packet->m_stream.number_of_bits > NBN_PACKET_MAX_DATA_SIZE * 8)
+        packet->header.messages_count >= NBN_MAX_MESSAGES_PER_PACKET ||
+        packet->m_stream.number_of_bits > NBN_PACKET_MAX_DATA_SIZE * 8)
     {
         packet->m_stream.number_of_bits = current_number_of_bits;
 
         return NBN_PACKET_WRITE_NO_SPACE;
     }
 
-    if (NBN_Message_SerializeHeader(&message->header, (NBN_Stream *)&packet->w_stream) < 0)
+    if (NBN_Message_SerializeHeader(&message->header, (NBN_Stream*)&packet->w_stream) < 0)
         return NBN_PACKET_WRITE_ERROR;
 
-    if (NBN_Message_SerializeData(message, (NBN_Stream *)&packet->w_stream, msg_serializer) < 0)
+    if (NBN_Message_SerializeData(message, (NBN_Stream*)&packet->w_stream, msg_serializer) < 0)
         return NBN_PACKET_WRITE_ERROR;
 
     packet->size = (packet->m_stream.number_of_bits - 1) / 8 + 1;
@@ -2634,9 +2634,9 @@ int NBN_Packet_WriteMessage(NBN_Packet *packet, NBN_Message *message, NBN_Messag
     return NBN_PACKET_WRITE_OK;
 }
 
-int NBN_Packet_Seal(NBN_Packet *packet, NBN_Connection *connection)
+int NBN_Packet_Seal(NBN_Packet* packet, NBN_Connection* connection)
 {
-    (void) connection;
+    (void)connection;
 
     if (packet->mode != NBN_PACKET_MODE_WRITE)
         return NBN_ERROR;
@@ -2650,7 +2650,7 @@ int NBN_Packet_Seal(NBN_Packet *packet, NBN_Connection *connection)
 
     NBN_WriteStream_Init(&header_w_stream, packet->buffer, NBN_PACKET_HEADER_SIZE);
 
-    if (Packet_SerializeHeader(&packet->header, (NBN_Stream *)&header_w_stream) < 0)
+    if (Packet_SerializeHeader(&packet->header, (NBN_Stream*)&header_w_stream) < 0)
         return NBN_ERROR;
 
     if (NBN_WriteStream_Flush(&header_w_stream) < 0)
@@ -2661,7 +2661,7 @@ int NBN_Packet_Seal(NBN_Packet *packet, NBN_Connection *connection)
     return 0;
 }
 
-static int Packet_SerializeHeader(NBN_PacketHeader *header, NBN_Stream *stream)
+static int Packet_SerializeHeader(NBN_PacketHeader* header, NBN_Stream* stream)
 {
     NBN_SerializeBytes(stream, &header->protocol_id, sizeof(header->protocol_id));
     NBN_SerializeBytes(stream, &header->seq_number, sizeof(header->seq_number));
@@ -2676,7 +2676,7 @@ static int Packet_SerializeHeader(NBN_PacketHeader *header, NBN_Stream *stream)
 
 #pragma region NBN_Message
 
-int NBN_Message_SerializeHeader(NBN_MessageHeader *message_header, NBN_Stream *stream)
+int NBN_Message_SerializeHeader(NBN_MessageHeader* message_header, NBN_Stream* stream)
 {
     NBN_SerializeBytes(stream, &message_header->id, sizeof(message_header->id));
     NBN_SerializeBytes(stream, &message_header->type, sizeof(message_header->type));
@@ -2685,18 +2685,18 @@ int NBN_Message_SerializeHeader(NBN_MessageHeader *message_header, NBN_Stream *s
     return 0;
 }
 
-int NBN_Message_Measure(NBN_Message *message, NBN_MeasureStream *m_stream, NBN_MessageSerializer msg_serializer)
+int NBN_Message_Measure(NBN_Message* message, NBN_MeasureStream* m_stream, NBN_MessageSerializer msg_serializer)
 {
-    if (NBN_Message_SerializeHeader(&message->header, (NBN_Stream *)m_stream) < 0)
+    if (NBN_Message_SerializeHeader(&message->header, (NBN_Stream*)m_stream) < 0)
         return NBN_ERROR;
 
-    if (NBN_Message_SerializeData(message, (NBN_Stream *)m_stream, msg_serializer) < 0)
+    if (NBN_Message_SerializeData(message, (NBN_Stream*)m_stream, msg_serializer) < 0)
         return NBN_ERROR;
 
     return m_stream->number_of_bits;
 }
 
-int NBN_Message_SerializeData(NBN_Message *message, NBN_Stream *stream, NBN_MessageSerializer msg_serializer)
+int NBN_Message_SerializeData(NBN_Message* message, NBN_Stream* stream, NBN_MessageSerializer msg_serializer)
 {
     return msg_serializer(message->data, stream);
 }
@@ -2705,21 +2705,21 @@ int NBN_Message_SerializeData(NBN_Message *message, NBN_Stream *stream, NBN_Mess
 
 #pragma region NBN_MessageChunk
 
-NBN_MessageChunk *NBN_MessageChunk_Create(void)
+NBN_MessageChunk* NBN_MessageChunk_Create(void)
 {
-    NBN_MessageChunk *chunk = (NBN_MessageChunk*)MemoryManager_Alloc(NBN_MEM_MESSAGE_CHUNK);
+    NBN_MessageChunk* chunk = (NBN_MessageChunk*)MemoryManager_Alloc(NBN_MEM_MESSAGE_CHUNK);
 
     chunk->outgoing_msg = NULL;
 
     return chunk;
 }
 
-void NBN_MessageChunk_Destroy(NBN_MessageChunk *chunk)
+void NBN_MessageChunk_Destroy(NBN_MessageChunk* chunk)
 {
     MemoryManager_Dealloc(chunk, NBN_MEM_MESSAGE_CHUNK);
 }
 
-int NBN_MessageChunk_Serialize(NBN_MessageChunk *msg, NBN_Stream *stream)
+int NBN_MessageChunk_Serialize(NBN_MessageChunk* msg, NBN_Stream* stream)
 {
     NBN_SerializeBytes(stream, &msg->id, 1);
     NBN_SerializeBytes(stream, &msg->total, 1);
@@ -2732,17 +2732,17 @@ int NBN_MessageChunk_Serialize(NBN_MessageChunk *msg, NBN_Stream *stream)
 
 #pragma region NBN_ClientClosedMessage
 
-NBN_ClientClosedMessage *NBN_ClientClosedMessage_Create(void)
+NBN_ClientClosedMessage* NBN_ClientClosedMessage_Create(void)
 {
     return (NBN_ClientClosedMessage*)NBN_Allocator(sizeof(NBN_ClientClosedMessage));
 }
 
-void NBN_ClientClosedMessage_Destroy(NBN_ClientClosedMessage *msg)
+void NBN_ClientClosedMessage_Destroy(NBN_ClientClosedMessage* msg)
 {
     NBN_Deallocator(msg);
 }
 
-int NBN_ClientClosedMessage_Serialize(NBN_ClientClosedMessage *msg, NBN_Stream *stream)
+int NBN_ClientClosedMessage_Serialize(NBN_ClientClosedMessage* msg, NBN_Stream* stream)
 {
     NBN_SerializeInt(stream, msg->code, SHRT_MIN, SHRT_MAX);
 
@@ -2753,17 +2753,17 @@ int NBN_ClientClosedMessage_Serialize(NBN_ClientClosedMessage *msg, NBN_Stream *
 
 #pragma region NBN_ClientAcceptedMessage
 
-NBN_ClientAcceptedMessage *NBN_ClientAcceptedMessage_Create(void)
+NBN_ClientAcceptedMessage* NBN_ClientAcceptedMessage_Create(void)
 {
     return (NBN_ClientAcceptedMessage*)NBN_Allocator(sizeof(NBN_ClientAcceptedMessage));
 }
 
-void NBN_ClientAcceptedMessage_Destroy(NBN_ClientAcceptedMessage *msg)
+void NBN_ClientAcceptedMessage_Destroy(NBN_ClientAcceptedMessage* msg)
 {
     NBN_Deallocator(msg);
 }
 
-int NBN_ClientAcceptedMessage_Serialize(NBN_ClientAcceptedMessage *msg, NBN_Stream *stream)
+int NBN_ClientAcceptedMessage_Serialize(NBN_ClientAcceptedMessage* msg, NBN_Stream* stream)
 {
     NBN_SerializeUInt(stream, msg->length, 0, NBN_SERVER_DATA_MAX_SIZE);
     NBN_SerializeBytes(stream, msg->data, msg->length);
@@ -2775,17 +2775,17 @@ int NBN_ClientAcceptedMessage_Serialize(NBN_ClientAcceptedMessage *msg, NBN_Stre
 
 #pragma region NBN_ByteArrayMessage
 
-NBN_ByteArrayMessage *NBN_ByteArrayMessage_Create(void)
+NBN_ByteArrayMessage* NBN_ByteArrayMessage_Create(void)
 {
     return (NBN_ByteArrayMessage*)MemoryManager_Alloc(NBN_MEM_BYTE_ARRAY_MESSAGE);
 }
 
-void NBN_ByteArrayMessage_Destroy(NBN_ByteArrayMessage *msg)
+void NBN_ByteArrayMessage_Destroy(NBN_ByteArrayMessage* msg)
 {
     MemoryManager_Dealloc(msg, NBN_MEM_BYTE_ARRAY_MESSAGE);
 }
 
-int NBN_ByteArrayMessage_Serialize(NBN_ByteArrayMessage *msg, NBN_Stream *stream)
+int NBN_ByteArrayMessage_Serialize(NBN_ByteArrayMessage* msg, NBN_Stream* stream)
 {
     NBN_SerializeUInt(stream, msg->length, 0, NBN_BYTE_ARRAY_MAX_SIZE);
     NBN_SerializeBytes(stream, msg->bytes, msg->length);
@@ -2797,17 +2797,17 @@ int NBN_ByteArrayMessage_Serialize(NBN_ByteArrayMessage *msg, NBN_Stream *stream
 
 #pragma region NBN_DisconnectionMessage
 
-void *NBN_DisconnectionMessage_Create(void)
+void* NBN_DisconnectionMessage_Create(void)
 {
     return NULL;
 }
 
-void NBN_DisconnectionMessage_Destroy(void *msg)
+void NBN_DisconnectionMessage_Destroy(void* msg)
 {
     NBN_Deallocator(msg);
 }
 
-int NBN_DisconnectionMessage_Serialize(void *msg, NBN_Stream *stream)
+int NBN_DisconnectionMessage_Serialize(void* msg, NBN_Stream* stream)
 {
     (void)msg;
     (void)stream;
@@ -2819,17 +2819,17 @@ int NBN_DisconnectionMessage_Serialize(void *msg, NBN_Stream *stream)
 
 #pragma region NBN_ConnectionRequestMessage
 
-NBN_ConnectionRequestMessage *NBN_ConnectionRequestMessage_Create(void)
+NBN_ConnectionRequestMessage* NBN_ConnectionRequestMessage_Create(void)
 {
-    return (NBN_ConnectionRequestMessage *)NBN_Allocator(sizeof(NBN_ConnectionRequestMessage));
+    return (NBN_ConnectionRequestMessage*)NBN_Allocator(sizeof(NBN_ConnectionRequestMessage));
 }
 
-void NBN_ConnectionRequestMessage_Destroy(NBN_ConnectionRequestMessage *msg)
+void NBN_ConnectionRequestMessage_Destroy(NBN_ConnectionRequestMessage* msg)
 {
     NBN_Deallocator(msg);
 }
 
-int NBN_ConnectionRequestMessage_Serialize(NBN_ConnectionRequestMessage *msg, NBN_Stream *stream)
+int NBN_ConnectionRequestMessage_Serialize(NBN_ConnectionRequestMessage* msg, NBN_Stream* stream)
 {
     NBN_SerializeUInt(stream, msg->length, 0, NBN_CONNECTION_DATA_MAX_SIZE);
     NBN_SerializeBytes(stream, msg->data, msg->length);
@@ -2841,24 +2841,24 @@ int NBN_ConnectionRequestMessage_Serialize(NBN_ConnectionRequestMessage *msg, NB
 
 #pragma region NBN_RPC_Message
 
-void *NBN_RPC_Message_Create(void)
+void* NBN_RPC_Message_Create(void)
 {
-    return (NBN_RPC_Message *)NBN_Allocator(sizeof(NBN_RPC_Message));
+    return (NBN_RPC_Message*)NBN_Allocator(sizeof(NBN_RPC_Message));
 }
 
-void NBN_RPC_Message_Destroy(NBN_RPC_Message *msg)
+void NBN_RPC_Message_Destroy(NBN_RPC_Message* msg)
 {
     NBN_Deallocator(msg);
 }
 
-int NBN_RPC_Message_Serialize(NBN_RPC_Message *msg, NBN_Stream *stream)
+int NBN_RPC_Message_Serialize(NBN_RPC_Message* msg, NBN_Stream* stream)
 {
     NBN_SerializeUInt(stream, msg->id, 0, NBN_RPC_MAX);
     NBN_SerializeUInt(stream, msg->param_count, 0, NBN_RPC_MAX_PARAM_COUNT);
 
     for (unsigned int i = 0; i < msg->param_count; i++)
     {
-        NBN_RPC_Param *p = &msg->params[i];
+        NBN_RPC_Param* p = &msg->params[i];
 
         NBN_SerializeUInt(stream, p->type, 0, 8);
 
@@ -2900,30 +2900,30 @@ int NBN_RPC_Message_Serialize(NBN_RPC_Message *msg, NBN_Stream *stream)
 
 #pragma region NBN_Connection
 
-static NBN_OutgoingMessage *Endpoint_CreateOutgoingMessage(NBN_Endpoint *, NBN_Channel*, uint8_t, void *);
+static NBN_OutgoingMessage* Endpoint_CreateOutgoingMessage(NBN_Endpoint*, NBN_Channel*, uint8_t, void*);
 
-static uint32_t Connection_BuildPacketAckBits(NBN_Connection *);
-static int Connection_DecodePacketHeader(NBN_Connection *, NBN_Packet *, double);
-static int Connection_AckPacket(NBN_Connection *, uint16_t, double time);
-static void Connection_InitOutgoingPacket(NBN_Connection *, NBN_Packet *, NBN_PacketEntry **);
-static NBN_PacketEntry *Connection_InsertOutgoingPacketEntry(NBN_Connection *, uint16_t);
-static bool Connection_InsertReceivedPacketEntry(NBN_Connection *, uint16_t);
-static NBN_PacketEntry *Connection_FindSendPacketEntry(NBN_Connection *, uint16_t);
-static bool Connection_IsPacketReceived(NBN_Connection *, uint16_t);
-static int Connection_SendPacket(NBN_Connection *, NBN_Packet *, NBN_PacketEntry *, double);
-static int Connection_ReadNextMessageFromStream(NBN_Connection *, NBN_ReadStream *, NBN_Message *);
-static int Connection_ReadNextMessageFromPacket(NBN_Connection *, NBN_Packet *, NBN_Message *);
-static void Connection_RecycleMessage(NBN_Channel *, NBN_Message *);
-static void Connection_UpdateAveragePing(NBN_Connection *, double);
-static void Connection_UpdateAveragePacketLoss(NBN_Connection *, uint16_t);
-static void Connection_UpdateAverageUploadBandwidth(NBN_Connection *, float);
-static void Connection_UpdateAverageDownloadBandwidth(NBN_Connection *, double);
-static NBN_RPC_Message *Connection_BuildRPC(NBN_Connection *, NBN_RPC *, va_list);
-static void Connection_HandleReceivedRPC(NBN_ConnectionHandle, NBN_Endpoint *, NBN_RPC_Message *);
+static uint32_t Connection_BuildPacketAckBits(NBN_Connection*);
+static int Connection_DecodePacketHeader(NBN_Connection*, NBN_Packet*, double);
+static int Connection_AckPacket(NBN_Connection*, uint16_t, double time);
+static void Connection_InitOutgoingPacket(NBN_Connection*, NBN_Packet*, NBN_PacketEntry**);
+static NBN_PacketEntry* Connection_InsertOutgoingPacketEntry(NBN_Connection*, uint16_t);
+static bool Connection_InsertReceivedPacketEntry(NBN_Connection*, uint16_t);
+static NBN_PacketEntry* Connection_FindSendPacketEntry(NBN_Connection*, uint16_t);
+static bool Connection_IsPacketReceived(NBN_Connection*, uint16_t);
+static int Connection_SendPacket(NBN_Connection*, NBN_Packet*, NBN_PacketEntry*, double);
+static int Connection_ReadNextMessageFromStream(NBN_Connection*, NBN_ReadStream*, NBN_Message*);
+static int Connection_ReadNextMessageFromPacket(NBN_Connection*, NBN_Packet*, NBN_Message*);
+static void Connection_RecycleMessage(NBN_Channel*, NBN_Message*);
+static void Connection_UpdateAveragePing(NBN_Connection*, double);
+static void Connection_UpdateAveragePacketLoss(NBN_Connection*, uint16_t);
+static void Connection_UpdateAverageUploadBandwidth(NBN_Connection*, float);
+static void Connection_UpdateAverageDownloadBandwidth(NBN_Connection*, double);
+static NBN_RPC_Message* Connection_BuildRPC(NBN_Connection*, NBN_RPC*, va_list);
+static void Connection_HandleReceivedRPC(NBN_ConnectionHandle, NBN_Endpoint*, NBN_RPC_Message*);
 
-NBN_Connection *NBN_Connection_Create(uint32_t id, uint32_t protocol_id, NBN_Endpoint *endpoint, NBN_Driver *driver, void *driver_data)
+NBN_Connection* NBN_Connection_Create(uint32_t id, uint32_t protocol_id, NBN_Endpoint* endpoint, NBN_Driver* driver, void* driver_data)
 {
-    NBN_Connection *connection = (NBN_Connection*)MemoryManager_Alloc(NBN_MEM_CONNECTION);
+    NBN_Connection* connection = (NBN_Connection*)MemoryManager_Alloc(NBN_MEM_CONNECTION);
 
     connection->id = id;
     connection->protocol_id = protocol_id;
@@ -2957,11 +2957,11 @@ NBN_Connection *NBN_Connection_Create(uint32_t id, uint32_t protocol_id, NBN_End
     return connection;
 }
 
-void NBN_Connection_Destroy(NBN_Connection *connection)
+void NBN_Connection_Destroy(NBN_Connection* connection)
 {
     for (int i = 0; i < NBN_MAX_CHANNELS; i++)
     {
-        NBN_Channel *channel = connection->channels[i];
+        NBN_Channel* channel = connection->channels[i];
 
         if (channel)
         {
@@ -2973,7 +2973,7 @@ void NBN_Connection_Destroy(NBN_Connection *connection)
     MemoryManager_Dealloc(connection, NBN_MEM_CONNECTION);
 }
 
-int NBN_Connection_ProcessReceivedPacket(NBN_Connection *connection, NBN_Packet *packet, double time)
+int NBN_Connection_ProcessReceivedPacket(NBN_Connection* connection, NBN_Packet* packet, double time)
 {
     if (Connection_DecodePacketHeader(connection, packet, time) < 0)
     {
@@ -3003,7 +3003,7 @@ int NBN_Connection_ProcessReceivedPacket(NBN_Connection *connection, NBN_Packet 
             return NBN_ERROR;
         }
 
-        NBN_Channel *channel = connection->channels[message.header.channel_id];
+        NBN_Channel* channel = connection->channels[message.header.channel_id];
 
         if (channel->AddReceivedMessage(channel, &message))
         {
@@ -3025,18 +3025,18 @@ int NBN_Connection_ProcessReceivedPacket(NBN_Connection *connection, NBN_Packet 
     return 0;
 }
 
-int NBN_Connection_EnqueueOutgoingMessage(NBN_Connection *connection, NBN_Channel *channel, NBN_Message *message)
+int NBN_Connection_EnqueueOutgoingMessage(NBN_Connection* connection, NBN_Channel* channel, NBN_Message* message)
 {
     assert(!connection->is_closed || message->header.type == NBN_CLIENT_CLOSED_MESSAGE_TYPE);
     assert(!connection->is_stale);
-    (void) connection;
+    (void)connection;
 
     NBN_LogTrace("Enqueue message of type %d on channel %d", message->header.type, channel->id);
 
     if (!channel->AddOutgoingMessage(channel, message))
     {
         NBN_LogError("Failed to enqueue outgoing message of type %d on channel %d",
-                message->header.type, message->header.channel_id);
+            message->header.type, message->header.channel_id);
 
         return NBN_ERROR;
     }
@@ -3044,12 +3044,12 @@ int NBN_Connection_EnqueueOutgoingMessage(NBN_Connection *connection, NBN_Channe
     return 0;
 }
 
-int NBN_Connection_FlushSendQueue(NBN_Connection *connection, double time)
+int NBN_Connection_FlushSendQueue(NBN_Connection* connection, double time)
 {
     NBN_LogTrace("Flushing the send queue");
 
     NBN_Packet packet;
-    NBN_PacketEntry *packet_entry;
+    NBN_PacketEntry* packet_entry;
     unsigned int sent_packet_count = 0;
     unsigned int sent_bytes = 0;
 
@@ -3057,21 +3057,21 @@ int NBN_Connection_FlushSendQueue(NBN_Connection *connection, double time)
 
     for (unsigned int i = 0; i < NBN_MAX_CHANNELS; i++)
     {
-        NBN_Channel *channel = connection->channels[i];
+        NBN_Channel* channel = connection->channels[i];
 
         if (channel == NULL)
             continue;
 
         NBN_LogTrace("Flushing channel %d (message count: %d)", channel->id, channel->outgoing_message_count);
 
-        NBN_Message *message;
+        NBN_Message* message;
         unsigned int j = 0;
 
         while (
-                j < channel->outgoing_message_count &&
-                sent_packet_count < NBN_CONNECTION_MAX_SENT_PACKET_COUNT &&
-                (message = channel->GetNextOutgoingMessage(channel, time)) != NULL
-              )
+            j < channel->outgoing_message_count &&
+            sent_packet_count < NBN_CONNECTION_MAX_SENT_PACKET_COUNT &&
+            (message = channel->GetNextOutgoingMessage(channel, time)) != NULL
+            )
         {
             bool message_sent = false;
             NBN_MessageSerializer msg_serializer = connection->endpoint->message_serializers[message->header.type];
@@ -3112,7 +3112,7 @@ int NBN_Connection_FlushSendQueue(NBN_Connection *connection, double time)
             else if (ret == NBN_PACKET_WRITE_ERROR)
             {
                 NBN_LogError("Failed to write message %d of type %d to packet %d",
-                        message->header.id, message->header.type, packet.header.seq_number);
+                    message->header.id, message->header.type, packet.header.seq_number);
 
                 return NBN_ERROR;
             }
@@ -3156,7 +3156,7 @@ int NBN_Connection_FlushSendQueue(NBN_Connection *connection, double time)
     return 0;
 }
 
-int NBN_Connection_InitChannel(NBN_Connection *connection, NBN_Channel *channel)
+int NBN_Connection_InitChannel(NBN_Connection* connection, NBN_Channel* channel)
 {
     channel->connection = connection;
     channel->read_chunk_buffer = (uint8_t*)NBN_Allocator(NBN_CHANNEL_RW_CHUNK_BUFFER_INITIAL_SIZE);
@@ -3183,11 +3183,11 @@ int NBN_Connection_InitChannel(NBN_Connection *connection, NBN_Channel *channel)
     return 0;
 }
 
-bool NBN_Connection_CheckIfStale(NBN_Connection *connection, double time)
+bool NBN_Connection_CheckIfStale(NBN_Connection* connection, double time)
 {
 #if defined(NBN_DEBUG) && defined(NBN_DISABLE_STALE_CONNECTION_DETECTION)
-    (void) connection;
-    (void) time;
+    (void)connection;
+    (void)time;
     /* When testing under bad network conditions (in soak test for instance), we don't want to deal
        with stale connections */
     return false;
@@ -3196,7 +3196,7 @@ bool NBN_Connection_CheckIfStale(NBN_Connection *connection, double time)
 #endif
 }
 
-static int Connection_DecodePacketHeader(NBN_Connection *connection, NBN_Packet *packet, double time)
+static int Connection_DecodePacketHeader(NBN_Connection* connection, NBN_Packet* packet, double time)
 {
     if (Connection_AckPacket(connection, packet->header.ack, time) < 0)
     {
@@ -3221,13 +3221,13 @@ static int Connection_DecodePacketHeader(NBN_Connection *connection, NBN_Packet 
     return 0;
 }
 
-static uint32_t Connection_BuildPacketAckBits(NBN_Connection *connection)
+static uint32_t Connection_BuildPacketAckBits(NBN_Connection* connection)
 {
     uint32_t ack_bits = 0;
 
     for (int i = 0; i < 32; i++)
     {
-        /* 
+        /*
            when last_received_packet_seq_number is lower than 32, the value of acked_packet_seq_number will eventually
            wrap around, which means the packets from before the wrap around will naturally be acked
            */
@@ -3241,9 +3241,9 @@ static uint32_t Connection_BuildPacketAckBits(NBN_Connection *connection)
     return ack_bits;
 }
 
-static int Connection_AckPacket(NBN_Connection *connection, uint16_t ack_packet_seq_number, double time)
+static int Connection_AckPacket(NBN_Connection* connection, uint16_t ack_packet_seq_number, double time)
 {
-    NBN_PacketEntry *packet_entry = Connection_FindSendPacketEntry(connection, ack_packet_seq_number);
+    NBN_PacketEntry* packet_entry = Connection_FindSendPacketEntry(connection, ack_packet_seq_number);
 
     if (packet_entry && !packet_entry->acked)
     {
@@ -3255,8 +3255,8 @@ static int Connection_AckPacket(NBN_Connection *connection, uint16_t ack_packet_
 
         for (unsigned int i = 0; i < packet_entry->messages_count; i++)
         {
-            NBN_MessageEntry *msg_entry = &packet_entry->messages[i];
-            NBN_Channel *channel = connection->channels[msg_entry->channel_id];
+            NBN_MessageEntry* msg_entry = &packet_entry->messages[i];
+            NBN_Channel* channel = connection->channels[msg_entry->channel_id];
 
             assert(channel != NULL);
 
@@ -3272,19 +3272,19 @@ static int Connection_AckPacket(NBN_Connection *connection, uint16_t ack_packet_
 }
 
 static void Connection_InitOutgoingPacket(
-        NBN_Connection *connection, NBN_Packet *outgoing_packet, NBN_PacketEntry **packet_entry)
+    NBN_Connection* connection, NBN_Packet* outgoing_packet, NBN_PacketEntry** packet_entry)
 {
     NBN_Packet_InitWrite(
-            outgoing_packet,
-            connection->protocol_id,
-            connection->next_packet_seq_number++,
-            connection->last_received_packet_seq_number,
-            Connection_BuildPacketAckBits(connection));
+        outgoing_packet,
+        connection->protocol_id,
+        connection->next_packet_seq_number++,
+        connection->last_received_packet_seq_number,
+        Connection_BuildPacketAckBits(connection));
 
     *packet_entry = Connection_InsertOutgoingPacketEntry(connection, outgoing_packet->header.seq_number);
 }
 
-static NBN_PacketEntry *Connection_InsertOutgoingPacketEntry(NBN_Connection *connection, uint16_t seq_number)
+static NBN_PacketEntry* Connection_InsertOutgoingPacketEntry(NBN_Connection* connection, uint16_t seq_number)
 {
     uint16_t index = seq_number % NBN_MAX_PACKET_ENTRIES;
     NBN_PacketEntry entry = {
@@ -3301,13 +3301,13 @@ static NBN_PacketEntry *Connection_InsertOutgoingPacketEntry(NBN_Connection *con
     return &connection->packet_send_buffer[index];
 }
 
-static bool Connection_InsertReceivedPacketEntry(NBN_Connection *connection, uint16_t seq_number)
+static bool Connection_InsertReceivedPacketEntry(NBN_Connection* connection, uint16_t seq_number)
 {
     uint16_t index = seq_number % NBN_MAX_PACKET_ENTRIES;
 
     /* Ignore duplicated packets */
     if (connection->packet_recv_seq_buffer[index] != 0xFFFFFFFF &&
-            connection->packet_recv_seq_buffer[index] == seq_number)
+        connection->packet_recv_seq_buffer[index] == seq_number)
         return false;
 
     /*
@@ -3326,7 +3326,7 @@ static bool Connection_InsertReceivedPacketEntry(NBN_Connection *connection, uin
     return true;
 }
 
-static NBN_PacketEntry *Connection_FindSendPacketEntry(NBN_Connection *connection, uint16_t seq_number)
+static NBN_PacketEntry* Connection_FindSendPacketEntry(NBN_Connection* connection, uint16_t seq_number)
 {
     uint16_t index = seq_number % NBN_MAX_PACKET_ENTRIES;
 
@@ -3336,17 +3336,17 @@ static NBN_PacketEntry *Connection_FindSendPacketEntry(NBN_Connection *connectio
     return NULL;
 }
 
-static bool Connection_IsPacketReceived(NBN_Connection *connection, uint16_t packet_seq_number)
+static bool Connection_IsPacketReceived(NBN_Connection* connection, uint16_t packet_seq_number)
 {
     uint16_t index = packet_seq_number % NBN_MAX_PACKET_ENTRIES;
 
     return connection->packet_recv_seq_buffer[index] == packet_seq_number;
 }
 
-static int Connection_SendPacket(NBN_Connection *connection, NBN_Packet *packet, NBN_PacketEntry *packet_entry, double time)
+static int Connection_SendPacket(NBN_Connection* connection, NBN_Packet* packet, NBN_PacketEntry* packet_entry, double time)
 {
     NBN_LogTrace("Send packet %d to connection %d (messages count: %d)",
-            packet->header.seq_number, connection->id, packet->header.messages_count);
+        packet->header.seq_number, connection->id, packet->header.messages_count);
 
     assert(packet_entry->messages_count == packet->header.messages_count);
 
@@ -3375,7 +3375,7 @@ static int Connection_SendPacket(NBN_Connection *connection, NBN_Packet *packet,
 #if defined(NBN_DEBUG) && defined(NBN_USE_PACKET_SIMULATOR)
         return NBN_PacketSimulator_EnqueuePacket(&nbn_game_client.endpoint.packet_simulator, packet, connection);
 #else
-        NBN_Driver *driver = nbn_game_client.server_connection->driver;
+        NBN_Driver* driver = nbn_game_client.server_connection->driver;
 
         return driver->impl.cli_send_packet(packet);
 #endif
@@ -3383,15 +3383,15 @@ static int Connection_SendPacket(NBN_Connection *connection, NBN_Packet *packet,
 }
 
 static int Connection_ReadNextMessageFromStream(
-        NBN_Connection *connection, NBN_ReadStream *r_stream, NBN_Message *message)
+    NBN_Connection* connection, NBN_ReadStream* r_stream, NBN_Message* message)
 {
-    if (NBN_Message_SerializeHeader(&message->header, (NBN_Stream *)r_stream) < 0)
+    if (NBN_Message_SerializeHeader(&message->header, (NBN_Stream*)r_stream) < 0)
     {
         NBN_LogError("Failed to read message header");
 
         return NBN_ERROR;
     }
-    
+
     uint8_t msg_type = message->header.type;
     NBN_MessageBuilder msg_builder = connection->endpoint->message_builders[msg_type];
 
@@ -3411,7 +3411,7 @@ static int Connection_ReadNextMessageFromStream(
         return NBN_ERROR;
     }
 
-    NBN_Channel *channel = connection->channels[message->header.channel_id];
+    NBN_Channel* channel = connection->channels[message->header.channel_id];
 
     if (channel == NULL)
     {
@@ -3422,7 +3422,7 @@ static int Connection_ReadNextMessageFromStream(
 
     message->data = msg_builder();
 
-    if (msg_serializer(message->data, (NBN_Stream *)r_stream) < 0)
+    if (msg_serializer(message->data, (NBN_Stream*)r_stream) < 0)
     {
         NBN_LogError("Failed to read message body");
 
@@ -3432,12 +3432,12 @@ static int Connection_ReadNextMessageFromStream(
     return 0;
 }
 
-static int Connection_ReadNextMessageFromPacket(NBN_Connection *connection, NBN_Packet *packet, NBN_Message *message)
+static int Connection_ReadNextMessageFromPacket(NBN_Connection* connection, NBN_Packet* packet, NBN_Message* message)
 {
     return Connection_ReadNextMessageFromStream(connection, &packet->r_stream, message);
 }
 
-static void Connection_RecycleMessage(NBN_Channel *channel, NBN_Message *message)
+static void Connection_RecycleMessage(NBN_Channel* channel, NBN_Message* message)
 {
     // for incoming messages : message->outgoing_msg == NULL
     assert(message->outgoing_msg == NULL || message->outgoing_msg->ref_count > 0);
@@ -3446,7 +3446,7 @@ static void Connection_RecycleMessage(NBN_Channel *channel, NBN_Message *message
     {
         if (message->header.type == NBN_MESSAGE_CHUNK_TYPE)
         {
-            NBN_MessageChunk *chunk = (NBN_MessageChunk*)message->data;
+            NBN_MessageChunk* chunk = (NBN_MessageChunk*)message->data;
 
             if (chunk->outgoing_msg)
             {
@@ -3470,13 +3470,13 @@ static void Connection_RecycleMessage(NBN_Channel *channel, NBN_Message *message
     }
 }
 
-static void Connection_UpdateAveragePing(NBN_Connection *connection, double ping)
+static void Connection_UpdateAveragePing(NBN_Connection* connection, double ping)
 {
     /* exponential smoothing with a factor of 0.05 */
     connection->stats.ping = connection->stats.ping + .05f * (ping - connection->stats.ping);
 }
 
-static void Connection_UpdateAveragePacketLoss(NBN_Connection *connection, uint16_t seq)
+static void Connection_UpdateAveragePacketLoss(NBN_Connection* connection, uint16_t seq)
 {
     unsigned int lost_packet_count = 0;
     uint16_t start_seq = seq - 64;
@@ -3484,7 +3484,7 @@ static void Connection_UpdateAveragePacketLoss(NBN_Connection *connection, uint1
     for (int i = 0; i < 100; i++)
     {
         uint16_t s = start_seq - i;
-        NBN_PacketEntry *entry = Connection_FindSendPacketEntry(connection, s);
+        NBN_PacketEntry* entry = Connection_FindSendPacketEntry(connection, s);
 
         if (entry && !entry->acked)
         {
@@ -3504,14 +3504,14 @@ static void Connection_UpdateAveragePacketLoss(NBN_Connection *connection, uint1
     connection->stats.packet_loss = connection->stats.packet_loss + .1f * (packet_loss - connection->stats.packet_loss);
 }
 
-static void Connection_UpdateAverageUploadBandwidth(NBN_Connection *connection, float bytes_per_sec)
+static void Connection_UpdateAverageUploadBandwidth(NBN_Connection* connection, float bytes_per_sec)
 {
     /* exponential smoothing with a factor of 0.1 */
     connection->stats.upload_bandwidth =
         connection->stats.upload_bandwidth + .1f * (bytes_per_sec - connection->stats.upload_bandwidth);
 }
 
-static void Connection_UpdateAverageDownloadBandwidth(NBN_Connection *connection, double time)
+static void Connection_UpdateAverageDownloadBandwidth(NBN_Connection* connection, double time)
 {
     double t = time - connection->last_read_packets_time;
 
@@ -3527,9 +3527,9 @@ static void Connection_UpdateAverageDownloadBandwidth(NBN_Connection *connection
     connection->downloaded_bytes = 0;
 }
 
-static NBN_RPC_Message *Connection_BuildRPC(NBN_Connection *connection, NBN_RPC *rpc, va_list args)
+static NBN_RPC_Message* Connection_BuildRPC(NBN_Connection* connection, NBN_RPC* rpc, va_list args)
 {
-    NBN_RPC_Message *msg = (NBN_RPC_Message *) NBN_RPC_Message_Create();
+    NBN_RPC_Message* msg = (NBN_RPC_Message*)NBN_RPC_Message_Create();
 
     assert(msg != NULL);
 
@@ -3556,7 +3556,7 @@ static NBN_RPC_Message *Connection_BuildRPC(NBN_Connection *connection, NBN_RPC 
         }
         else if (param_type == NBN_RPC_PARAM_STRING)
         {
-            char *str = va_arg(args, char *);
+            char* str = va_arg(args, char*);
 
             strncpy(msg->params[i].value.s, str, NBN_RPC_STRING_MAX_LENGTH);
         }
@@ -3572,7 +3572,7 @@ static NBN_RPC_Message *Connection_BuildRPC(NBN_Connection *connection, NBN_RPC 
     return msg;
 }
 
-static void Connection_HandleReceivedRPC(NBN_ConnectionHandle connection, NBN_Endpoint *endpoint, NBN_RPC_Message *msg)
+static void Connection_HandleReceivedRPC(NBN_ConnectionHandle connection, NBN_Endpoint* endpoint, NBN_RPC_Message* msg)
 {
     if (msg->id > NBN_RPC_MAX - 1)
     {
@@ -3581,7 +3581,7 @@ static void Connection_HandleReceivedRPC(NBN_ConnectionHandle connection, NBN_En
         return;
     }
 
-    NBN_RPC *rpc = &endpoint->rpcs[msg->id];
+    NBN_RPC* rpc = &endpoint->rpcs[msg->id];
 
     if (rpc->id != msg->id)
     {
@@ -3604,11 +3604,11 @@ static void Connection_HandleReceivedRPC(NBN_ConnectionHandle connection, NBN_En
 
 #pragma region NBN_Channel
 
-void NBN_Channel_Destroy(NBN_Channel *channel)
+void NBN_Channel_Destroy(NBN_Channel* channel)
 {
     for (int i = 0; i < NBN_CHANNEL_BUFFER_SIZE; i++)
     {
-        NBN_MessageSlot *slot = &channel->recved_message_slot_buffer[i];
+        NBN_MessageSlot* slot = &channel->recved_message_slot_buffer[i];
 
         if (!slot->free)
         {
@@ -3629,14 +3629,14 @@ void NBN_Channel_Destroy(NBN_Channel *channel)
     NBN_Deallocator(channel);
 }
 
-bool NBN_Channel_AddChunk(NBN_Channel *channel, NBN_Message *chunk_msg)
+bool NBN_Channel_AddChunk(NBN_Channel* channel, NBN_Message* chunk_msg)
 {
     assert(chunk_msg->header.type == NBN_MESSAGE_CHUNK_TYPE);
 
-    NBN_MessageChunk *chunk = (NBN_MessageChunk *)chunk_msg->data;
+    NBN_MessageChunk* chunk = (NBN_MessageChunk*)chunk_msg->data;
 
     NBN_LogTrace("Add chunk %d to channel %d (current chunk count: %d, last recved chunk id: %d)",
-                 chunk->id, channel->id, channel->chunk_count, channel->last_received_chunk_id);
+        chunk->id, channel->id, channel->chunk_count, channel->last_received_chunk_id);
 
     if (chunk->id == channel->last_received_chunk_id + 1)
     {
@@ -3682,7 +3682,7 @@ bool NBN_Channel_AddChunk(NBN_Channel *channel, NBN_Message *chunk_msg)
 }
 
 int NBN_Channel_ReconstructMessageFromChunks(
-    NBN_Channel *channel, NBN_Connection *connection, NBN_Message *message)
+    NBN_Channel* channel, NBN_Connection* connection, NBN_Message* message)
 {
     unsigned int message_size = channel->chunk_count * NBN_MESSAGE_CHUNK_SIZE;
 
@@ -3690,11 +3690,11 @@ int NBN_Channel_ReconstructMessageFromChunks(
         NBN_Channel_ResizeReadChunkBuffer(channel, message_size);
 
     NBN_LogTrace("Reconstructing message (chunk count: %d, size: %d) from channel %d",
-                 channel->chunk_count, message_size, channel->id);
+        channel->chunk_count, message_size, channel->id);
 
     for (unsigned int i = 0; i < channel->chunk_count; i++)
     {
-        NBN_MessageChunk *chunk = channel->recv_chunk_buffer[i];
+        NBN_MessageChunk* chunk = channel->recv_chunk_buffer[i];
 
         memcpy(channel->read_chunk_buffer + i * NBN_MESSAGE_CHUNK_SIZE, chunk->data, NBN_MESSAGE_CHUNK_SIZE);
 
@@ -3717,23 +3717,23 @@ int NBN_Channel_ReconstructMessageFromChunks(
     return 0;
 }
 
-void NBN_Channel_ResizeWriteChunkBuffer(NBN_Channel *channel, unsigned int size)
+void NBN_Channel_ResizeWriteChunkBuffer(NBN_Channel* channel, unsigned int size)
 {
-    channel->write_chunk_buffer = (uint8_t *)NBN_Reallocator(channel->write_chunk_buffer, size);
+    channel->write_chunk_buffer = (uint8_t*)NBN_Reallocator(channel->write_chunk_buffer, size);
 
     channel->write_chunk_buffer_size = size;
 }
 
-void NBN_Channel_ResizeReadChunkBuffer(NBN_Channel *channel, unsigned int size)
+void NBN_Channel_ResizeReadChunkBuffer(NBN_Channel* channel, unsigned int size)
 {
-    channel->read_chunk_buffer = (uint8_t *)NBN_Reallocator(channel->read_chunk_buffer, size);
+    channel->read_chunk_buffer = (uint8_t*)NBN_Reallocator(channel->read_chunk_buffer, size);
 
     channel->read_chunk_buffer_size = size;
 }
 
-void NBN_Channel_UpdateMessageLastSendTime(NBN_Channel *channel, NBN_Message *message, double time)
+void NBN_Channel_UpdateMessageLastSendTime(NBN_Channel* channel, NBN_Message* message, double time)
 {
-    NBN_MessageSlot *slot = &channel->outgoing_message_slot_buffer[message->header.id % NBN_CHANNEL_BUFFER_SIZE];
+    NBN_MessageSlot* slot = &channel->outgoing_message_slot_buffer[message->header.id % NBN_CHANNEL_BUFFER_SIZE];
 
     assert(slot->message.header.id == message->header.id);
 
@@ -3742,15 +3742,15 @@ void NBN_Channel_UpdateMessageLastSendTime(NBN_Channel *channel, NBN_Message *me
 
 /* Unreliable ordered */
 
-static bool UnreliableOrderedChannel_AddReceivedMessage(NBN_Channel *, NBN_Message *);
-static bool UnreliableOrderedChannel_AddOutgoingMessage(NBN_Channel *, NBN_Message *);
-static NBN_Message *UnreliableOrderedChannel_GetNextRecvedMessage(NBN_Channel *);
-static NBN_Message *UnreliableOrderedChannel_GetNextOutgoingMessage(NBN_Channel *, double);
-static int UnreliableOrderedChannel_OnMessageSent(NBN_Channel *, NBN_Message *);
+static bool UnreliableOrderedChannel_AddReceivedMessage(NBN_Channel*, NBN_Message*);
+static bool UnreliableOrderedChannel_AddOutgoingMessage(NBN_Channel*, NBN_Message*);
+static NBN_Message* UnreliableOrderedChannel_GetNextRecvedMessage(NBN_Channel*);
+static NBN_Message* UnreliableOrderedChannel_GetNextOutgoingMessage(NBN_Channel*, double);
+static int UnreliableOrderedChannel_OnMessageSent(NBN_Channel*, NBN_Message*);
 
-NBN_UnreliableOrderedChannel *NBN_UnreliableOrderedChannel_Create(void)
+NBN_UnreliableOrderedChannel* NBN_UnreliableOrderedChannel_Create(void)
 {
-    NBN_UnreliableOrderedChannel *channel = (NBN_UnreliableOrderedChannel *)NBN_Allocator(sizeof(NBN_UnreliableOrderedChannel));
+    NBN_UnreliableOrderedChannel* channel = (NBN_UnreliableOrderedChannel*)NBN_Allocator(sizeof(NBN_UnreliableOrderedChannel));
 
     channel->base.next_outgoing_message_pool_slot = 0;
     channel->base.AddReceivedMessage = UnreliableOrderedChannel_AddReceivedMessage;
@@ -3768,13 +3768,13 @@ NBN_UnreliableOrderedChannel *NBN_UnreliableOrderedChannel_Create(void)
     return channel;
 }
 
-static bool UnreliableOrderedChannel_AddReceivedMessage(NBN_Channel *channel, NBN_Message *message)
+static bool UnreliableOrderedChannel_AddReceivedMessage(NBN_Channel* channel, NBN_Message* message)
 {
-    NBN_UnreliableOrderedChannel *unreliable_ordered_channel = (NBN_UnreliableOrderedChannel *)channel;
+    NBN_UnreliableOrderedChannel* unreliable_ordered_channel = (NBN_UnreliableOrderedChannel*)channel;
 
     if (SEQUENCE_NUMBER_GT(message->header.id, unreliable_ordered_channel->last_received_message_id))
     {
-        NBN_MessageSlot *slot = &channel->recved_message_slot_buffer[message->header.id % NBN_CHANNEL_BUFFER_SIZE];
+        NBN_MessageSlot* slot = &channel->recved_message_slot_buffer[message->header.id % NBN_CHANNEL_BUFFER_SIZE];
 
         memcpy(&slot->message, message, sizeof(NBN_Message));
 
@@ -3788,10 +3788,10 @@ static bool UnreliableOrderedChannel_AddReceivedMessage(NBN_Channel *channel, NB
     return false;
 }
 
-static bool UnreliableOrderedChannel_AddOutgoingMessage(NBN_Channel *channel, NBN_Message *message)
+static bool UnreliableOrderedChannel_AddOutgoingMessage(NBN_Channel* channel, NBN_Message* message)
 {
     uint16_t msg_id = channel->next_outgoing_message_id;
-    NBN_MessageSlot *slot = &channel->outgoing_message_slot_buffer[msg_id % NBN_CHANNEL_BUFFER_SIZE];
+    NBN_MessageSlot* slot = &channel->outgoing_message_slot_buffer[msg_id % NBN_CHANNEL_BUFFER_SIZE];
 
     memcpy(&slot->message, message, sizeof(NBN_Message));
 
@@ -3804,13 +3804,13 @@ static bool UnreliableOrderedChannel_AddOutgoingMessage(NBN_Channel *channel, NB
     return true;
 }
 
-static NBN_Message *UnreliableOrderedChannel_GetNextRecvedMessage(NBN_Channel *channel)
+static NBN_Message* UnreliableOrderedChannel_GetNextRecvedMessage(NBN_Channel* channel)
 {
-    NBN_UnreliableOrderedChannel *unreliable_ordered_channel = (NBN_UnreliableOrderedChannel *)channel;
+    NBN_UnreliableOrderedChannel* unreliable_ordered_channel = (NBN_UnreliableOrderedChannel*)channel;
 
     while (SEQUENCE_NUMBER_LT(channel->next_recv_message_id, unreliable_ordered_channel->last_received_message_id))
     {
-        NBN_MessageSlot *slot = &channel->recved_message_slot_buffer[channel->next_recv_message_id % NBN_CHANNEL_BUFFER_SIZE];
+        NBN_MessageSlot* slot = &channel->recved_message_slot_buffer[channel->next_recv_message_id % NBN_CHANNEL_BUFFER_SIZE];
 
         if (!slot->free && slot->message.header.id == channel->next_recv_message_id)
         {
@@ -3825,13 +3825,13 @@ static NBN_Message *UnreliableOrderedChannel_GetNextRecvedMessage(NBN_Channel *c
     return NULL;
 }
 
-static NBN_Message *UnreliableOrderedChannel_GetNextOutgoingMessage(NBN_Channel *channel, double time)
+static NBN_Message* UnreliableOrderedChannel_GetNextOutgoingMessage(NBN_Channel* channel, double time)
 {
     (void)time;
 
-    NBN_UnreliableOrderedChannel *unreliable_ordered_channel = (NBN_UnreliableOrderedChannel *)channel;
+    NBN_UnreliableOrderedChannel* unreliable_ordered_channel = (NBN_UnreliableOrderedChannel*)channel;
 
-    NBN_MessageSlot *slot = &channel->outgoing_message_slot_buffer[unreliable_ordered_channel->next_outgoing_message_slot];
+    NBN_MessageSlot* slot = &channel->outgoing_message_slot_buffer[unreliable_ordered_channel->next_outgoing_message_slot];
 
     if (slot->free)
         return NULL;
@@ -3844,7 +3844,7 @@ static NBN_Message *UnreliableOrderedChannel_GetNextOutgoingMessage(NBN_Channel 
     return &slot->message;
 }
 
-static int UnreliableOrderedChannel_OnMessageSent(NBN_Channel *channel, NBN_Message *message)
+static int UnreliableOrderedChannel_OnMessageSent(NBN_Channel* channel, NBN_Message* message)
 {
     Connection_RecycleMessage(channel, message);
 
@@ -3853,15 +3853,15 @@ static int UnreliableOrderedChannel_OnMessageSent(NBN_Channel *channel, NBN_Mess
 
 /* Reliable ordered */
 
-static bool ReliableOrderedChannel_AddReceivedMessage(NBN_Channel *, NBN_Message *);
-static bool ReliableOrderedChannel_AddOutgoingMessage(NBN_Channel *channel, NBN_Message *);
-static NBN_Message *ReliableOrderedChannel_GetNextRecvedMessage(NBN_Channel *);
-static NBN_Message *ReliableOrderedChannel_GetNextOutgoingMessage(NBN_Channel *, double);
-static int ReliableOrderedChannel_OnOutgoingMessageAcked(NBN_Channel *, uint16_t);
+static bool ReliableOrderedChannel_AddReceivedMessage(NBN_Channel*, NBN_Message*);
+static bool ReliableOrderedChannel_AddOutgoingMessage(NBN_Channel* channel, NBN_Message*);
+static NBN_Message* ReliableOrderedChannel_GetNextRecvedMessage(NBN_Channel*);
+static NBN_Message* ReliableOrderedChannel_GetNextOutgoingMessage(NBN_Channel*, double);
+static int ReliableOrderedChannel_OnOutgoingMessageAcked(NBN_Channel*, uint16_t);
 
-NBN_ReliableOrderedChannel *NBN_ReliableOrderedChannel_Create(void)
+NBN_ReliableOrderedChannel* NBN_ReliableOrderedChannel_Create(void)
 {
-    NBN_ReliableOrderedChannel *channel = (NBN_ReliableOrderedChannel *)NBN_Allocator(sizeof(NBN_ReliableOrderedChannel));
+    NBN_ReliableOrderedChannel* channel = (NBN_ReliableOrderedChannel*)NBN_Allocator(sizeof(NBN_ReliableOrderedChannel));
 
     channel->base.next_outgoing_message_pool_slot = 0;
     channel->base.AddReceivedMessage = ReliableOrderedChannel_AddReceivedMessage;
@@ -3891,14 +3891,14 @@ static unsigned int ReliableOrderedChannel_ComputeMessageIdDelta(uint16_t id1, u
         return (id2 >= id1) ? id2 - id1 : (((0xFFFF + 1) - id1) + id2) % 0xFFFF;
 }
 
-static bool ReliableOrderedChannel_AddReceivedMessage(NBN_Channel *channel, NBN_Message *message)
+static bool ReliableOrderedChannel_AddReceivedMessage(NBN_Channel* channel, NBN_Message* message)
 {
-    NBN_ReliableOrderedChannel *reliable_ordered_channel = (NBN_ReliableOrderedChannel *)channel;
+    NBN_ReliableOrderedChannel* reliable_ordered_channel = (NBN_ReliableOrderedChannel*)channel;
     unsigned int dt = ReliableOrderedChannel_ComputeMessageIdDelta(
         message->header.id, reliable_ordered_channel->most_recent_message_id);
 
     NBN_LogTrace("Add recved message %d of type %d to channel %d (most recent msg id: %d, dt: %d)",
-                 message->header.id, message->header.type, channel->id, reliable_ordered_channel->most_recent_message_id, dt);
+        message->header.id, message->header.type, channel->id, reliable_ordered_channel->most_recent_message_id, dt);
 
     if (SEQUENCE_NUMBER_GT(message->header.id, reliable_ordered_channel->most_recent_message_id))
     {
@@ -3914,7 +3914,7 @@ static bool ReliableOrderedChannel_AddReceivedMessage(NBN_Channel *channel, NBN_
             return false;
     }
 
-    NBN_MessageSlot *slot = &channel->recved_message_slot_buffer[message->header.id % NBN_CHANNEL_BUFFER_SIZE];
+    NBN_MessageSlot* slot = &channel->recved_message_slot_buffer[message->header.id % NBN_CHANNEL_BUFFER_SIZE];
 
     if (!slot->free)
     {
@@ -3928,16 +3928,16 @@ static bool ReliableOrderedChannel_AddReceivedMessage(NBN_Channel *channel, NBN_
     return true;
 }
 
-static bool ReliableOrderedChannel_AddOutgoingMessage(NBN_Channel *channel, NBN_Message *message)
+static bool ReliableOrderedChannel_AddOutgoingMessage(NBN_Channel* channel, NBN_Message* message)
 {
     uint16_t msg_id = channel->next_outgoing_message_id;
     int index = msg_id % NBN_CHANNEL_BUFFER_SIZE;
-    NBN_MessageSlot *slot = &channel->outgoing_message_slot_buffer[index];
+    NBN_MessageSlot* slot = &channel->outgoing_message_slot_buffer[index];
 
     if (!slot->free)
     {
         NBN_LogTrace("Slot %d is not free on channel %d (slot msg id: %d, outgoing message count: %d)",
-                     index, channel->id, slot->message.header.id, channel->outgoing_message_count);
+            index, channel->id, slot->message.header.id, channel->outgoing_message_count);
 
         return false;
     }
@@ -3952,14 +3952,14 @@ static bool ReliableOrderedChannel_AddOutgoingMessage(NBN_Channel *channel, NBN_
     channel->outgoing_message_count++;
 
     NBN_LogTrace("Added outgoing message %d of type %d to channel %d (index: %d)",
-                 slot->message.header.id, slot->message.header.type, channel->id, index);
+        slot->message.header.id, slot->message.header.type, channel->id, index);
 
     return true;
 }
 
-static NBN_Message *ReliableOrderedChannel_GetNextRecvedMessage(NBN_Channel *channel)
+static NBN_Message* ReliableOrderedChannel_GetNextRecvedMessage(NBN_Channel* channel)
 {
-    NBN_MessageSlot *slot = &channel->recved_message_slot_buffer[channel->next_recv_message_id % NBN_CHANNEL_BUFFER_SIZE];
+    NBN_MessageSlot* slot = &channel->recved_message_slot_buffer[channel->next_recv_message_id % NBN_CHANNEL_BUFFER_SIZE];
 
     if (!slot->free && slot->message.header.id == channel->next_recv_message_id)
     {
@@ -3972,9 +3972,9 @@ static NBN_Message *ReliableOrderedChannel_GetNextRecvedMessage(NBN_Channel *cha
     return NULL;
 }
 
-static NBN_Message *ReliableOrderedChannel_GetNextOutgoingMessage(NBN_Channel *channel, double time)
+static NBN_Message* ReliableOrderedChannel_GetNextOutgoingMessage(NBN_Channel* channel, double time)
 {
-    NBN_ReliableOrderedChannel *reliable_ordered_channel = (NBN_ReliableOrderedChannel *)channel;
+    NBN_ReliableOrderedChannel* reliable_ordered_channel = (NBN_ReliableOrderedChannel*)channel;
 
     int max_message_id = (reliable_ordered_channel->oldest_unacked_message_id + (NBN_CHANNEL_BUFFER_SIZE - 1)) % (0xFFFF + 1);
 
@@ -3985,7 +3985,7 @@ static NBN_Message *ReliableOrderedChannel_GetNextOutgoingMessage(NBN_Channel *c
 
     while (SEQUENCE_NUMBER_LT(msg_id, max_message_id))
     {
-        NBN_MessageSlot *slot = &channel->outgoing_message_slot_buffer[msg_id % NBN_CHANNEL_BUFFER_SIZE];
+        NBN_MessageSlot* slot = &channel->outgoing_message_slot_buffer[msg_id % NBN_CHANNEL_BUFFER_SIZE];
 
         if (
             !slot->free &&
@@ -4000,10 +4000,10 @@ static NBN_Message *ReliableOrderedChannel_GetNextOutgoingMessage(NBN_Channel *c
     return NULL;
 }
 
-static int ReliableOrderedChannel_OnOutgoingMessageAcked(NBN_Channel *channel, uint16_t msg_id)
+static int ReliableOrderedChannel_OnOutgoingMessageAcked(NBN_Channel* channel, uint16_t msg_id)
 {
-    NBN_ReliableOrderedChannel *reliable_ordered_channel = (NBN_ReliableOrderedChannel *)channel;
-    NBN_MessageSlot *slot = &reliable_ordered_channel->base.outgoing_message_slot_buffer[msg_id % NBN_CHANNEL_BUFFER_SIZE];
+    NBN_ReliableOrderedChannel* reliable_ordered_channel = (NBN_ReliableOrderedChannel*)channel;
+    NBN_MessageSlot* slot = &reliable_ordered_channel->base.outgoing_message_slot_buffer[msg_id % NBN_CHANNEL_BUFFER_SIZE];
 
     if (slot->free || slot->message.header.id != msg_id)
         return 0;
@@ -4011,7 +4011,7 @@ static int ReliableOrderedChannel_OnOutgoingMessageAcked(NBN_Channel *channel, u
     slot->free = true;
 
     NBN_LogTrace("Message %d acked on channel %d (buffer index: %d, oldest unacked: %d)",
-                 msg_id, channel->id, msg_id % NBN_CHANNEL_BUFFER_SIZE, reliable_ordered_channel->oldest_unacked_message_id);
+        msg_id, channel->id, msg_id % NBN_CHANNEL_BUFFER_SIZE, reliable_ordered_channel->oldest_unacked_message_id);
 
     reliable_ordered_channel->ack_buffer[msg_id % NBN_CHANNEL_BUFFER_SIZE] = true;
     channel->outgoing_message_count--;
@@ -4035,7 +4035,7 @@ static int ReliableOrderedChannel_OnOutgoingMessageAcked(NBN_Channel *channel, u
         }
 
         NBN_LogTrace("Updated oldest unacked message id on channel %d: %d",
-                     channel->id, reliable_ordered_channel->oldest_unacked_message_id);
+            channel->id, reliable_ordered_channel->oldest_unacked_message_id);
     }
 
     Connection_RecycleMessage(channel, &slot->message);
@@ -4047,14 +4047,14 @@ static int ReliableOrderedChannel_OnOutgoingMessageAcked(NBN_Channel *channel, u
 
 #pragma region NBN_EventQueue
 
-void NBN_EventQueue_Init(NBN_EventQueue *event_queue)
+void NBN_EventQueue_Init(NBN_EventQueue* event_queue)
 {
     event_queue->head = 0;
     event_queue->tail = 0;
     event_queue->count = 0;
 }
 
-bool NBN_EventQueue_Enqueue(NBN_EventQueue *event_queue, NBN_Event ev)
+bool NBN_EventQueue_Enqueue(NBN_EventQueue* event_queue, NBN_Event ev)
 {
     if (event_queue->count >= NBN_EVENT_QUEUE_CAPACITY)
         return false;
@@ -4067,7 +4067,7 @@ bool NBN_EventQueue_Enqueue(NBN_EventQueue *event_queue, NBN_Event ev)
     return true;
 }
 
-bool NBN_EventQueue_Dequeue(NBN_EventQueue *event_queue, NBN_Event *ev)
+bool NBN_EventQueue_Dequeue(NBN_EventQueue* event_queue, NBN_Event* ev)
 {
     if (NBN_EventQueue_IsEmpty(event_queue))
         return false;
@@ -4079,7 +4079,7 @@ bool NBN_EventQueue_Dequeue(NBN_EventQueue *event_queue, NBN_Event *ev)
     return true;
 }
 
-bool NBN_EventQueue_IsEmpty(NBN_EventQueue *event_queue)
+bool NBN_EventQueue_IsEmpty(NBN_EventQueue* event_queue)
 {
     return event_queue->count == 0;
 }
@@ -4088,22 +4088,22 @@ bool NBN_EventQueue_IsEmpty(NBN_EventQueue *event_queue)
 
 #pragma region NBN_Endpoint
 
-static void Endpoint_Init(NBN_Endpoint *, bool);
-static void Endpoint_Deinit(NBN_Endpoint *);
-static void Endpoint_RegisterMessageBuilder(NBN_Endpoint *, NBN_MessageBuilder, uint8_t);
-static void Endpoint_RegisterMessageDestructor(NBN_Endpoint *, NBN_MessageDestructor, uint8_t);
-static void Endpoint_RegisterMessageSerializer(NBN_Endpoint *, NBN_MessageSerializer, uint8_t);
-static NBN_Connection *Endpoint_CreateConnection(NBN_Endpoint *, uint32_t, uint32_t, int, void *);
-static int Endpoint_RegisterRPC(NBN_Endpoint *, unsigned int id, NBN_RPC_Signature, NBN_RPC_Func);
-static uint32_t Endpoint_BuildProtocolId(const char *);
-static void Endpoint_RegisterChannel(NBN_Endpoint *, uint8_t, NBN_ChannelBuilder, NBN_ChannelDestructor);
-static int Endpoint_ProcessReceivedPacket(NBN_Endpoint *, NBN_Packet *, NBN_Connection *);
-static int Endpoint_EnqueueOutgoingMessage(NBN_Endpoint *, NBN_Connection *, NBN_OutgoingMessage *, uint8_t);
+static void Endpoint_Init(NBN_Endpoint*, bool);
+static void Endpoint_Deinit(NBN_Endpoint*);
+static void Endpoint_RegisterMessageBuilder(NBN_Endpoint*, NBN_MessageBuilder, uint8_t);
+static void Endpoint_RegisterMessageDestructor(NBN_Endpoint*, NBN_MessageDestructor, uint8_t);
+static void Endpoint_RegisterMessageSerializer(NBN_Endpoint*, NBN_MessageSerializer, uint8_t);
+static NBN_Connection* Endpoint_CreateConnection(NBN_Endpoint*, uint32_t, uint32_t, int, void*);
+static int Endpoint_RegisterRPC(NBN_Endpoint*, unsigned int id, NBN_RPC_Signature, NBN_RPC_Func);
+static uint32_t Endpoint_BuildProtocolId(const char*);
+static void Endpoint_RegisterChannel(NBN_Endpoint*, uint8_t, NBN_ChannelBuilder, NBN_ChannelDestructor);
+static int Endpoint_ProcessReceivedPacket(NBN_Endpoint*, NBN_Packet*, NBN_Connection*);
+static int Endpoint_EnqueueOutgoingMessage(NBN_Endpoint*, NBN_Connection*, NBN_OutgoingMessage*, uint8_t);
 static int Endpoint_SplitMessageIntoChunks(
-    NBN_Message *, NBN_OutgoingMessage *, NBN_Channel *, NBN_MessageSerializer, unsigned int, NBN_MessageChunk **);
-static void Endpoint_UpdateTime(NBN_Endpoint *);
+    NBN_Message*, NBN_OutgoingMessage*, NBN_Channel*, NBN_MessageSerializer, unsigned int, NBN_MessageChunk**);
+static void Endpoint_UpdateTime(NBN_Endpoint*);
 
-static void Endpoint_Init(NBN_Endpoint *endpoint, bool is_server)
+static void Endpoint_Init(NBN_Endpoint* endpoint, bool is_server)
 {
     MemoryManager_Init();
 
@@ -4122,7 +4122,7 @@ static void Endpoint_Init(NBN_Endpoint *endpoint, bool is_server)
         endpoint->message_serializers[i] = NULL;
     }
 
-    NBN_RPC rpc = {.id = UINT_MAX};
+    NBN_RPC rpc = { .id = UINT_MAX };
     for (int i = 0; i < NBN_RPC_MAX; i++)
     {
         endpoint->rpcs[i] = rpc;
@@ -4209,7 +4209,7 @@ static void Endpoint_Init(NBN_Endpoint *endpoint, bool is_server)
     Endpoint_UpdateTime(endpoint);
 }
 
-static void Endpoint_Deinit(NBN_Endpoint *endpoint)
+static void Endpoint_Deinit(NBN_Endpoint* endpoint)
 {
     (void)endpoint;
 
@@ -4220,41 +4220,41 @@ static void Endpoint_Deinit(NBN_Endpoint *endpoint)
     MemoryManager_Deinit();
 }
 
-static void Endpoint_RegisterMessageBuilder(NBN_Endpoint *endpoint, NBN_MessageBuilder msg_builder, uint8_t msg_type)
+static void Endpoint_RegisterMessageBuilder(NBN_Endpoint* endpoint, NBN_MessageBuilder msg_builder, uint8_t msg_type)
 {
     endpoint->message_builders[msg_type] = msg_builder;
 }
 
-static void Endpoint_RegisterMessageDestructor(NBN_Endpoint *endpoint, NBN_MessageDestructor msg_destructor, uint8_t msg_type)
+static void Endpoint_RegisterMessageDestructor(NBN_Endpoint* endpoint, NBN_MessageDestructor msg_destructor, uint8_t msg_type)
 {
     endpoint->message_destructors[msg_type] = msg_destructor;
 }
 
 static void Endpoint_RegisterMessageSerializer(
-    NBN_Endpoint *endpoint, NBN_MessageSerializer msg_serializer, uint8_t msg_type)
+    NBN_Endpoint* endpoint, NBN_MessageSerializer msg_serializer, uint8_t msg_type)
 {
     endpoint->message_serializers[msg_type] = msg_serializer;
 }
 
-static NBN_Connection *Endpoint_CreateConnection(NBN_Endpoint *endpoint, uint32_t id, uint32_t protocol_id, int driver_id, void *driver_data)
+static NBN_Connection* Endpoint_CreateConnection(NBN_Endpoint* endpoint, uint32_t id, uint32_t protocol_id, int driver_id, void* driver_data)
 {
-    NBN_Driver *driver = &nbn_drivers[driver_id];
+    NBN_Driver* driver = &nbn_drivers[driver_id];
 
     assert(driver->id >= 0);
 
-    NBN_Connection *connection = NBN_Connection_Create(id, protocol_id, endpoint, driver, driver_data);
+    NBN_Connection* connection = NBN_Connection_Create(id, protocol_id, endpoint, driver, driver_data);
 
     for (unsigned int chan_id = 0; chan_id < NBN_MAX_CHANNELS; chan_id++)
     {
-        NBN_ChannelBuilder builder = endpoint->channel_builders[chan_id]; 
+        NBN_ChannelBuilder builder = endpoint->channel_builders[chan_id];
 
-        if (!builder) continue; 
+        if (!builder) continue;
 
-        NBN_ChannelDestructor destructor = endpoint->channel_destructors[chan_id]; 
+        NBN_ChannelDestructor destructor = endpoint->channel_destructors[chan_id];
 
         assert(destructor);
 
-        NBN_Channel *channel = builder();
+        NBN_Channel* channel = builder();
 
         assert(channel);
 
@@ -4269,7 +4269,7 @@ static NBN_Connection *Endpoint_CreateConnection(NBN_Endpoint *endpoint, uint32_
     return connection;
 }
 
-static int Endpoint_RegisterRPC(NBN_Endpoint *endpoint, unsigned int id, NBN_RPC_Signature signature, NBN_RPC_Func func)
+static int Endpoint_RegisterRPC(NBN_Endpoint* endpoint, unsigned int id, NBN_RPC_Signature signature, NBN_RPC_Func func)
 {
     if (id >= NBN_RPC_MAX)
     {
@@ -4294,7 +4294,7 @@ static int Endpoint_RegisterRPC(NBN_Endpoint *endpoint, unsigned int id, NBN_RPC
     return 0;
 }
 
-static uint32_t Endpoint_BuildProtocolId(const char *protocol_name)
+static uint32_t Endpoint_BuildProtocolId(const char* protocol_name)
 {
     uint32_t protocol_id = 2166136261;
 
@@ -4307,7 +4307,7 @@ static uint32_t Endpoint_BuildProtocolId(const char *protocol_name)
     return protocol_id;
 }
 
-static void Endpoint_RegisterChannel(NBN_Endpoint *endpoint, uint8_t id, NBN_ChannelBuilder builder, NBN_ChannelDestructor destructor)
+static void Endpoint_RegisterChannel(NBN_Endpoint* endpoint, uint8_t id, NBN_ChannelBuilder builder, NBN_ChannelDestructor destructor)
 {
     if (endpoint->channel_builders[id] || endpoint->channel_destructors[id])
     {
@@ -4319,12 +4319,12 @@ static void Endpoint_RegisterChannel(NBN_Endpoint *endpoint, uint8_t id, NBN_Cha
     endpoint->channel_destructors[id] = destructor;
 }
 
-static int Endpoint_ProcessReceivedPacket(NBN_Endpoint *endpoint, NBN_Packet *packet, NBN_Connection *connection)
+static int Endpoint_ProcessReceivedPacket(NBN_Endpoint* endpoint, NBN_Packet* packet, NBN_Connection* connection)
 {
     (void)endpoint;
 
     NBN_LogTrace("Received packet %d (conn id: %d, ack: %d, messages count: %d)", packet->header.seq_number,
-                 connection->id, packet->header.ack, packet->header.messages_count);
+        connection->id, packet->header.ack, packet->header.messages_count);
 
     if (NBN_Connection_ProcessReceivedPacket(connection, packet, endpoint->time) < 0)
         return NBN_ERROR;
@@ -4335,7 +4335,7 @@ static int Endpoint_ProcessReceivedPacket(NBN_Endpoint *endpoint, NBN_Packet *pa
     return 0;
 }
 
-static NBN_OutgoingMessage *Endpoint_CreateOutgoingMessage(NBN_Endpoint *endpoint, NBN_Channel *channel, uint8_t msg_type, void *data)
+static NBN_OutgoingMessage* Endpoint_CreateOutgoingMessage(NBN_Endpoint* endpoint, NBN_Channel* channel, uint8_t msg_type, void* data)
 {
     assert(channel);
 
@@ -4345,7 +4345,7 @@ static NBN_OutgoingMessage *Endpoint_CreateOutgoingMessage(NBN_Endpoint *endpoin
         NBN_Abort();
     }
 
-    NBN_OutgoingMessage *outgoing_message = &channel->outgoing_message_pool[channel->next_outgoing_message_pool_slot];
+    NBN_OutgoingMessage* outgoing_message = &channel->outgoing_message_pool[channel->next_outgoing_message_pool_slot];
     if (outgoing_message->ref_count != 0)
     {
         NBN_LogError("Outgoing message pool has run out of space");
@@ -4363,9 +4363,9 @@ static NBN_OutgoingMessage *Endpoint_CreateOutgoingMessage(NBN_Endpoint *endpoin
 }
 
 static int Endpoint_EnqueueOutgoingMessage(
-    NBN_Endpoint *endpoint, NBN_Connection *connection, NBN_OutgoingMessage *outgoing_msg, uint8_t channel_id)
+    NBN_Endpoint* endpoint, NBN_Connection* connection, NBN_OutgoingMessage* outgoing_msg, uint8_t channel_id)
 {
-    NBN_Channel *channel = connection->channels[channel_id];
+    NBN_Channel* channel = connection->channels[channel_id];
 
     if (channel == NULL)
     {
@@ -4382,7 +4382,7 @@ static int Endpoint_EnqueueOutgoingMessage(
         {0, outgoing_msg->type, channel_id},
         NULL,
         outgoing_msg,
-        outgoing_msg->data};
+        outgoing_msg->data };
 
     NBN_MeasureStream m_stream;
 
@@ -4392,7 +4392,7 @@ static int Endpoint_EnqueueOutgoingMessage(
 
     if (message_size > NBN_PACKET_MAX_DATA_SIZE)
     {
-        NBN_MessageChunk *chunks[NBN_CHANNEL_CHUNKS_BUFFER_SIZE];
+        NBN_MessageChunk* chunks[NBN_CHANNEL_CHUNKS_BUFFER_SIZE];
         int chunk_count = Endpoint_SplitMessageIntoChunks(
             &message, outgoing_msg, channel, msg_serializer, message_size, chunks);
 
@@ -4408,11 +4408,11 @@ static int Endpoint_EnqueueOutgoingMessage(
         assert(outgoing_msg->ref_count == 0);
         outgoing_msg->ref_count = chunk_count;
 
-        NBN_Channel *channel = connection->channels[channel_id];
+        NBN_Channel* channel = connection->channels[channel_id];
 
         for (int i = 0; i < chunk_count; i++)
         {
-            NBN_OutgoingMessage *chunk_outgoing_msg = Endpoint_CreateOutgoingMessage(
+            NBN_OutgoingMessage* chunk_outgoing_msg = Endpoint_CreateOutgoingMessage(
                 endpoint, channel, NBN_MESSAGE_CHUNK_TYPE, chunks[i]);
 
             if (chunk_outgoing_msg == NULL)
@@ -4438,12 +4438,12 @@ static int Endpoint_EnqueueOutgoingMessage(
 }
 
 static int Endpoint_SplitMessageIntoChunks(
-    NBN_Message *message,
-    NBN_OutgoingMessage *outgoing_msg,
-    NBN_Channel *channel,
+    NBN_Message* message,
+    NBN_OutgoingMessage* outgoing_msg,
+    NBN_Channel* channel,
     NBN_MessageSerializer msg_serializer,
     unsigned int message_size,
-    NBN_MessageChunk **chunks)
+    NBN_MessageChunk** chunks)
 {
     unsigned int chunk_count = ((message_size - 1) / NBN_MESSAGE_CHUNK_SIZE) + 1;
 
@@ -4463,15 +4463,15 @@ static int Endpoint_SplitMessageIntoChunks(
 
     NBN_WriteStream_Init(&w_stream, channel->write_chunk_buffer, message_size);
 
-    if (NBN_Message_SerializeHeader(&message->header, (NBN_Stream *)&w_stream) < 0)
+    if (NBN_Message_SerializeHeader(&message->header, (NBN_Stream*)&w_stream) < 0)
         return NBN_ERROR;
 
-    if (NBN_Message_SerializeData(message, (NBN_Stream *)&w_stream, msg_serializer) < 0)
+    if (NBN_Message_SerializeData(message, (NBN_Stream*)&w_stream, msg_serializer) < 0)
         return NBN_ERROR;
 
     for (unsigned int i = 0; i < chunk_count; i++)
     {
-        NBN_MessageChunk *chunk = NBN_MessageChunk_Create();
+        NBN_MessageChunk* chunk = NBN_MessageChunk_Create();
 
         chunk->id = i;
         chunk->total = chunk_count;
@@ -4485,7 +4485,7 @@ static int Endpoint_SplitMessageIntoChunks(
         memcpy(chunk->data, channel->write_chunk_buffer + offset, chunk_size);
 
         NBN_LogTrace("Enqueue chunk %d (size: %d, total: %d) for message %d of type %d",
-                     chunk->id, chunk_size, chunk->total, message->header.id, message->header.type);
+            chunk->id, chunk_size, chunk->total, message->header.id, message->header.type);
 
         chunks[i] = chunk;
     }
@@ -4493,7 +4493,7 @@ static int Endpoint_SplitMessageIntoChunks(
     return chunk_count;
 }
 
-static void Endpoint_UpdateTime(NBN_Endpoint *endpoint)
+static void Endpoint_UpdateTime(NBN_Endpoint* endpoint)
 {
 #ifdef NBNET_WINDOWS
     endpoint->time = GetTickCount64() / 1000.0;
@@ -4514,16 +4514,16 @@ static void Endpoint_UpdateTime(NBN_Endpoint *endpoint)
 
 #pragma region Network driver
 
-static void ClientDriver_OnPacketReceived(NBN_Packet *packet);
-static int ServerDriver_OnClientConnected(NBN_Connection *);
-static int ServerDriver_OnClientPacketReceived(NBN_Packet *);
+static void ClientDriver_OnPacketReceived(NBN_Packet* packet);
+static int ServerDriver_OnClientConnected(NBN_Connection*);
+static int ServerDriver_OnClientPacketReceived(NBN_Packet*);
 
-void NBN_Driver_Register(int id, const char *name, NBN_DriverImplementation implementation)
+void NBN_Driver_Register(int id, const char* name, NBN_DriverImplementation implementation)
 {
     // driver id must be valid
     assert(id >= 0 && id < NBN_MAX_DRIVERS);
 
-    NBN_Driver *driver = &nbn_drivers[id];
+    NBN_Driver* driver = &nbn_drivers[id];
 
     // driver id must be unique
     assert(driver->id == -1);
@@ -4537,19 +4537,19 @@ void NBN_Driver_Register(int id, const char *name, NBN_DriverImplementation impl
     nbn_driver_count++;
 }
 
-int NBN_Driver_RaiseEvent(NBN_DriverEvent ev, void *data)
+int NBN_Driver_RaiseEvent(NBN_DriverEvent ev, void* data)
 {
     switch (ev)
     {
     case NBN_DRIVER_CLI_PACKET_RECEIVED:
-        ClientDriver_OnPacketReceived((NBN_Packet *)data);
+        ClientDriver_OnPacketReceived((NBN_Packet*)data);
         break;
 
     case NBN_DRIVER_SERV_CLIENT_CONNECTED:
-        return ServerDriver_OnClientConnected((NBN_Connection *)data);
+        return ServerDriver_OnClientConnected((NBN_Connection*)data);
 
     case NBN_DRIVER_SERV_CLIENT_PACKET_RECEIVED:
-        return ServerDriver_OnClientPacketReceived((NBN_Packet *)data);
+        return ServerDriver_OnClientPacketReceived((NBN_Packet*)data);
     }
 
     return 0;
@@ -4561,16 +4561,16 @@ int NBN_Driver_RaiseEvent(NBN_DriverEvent ev, void *data)
 
 NBN_GameClient nbn_game_client;
 
-static int GameClient_ProcessReceivedMessage(NBN_Message *, NBN_Connection *);
+static int GameClient_ProcessReceivedMessage(NBN_Message*, NBN_Connection*);
 static int GameClient_HandleEvent(void);
 static int GameClient_HandleMessageReceivedEvent(void);
 
-int NBN_GameClient_Start(const char *protocol_name, const char *host, uint16_t port)
+int NBN_GameClient_Start(const char* protocol_name, const char* host, uint16_t port)
 {
     return NBN_GameClient_StartEx(protocol_name, host, port, NULL, 0);
 }
 
-int NBN_GameClient_StartEx(const char *protocol_name, const char *host, uint16_t port, uint8_t *data, unsigned int length)
+int NBN_GameClient_StartEx(const char* protocol_name, const char* host, uint16_t port, uint8_t* data, unsigned int length)
 {
     if (nbn_driver_count < 1)
     {
@@ -4592,7 +4592,7 @@ int NBN_GameClient_StartEx(const char *protocol_name, const char *host, uint16_t
 
     for (unsigned int i = 0; i < NBN_MAX_DRIVERS; i++)
     {
-        NBN_Driver *driver = &nbn_drivers[i];
+        NBN_Driver* driver = &nbn_drivers[i];
 
         if (driver->id < 0) continue;
 
@@ -4603,7 +4603,7 @@ int NBN_GameClient_StartEx(const char *protocol_name, const char *host, uint16_t
         }
     }
 
-    NBN_ConnectionRequestMessage *msg = NBN_ConnectionRequestMessage_Create();
+    NBN_ConnectionRequestMessage* msg = NBN_ConnectionRequestMessage_Create();
 
     msg->length = length;
 
@@ -4648,13 +4648,13 @@ void NBN_GameClient_Stop(void)
 
         NBN_Connection_Destroy(nbn_game_client.server_connection);
         nbn_game_client.server_connection = NULL;
-    } 
+    }
 
     NBN_LogInfo("Stopping all drivers...");
 
     for (unsigned int i = 0; i < NBN_MAX_DRIVERS; i++)
     {
-        NBN_Driver *driver = &nbn_drivers[i];
+        NBN_Driver* driver = &nbn_drivers[i];
 
         if (driver->id < 0) continue;
 
@@ -4671,7 +4671,7 @@ void NBN_GameClient_Stop(void)
     NBN_LogInfo("Stopped");
 }
 
-unsigned int NBN_GameClient_ReadServerData(uint8_t *data)
+unsigned int NBN_GameClient_ReadServerData(uint8_t* data)
 {
     memcpy(data, nbn_game_client.server_data, nbn_game_client.server_data_len);
 
@@ -4714,7 +4714,7 @@ int NBN_GameClient_Poll(void)
             NBN_Event e;
 
             e.type = NBN_DISCONNECTED;
-            e.data.connection = (NBN_Connection *)NULL;
+            e.data.connection = (NBN_Connection*)NULL;
 
             if (!NBN_EventQueue_Enqueue(&nbn_game_client.endpoint.event_queue, e))
                 return NBN_ERROR;
@@ -4723,7 +4723,7 @@ int NBN_GameClient_Poll(void)
         {
             for (unsigned int i = 0; i < NBN_MAX_DRIVERS; i++)
             {
-                NBN_Driver *driver = &nbn_drivers[i];
+                NBN_Driver* driver = &nbn_drivers[i];
 
                 if (driver->id < 0) continue;
 
@@ -4736,11 +4736,11 @@ int NBN_GameClient_Poll(void)
 
             for (unsigned int i = 0; i < NBN_MAX_CHANNELS; i++)
             {
-                NBN_Channel *channel = nbn_game_client.server_connection->channels[i];
+                NBN_Channel* channel = nbn_game_client.server_connection->channels[i];
 
                 if (channel)
                 {
-                    NBN_Message *msg;
+                    NBN_Message* msg;
 
                     while ((msg = channel->GetNextRecvedMessage(channel)) != NULL)
                     {
@@ -4772,13 +4772,13 @@ int NBN_GameClient_SendPackets(void)
     return NBN_Connection_FlushSendQueue(nbn_game_client.server_connection, nbn_game_client.endpoint.time);
 }
 
-int NBN_GameClient_SendMessage(uint8_t msg_type, uint8_t channel_id, void *msg_data)
+int NBN_GameClient_SendMessage(uint8_t msg_type, uint8_t channel_id, void* msg_data)
 {
-    NBN_OutgoingMessage *outgoing_msg = Endpoint_CreateOutgoingMessage(
-            &nbn_game_client.endpoint,
-            nbn_game_client.server_connection->channels[channel_id],
-            msg_type,
-            msg_data);
+    NBN_OutgoingMessage* outgoing_msg = Endpoint_CreateOutgoingMessage(
+        &nbn_game_client.endpoint,
+        nbn_game_client.server_connection->channels[channel_id],
+        msg_type,
+        msg_data);
 
 
     if (outgoing_msg == NULL)
@@ -4789,7 +4789,7 @@ int NBN_GameClient_SendMessage(uint8_t msg_type, uint8_t channel_id, void *msg_d
     }
 
     if (Endpoint_EnqueueOutgoingMessage(
-            &nbn_game_client.endpoint, nbn_game_client.server_connection, outgoing_msg, channel_id) < 0)
+        &nbn_game_client.endpoint, nbn_game_client.server_connection, outgoing_msg, channel_id) < 0)
     {
         NBN_LogError("Failed to create outgoing message");
 
@@ -4799,7 +4799,7 @@ int NBN_GameClient_SendMessage(uint8_t msg_type, uint8_t channel_id, void *msg_d
     return 0;
 }
 
-int NBN_GameClient_SendByteArray(uint8_t *bytes, unsigned int length, uint8_t channel_id)
+int NBN_GameClient_SendByteArray(uint8_t* bytes, unsigned int length, uint8_t channel_id)
 {
     if (length > NBN_BYTE_ARRAY_MAX_SIZE)
     {
@@ -4808,7 +4808,7 @@ int NBN_GameClient_SendByteArray(uint8_t *bytes, unsigned int length, uint8_t ch
         return NBN_ERROR;
     }
 
-    NBN_ByteArrayMessage *msg = NBN_ByteArrayMessage_Create();
+    NBN_ByteArrayMessage* msg = NBN_ByteArrayMessage_Create();
 
     memcpy(msg->bytes, bytes, length);
 
@@ -4817,29 +4817,29 @@ int NBN_GameClient_SendByteArray(uint8_t *bytes, unsigned int length, uint8_t ch
     return NBN_GameClient_SendMessage(NBN_BYTE_ARRAY_MESSAGE_TYPE, channel_id, msg);
 }
 
-int NBN_GameClient_SendUnreliableMessage(uint8_t msg_type, void *msg_data)
+int NBN_GameClient_SendUnreliableMessage(uint8_t msg_type, void* msg_data)
 {
     return NBN_GameClient_SendMessage(msg_type, NBN_CHANNEL_RESERVED_UNRELIABLE, msg_data);
 }
 
-int NBN_GameClient_SendReliableMessage(uint8_t msg_type, void *msg_data)
+int NBN_GameClient_SendReliableMessage(uint8_t msg_type, void* msg_data)
 {
     return NBN_GameClient_SendMessage(msg_type, NBN_CHANNEL_RESERVED_RELIABLE, msg_data);
 }
 
-int NBN_GameClient_SendUnreliableByteArray(uint8_t *bytes, unsigned int length)
+int NBN_GameClient_SendUnreliableByteArray(uint8_t* bytes, unsigned int length)
 {
     return NBN_GameClient_SendByteArray(bytes, length, NBN_CHANNEL_RESERVED_UNRELIABLE);
 }
 
-int NBN_GameClient_SendReliableByteArray(uint8_t *bytes, unsigned int length)
+int NBN_GameClient_SendReliableByteArray(uint8_t* bytes, unsigned int length)
 {
     return NBN_GameClient_SendByteArray(bytes, length, NBN_CHANNEL_RESERVED_RELIABLE);
 }
 
-NBN_Connection *NBN_GameClient_CreateServerConnection(int driver_id, void *driver_data, uint32_t protocol_id)
+NBN_Connection* NBN_GameClient_CreateServerConnection(int driver_id, void* driver_data, uint32_t protocol_id)
 {
-    NBN_Connection *server_connection = Endpoint_CreateConnection(&nbn_game_client.endpoint, 0, protocol_id, driver_id, driver_data);
+    NBN_Connection* server_connection = Endpoint_CreateConnection(&nbn_game_client.endpoint, 0, protocol_id, driver_id, driver_data);
 
 #ifdef NBN_DEBUG
     server_connection->debug_callbacks = nbn_game_client.endpoint.debug_callbacks;
@@ -4892,7 +4892,7 @@ int NBN_GameClient_CallRPC(unsigned int id, ...)
 
     va_start(args, id);
 
-    NBN_RPC_Message *rpc_msg = Connection_BuildRPC(nbn_game_client.server_connection, &rpc, args);
+    NBN_RPC_Message* rpc_msg = Connection_BuildRPC(nbn_game_client.server_connection, &rpc, args);
 
     assert(rpc_msg);
 
@@ -4922,7 +4922,7 @@ void NBN_GameClient_Debug_RegisterCallback(NBN_ConnectionDebugCallback cbs)
 
 #endif /* NBN_DEBUG */
 
-static int GameClient_ProcessReceivedMessage(NBN_Message *message, NBN_Connection *server_connection)
+static int GameClient_ProcessReceivedMessage(NBN_Message* message, NBN_Connection* server_connection)
 {
     assert(nbn_game_client.server_connection == server_connection);
 
@@ -4932,7 +4932,7 @@ static int GameClient_ProcessReceivedMessage(NBN_Message *message, NBN_Connectio
 
     if (message->header.type == NBN_MESSAGE_CHUNK_TYPE)
     {
-        NBN_Channel *channel = server_connection->channels[message->header.channel_id];
+        NBN_Channel* channel = server_connection->channels[message->header.channel_id];
 
         if (!NBN_Channel_AddChunk(channel, message))
             return 0;
@@ -4946,13 +4946,13 @@ static int GameClient_ProcessReceivedMessage(NBN_Message *message, NBN_Connectio
             return NBN_ERROR;
         }
 
-        NBN_MessageInfo msg_info = {complete_message.header.type, complete_message.header.channel_id, complete_message.data, 0};
+        NBN_MessageInfo msg_info = { complete_message.header.type, complete_message.header.channel_id, complete_message.data, 0 };
 
         ev.data.message_info = msg_info;
     }
     else
     {
-        NBN_MessageInfo msg_info = {message->header.type, message->header.channel_id, message->data, 0};
+        NBN_MessageInfo msg_info = { message->header.type, message->header.channel_id, message->data, 0 };
 
         ev.data.message_info = msg_info;
     }
@@ -4984,7 +4984,7 @@ static int GameClient_HandleMessageReceivedEvent(void)
     if (message_info.type == NBN_CLIENT_CLOSED_MESSAGE_TYPE)
     {
         nbn_game_client.is_connected = false;
-        nbn_game_client.closed_code = ((NBN_ClientClosedMessage *)message_info.data)->code;
+        nbn_game_client.closed_code = ((NBN_ClientClosedMessage*)message_info.data)->code;
         ret = NBN_DISCONNECTED;
     }
     else if (message_info.type == NBN_CLIENT_ACCEPTED_MESSAGE_TYPE)
@@ -4992,16 +4992,16 @@ static int GameClient_HandleMessageReceivedEvent(void)
         nbn_game_client.is_connected = true;
         ret = NBN_CONNECTED;
 
-        NBN_ClientAcceptedMessage *accepted_msg = (NBN_ClientAcceptedMessage *)message_info.data;
+        NBN_ClientAcceptedMessage* accepted_msg = (NBN_ClientAcceptedMessage*)message_info.data;
 
         memcpy(nbn_game_client.server_data, accepted_msg->data, accepted_msg->length);
         nbn_game_client.server_data_len = accepted_msg->length;
-    } 
+    }
     else if (message_info.type == NBN_RPC_MESSAGE_TYPE)
     {
         ret = NBN_NO_EVENT;
 
-        Connection_HandleReceivedRPC(nbn_game_client.server_connection->id, &nbn_game_client.endpoint, (NBN_RPC_Message *)message_info.data);
+        Connection_HandleReceivedRPC(nbn_game_client.server_connection->id, &nbn_game_client.endpoint, (NBN_RPC_Message*)message_info.data);
     }
     else
     {
@@ -5015,7 +5015,7 @@ static int GameClient_HandleMessageReceivedEvent(void)
 
 #pragma region Game client driver
 
-static void ClientDriver_OnPacketReceived(NBN_Packet *packet)
+static void ClientDriver_OnPacketReceived(NBN_Packet* packet)
 {
     // packets from server should always be valid
     if (Endpoint_ProcessReceivedPacket(&nbn_game_client.endpoint, packet, nbn_game_client.server_connection) < 0)
@@ -5031,23 +5031,23 @@ static void ClientDriver_OnPacketReceived(NBN_Packet *packet)
 
 NBN_GameServer nbn_game_server;
 
-static int GameServer_SendMessageTo(NBN_Connection *client, uint8_t msg_type, uint8_t channel_id, void *msg_data);
-static int GameServer_AddClient(NBN_Connection *);
-static int GameServer_CloseClientWithCode(NBN_Connection *client, int code, bool disconnection);
-static void GameServer_AddClientToClosedList(NBN_Connection *client);
+static int GameServer_SendMessageTo(NBN_Connection* client, uint8_t msg_type, uint8_t channel_id, void* msg_data);
+static int GameServer_AddClient(NBN_Connection*);
+static int GameServer_CloseClientWithCode(NBN_Connection* client, int code, bool disconnection);
+static void GameServer_AddClientToClosedList(NBN_Connection* client);
 static unsigned int GameServer_GetClientCount(void);
-static int GameServer_ProcessReceivedMessage(NBN_Message *, NBN_Connection *);
+static int GameServer_ProcessReceivedMessage(NBN_Message*, NBN_Connection*);
 static int GameServer_CloseStaleClientConnections(void);
 static void GameServer_RemoveClosedClientConnections(void);
 static int GameServer_HandleEvent(void);
 static int GameServer_HandleMessageReceivedEvent(void);
 
-int NBN_GameServer_Start(const char *protocol_name, uint16_t port)
+int NBN_GameServer_Start(const char* protocol_name, uint16_t port)
 {
     return NBN_GameServer_StartEx(protocol_name, port);
 }
 
-int NBN_GameServer_StartEx(const char *protocol_name, uint16_t port)
+int NBN_GameServer_StartEx(const char* protocol_name, uint16_t port)
 {
     if (nbn_driver_count < 1)
     {
@@ -5073,7 +5073,7 @@ int NBN_GameServer_StartEx(const char *protocol_name, uint16_t port)
 
     for (unsigned int i = 0; i < NBN_MAX_DRIVERS; i++)
     {
-        NBN_Driver *driver = &nbn_drivers[i];
+        NBN_Driver* driver = &nbn_drivers[i];
 
         if (driver->id < 0) continue;
 
@@ -5104,7 +5104,7 @@ void NBN_GameServer_Stop(void)
 
     for (unsigned int i = 0; i < NBN_MAX_DRIVERS; i++)
     {
-        NBN_Driver *driver = &nbn_drivers[i];
+        NBN_Driver* driver = &nbn_drivers[i];
 
         if (driver->id < 0) continue;
 
@@ -5112,11 +5112,11 @@ void NBN_GameServer_Stop(void)
     }
 
     // Free closed clients list
-    NBN_ConnectionListNode *current = nbn_game_server.closed_clients_head;
+    NBN_ConnectionListNode* current = nbn_game_server.closed_clients_head;
 
     while (current)
     {
-        NBN_ConnectionListNode *next = current->next;
+        NBN_ConnectionListNode* next = current->next;
 
         NBN_Deallocator(current);
 
@@ -5157,7 +5157,7 @@ int NBN_GameServer_Poll(void)
 
         for (unsigned int i = 0; i < NBN_MAX_DRIVERS; i++)
         {
-            NBN_Driver *driver = &nbn_drivers[i];
+            NBN_Driver* driver = &nbn_drivers[i];
 
             if (driver->id < 0) continue;
 
@@ -5172,15 +5172,15 @@ int NBN_GameServer_Poll(void)
 
         for (unsigned int i = 0; i < nbn_game_server.clients->count; i++)
         {
-            NBN_Connection *client = nbn_game_server.clients->connections[i];
+            NBN_Connection* client = nbn_game_server.clients->connections[i];
 
             for (unsigned int i = 0; i < NBN_MAX_CHANNELS; i++)
             {
-                NBN_Channel *channel = client->channels[i];
+                NBN_Channel* channel = client->channels[i];
 
                 if (channel)
                 {
-                    NBN_Message *msg;
+                    NBN_Message* msg;
 
                     while ((msg = channel->GetNextRecvedMessage(channel)) != NULL)
                     {
@@ -5222,7 +5222,7 @@ int NBN_GameServer_SendPackets(void)
 
     for (unsigned int i = 0; i < nbn_game_server.clients->count; i++)
     {
-        NBN_Connection *client = nbn_game_server.clients->connections[i];
+        NBN_Connection* client = nbn_game_server.clients->connections[i];
 
         assert(!(client->is_closed && client->is_stale));
 
@@ -5235,11 +5235,11 @@ int NBN_GameServer_SendPackets(void)
     return 0;
 }
 
-NBN_Connection *NBN_GameServer_CreateClientConnection(int driver_id, void *driver_data, uint32_t protocol_id, uint32_t conn_id)
+NBN_Connection* NBN_GameServer_CreateClientConnection(int driver_id, void* driver_data, uint32_t protocol_id, uint32_t conn_id)
 {
     assert(conn_id > 0); // Connection IDs start at 1
 
-    NBN_Connection *client = Endpoint_CreateConnection(&nbn_game_server.endpoint, conn_id, protocol_id, driver_id, driver_data);
+    NBN_Connection* client = Endpoint_CreateConnection(&nbn_game_server.endpoint, conn_id, protocol_id, driver_id, driver_data);
 
 #ifdef NBN_DEBUG
     client->debug_callbacks = nbn_game_server.endpoint.debug_callbacks;
@@ -5250,7 +5250,7 @@ NBN_Connection *NBN_GameServer_CreateClientConnection(int driver_id, void *drive
 
 int NBN_GameServer_CloseClientWithCode(NBN_ConnectionHandle connection_handle, int code)
 {
-    NBN_Connection *client = NBN_ConnectionTable_Get(nbn_game_server.clients_table, connection_handle);
+    NBN_Connection* client = NBN_ConnectionTable_Get(nbn_game_server.clients_table, connection_handle);
 
     if (client == NULL)
     {
@@ -5263,7 +5263,7 @@ int NBN_GameServer_CloseClientWithCode(NBN_ConnectionHandle connection_handle, i
 
 int NBN_GameServer_CloseClient(NBN_ConnectionHandle connection_handle)
 {
-    NBN_Connection *client = NBN_ConnectionTable_Get(nbn_game_server.clients_table, connection_handle);
+    NBN_Connection* client = NBN_ConnectionTable_Get(nbn_game_server.clients_table, connection_handle);
 
     if (client == NULL)
     {
@@ -5274,9 +5274,9 @@ int NBN_GameServer_CloseClient(NBN_ConnectionHandle connection_handle)
     return GameServer_CloseClientWithCode(client, -1, false);
 }
 
-int NBN_GameServer_SendByteArrayTo(NBN_ConnectionHandle connection_handle, uint8_t *bytes, unsigned int length, uint8_t channel_id)
+int NBN_GameServer_SendByteArrayTo(NBN_ConnectionHandle connection_handle, uint8_t* bytes, unsigned int length, uint8_t channel_id)
 {
-    NBN_Connection *client = NBN_ConnectionTable_Get(nbn_game_server.clients_table, connection_handle);
+    NBN_Connection* client = NBN_ConnectionTable_Get(nbn_game_server.clients_table, connection_handle);
 
     if (client == NULL)
     {
@@ -5291,7 +5291,7 @@ int NBN_GameServer_SendByteArrayTo(NBN_ConnectionHandle connection_handle, uint8
         return NBN_ERROR;
     }
 
-    NBN_ByteArrayMessage *msg = NBN_ByteArrayMessage_Create();
+    NBN_ByteArrayMessage* msg = NBN_ByteArrayMessage_Create();
 
     memcpy(msg->bytes, bytes, length);
 
@@ -5300,9 +5300,9 @@ int NBN_GameServer_SendByteArrayTo(NBN_ConnectionHandle connection_handle, uint8
     return NBN_GameServer_SendMessageTo(connection_handle, NBN_BYTE_ARRAY_MESSAGE_TYPE, channel_id, msg);
 }
 
-int NBN_GameServer_SendMessageTo(NBN_ConnectionHandle connection_handle, uint8_t msg_type, uint8_t channel_id, void *msg_data)
+int NBN_GameServer_SendMessageTo(NBN_ConnectionHandle connection_handle, uint8_t msg_type, uint8_t channel_id, void* msg_data)
 {
-    NBN_Connection *client = NBN_ConnectionTable_Get(nbn_game_server.clients_table, connection_handle);
+    NBN_Connection* client = NBN_ConnectionTable_Get(nbn_game_server.clients_table, connection_handle);
 
     if (client == NULL)
     {
@@ -5313,22 +5313,22 @@ int NBN_GameServer_SendMessageTo(NBN_ConnectionHandle connection_handle, uint8_t
     return GameServer_SendMessageTo(client, msg_type, channel_id, msg_data);
 }
 
-int NBN_GameServer_SendUnreliableMessageTo(NBN_ConnectionHandle connection_handle, uint8_t msg_type, void *msg_data)
+int NBN_GameServer_SendUnreliableMessageTo(NBN_ConnectionHandle connection_handle, uint8_t msg_type, void* msg_data)
 {
     return NBN_GameServer_SendMessageTo(connection_handle, msg_type, NBN_CHANNEL_RESERVED_UNRELIABLE, msg_data);
 }
 
-int NBN_GameServer_SendReliableMessageTo(NBN_ConnectionHandle connection_handle, uint8_t msg_type, void *msg_data)
+int NBN_GameServer_SendReliableMessageTo(NBN_ConnectionHandle connection_handle, uint8_t msg_type, void* msg_data)
 {
     return NBN_GameServer_SendMessageTo(connection_handle, msg_type, NBN_CHANNEL_RESERVED_RELIABLE, msg_data);
 }
 
-int NBN_GameServer_SendUnreliableByteArrayTo(NBN_ConnectionHandle connection_handle, uint8_t *bytes, unsigned int length)
+int NBN_GameServer_SendUnreliableByteArrayTo(NBN_ConnectionHandle connection_handle, uint8_t* bytes, unsigned int length)
 {
     return NBN_GameServer_SendByteArrayTo(connection_handle, bytes, length, NBN_CHANNEL_RESERVED_UNRELIABLE);
 }
 
-int NBN_GameServer_SendReliableByteArrayTo(NBN_ConnectionHandle connection_handle, uint8_t *bytes, unsigned int length)
+int NBN_GameServer_SendReliableByteArrayTo(NBN_ConnectionHandle connection_handle, uint8_t* bytes, unsigned int length)
 {
     return NBN_GameServer_SendByteArrayTo(connection_handle, bytes, length, NBN_CHANNEL_RESERVED_RELIABLE);
 }
@@ -5338,7 +5338,7 @@ int NBN_GameServer_AcceptIncomingConnection(void)
     return NBN_GameServer_AcceptIncomingConnectionWithData(NULL, 0);
 }
 
-int NBN_GameServer_AcceptIncomingConnectionWithData(uint8_t *data, unsigned int length)
+int NBN_GameServer_AcceptIncomingConnectionWithData(uint8_t* data, unsigned int length)
 {
     assert(nbn_game_server.last_event.type == NBN_NEW_CONNECTION);
     assert(nbn_game_server.last_event.data.connection != NULL);
@@ -5349,8 +5349,8 @@ int NBN_GameServer_AcceptIncomingConnectionWithData(uint8_t *data, unsigned int 
         return NBN_ERROR;
     }
 
-    NBN_Connection *client = nbn_game_server.last_event.data.connection;
-    NBN_ClientAcceptedMessage *msg = NBN_ClientAcceptedMessage_Create();
+    NBN_Connection* client = nbn_game_server.last_event.data.connection;
+    NBN_ClientAcceptedMessage* msg = NBN_ClientAcceptedMessage_Create();
 
     assert(msg != NULL);
 
@@ -5390,7 +5390,7 @@ NBN_ConnectionHandle NBN_GameServer_GetIncomingConnection(void)
     return nbn_game_server.last_event.data.connection->id;
 }
 
-unsigned int NBN_GameServer_ReadIncomingConnectionData(uint8_t *data)
+unsigned int NBN_GameServer_ReadIncomingConnectionData(uint8_t* data)
 {
     assert(nbn_game_server.last_event.type == NBN_NEW_CONNECTION);
 
@@ -5425,7 +5425,7 @@ int NBN_GameServer_RegisterRPC(unsigned int id, NBN_RPC_Signature signature, NBN
 
 int NBN_GameServer_CallRPC(unsigned int id, NBN_ConnectionHandle connection_handle, ...)
 {
-    NBN_Connection *client = NBN_ConnectionTable_Get(nbn_game_server.clients_table, connection_handle);
+    NBN_Connection* client = NBN_ConnectionTable_Get(nbn_game_server.clients_table, connection_handle);
 
     if (client == NULL)
     {
@@ -5447,7 +5447,7 @@ int NBN_GameServer_CallRPC(unsigned int id, NBN_ConnectionHandle connection_hand
 
     va_start(args, connection_handle);
 
-    NBN_RPC_Message *rpc_msg = Connection_BuildRPC(client, &rpc, args);
+    NBN_RPC_Message* rpc_msg = Connection_BuildRPC(client, &rpc, args);
 
     assert(rpc_msg);
 
@@ -5477,9 +5477,9 @@ void NBN_GameServer_Debug_RegisterCallback(NBN_ConnectionDebugCallback cbs)
 
 #endif /* NBN_DEBUG */
 
-static int GameServer_SendMessageTo(NBN_Connection *client, uint8_t msg_type, uint8_t channel_id, void *msg_data)
+static int GameServer_SendMessageTo(NBN_Connection* client, uint8_t msg_type, uint8_t channel_id, void* msg_data)
 {
-    NBN_OutgoingMessage *outgoing_msg = Endpoint_CreateOutgoingMessage(&nbn_game_server.endpoint, client->channels[channel_id], msg_type, msg_data);
+    NBN_OutgoingMessage* outgoing_msg = Endpoint_CreateOutgoingMessage(&nbn_game_server.endpoint, client->channels[channel_id], msg_type, msg_data);
 
     if (outgoing_msg == NULL)
     {
@@ -5507,7 +5507,7 @@ static int GameServer_SendMessageTo(NBN_Connection *client, uint8_t msg_type, ui
     return 0;
 }
 
-static int GameServer_AddClient(NBN_Connection *client)
+static int GameServer_AddClient(NBN_Connection* client)
 {
     if (nbn_game_server.clients->count >= NBN_MAX_CLIENTS)
     {
@@ -5522,7 +5522,7 @@ static int GameServer_AddClient(NBN_Connection *client)
     return 0;
 }
 
-static int GameServer_CloseClientWithCode(NBN_Connection *client, int code, bool disconnection)
+static int GameServer_CloseClientWithCode(NBN_Connection* client, int code, bool disconnection)
 {
     if (!client->is_closed && client->is_accepted)
     {
@@ -5557,7 +5557,7 @@ static int GameServer_CloseClientWithCode(NBN_Connection *client, int code, bool
     {
         NBN_LogDebug("Send close message for client %d (code: %d)", client->id, code);
 
-        NBN_ClientClosedMessage *msg = NBN_ClientClosedMessage_Create();
+        NBN_ClientClosedMessage* msg = NBN_ClientClosedMessage_Create();
 
         msg->code = code;
 
@@ -5567,11 +5567,11 @@ static int GameServer_CloseClientWithCode(NBN_Connection *client, int code, bool
     return 0;
 }
 
-static void GameServer_AddClientToClosedList(NBN_Connection *client)
+static void GameServer_AddClientToClosedList(NBN_Connection* client)
 {
     if (client->is_closed) return;
 
-    NBN_ConnectionListNode *node = (NBN_ConnectionListNode *)NBN_Allocator(sizeof(NBN_ConnectionListNode));
+    NBN_ConnectionListNode* node = (NBN_ConnectionListNode*)NBN_Allocator(sizeof(NBN_ConnectionListNode));
 
     node->conn = client;
     node->next = NULL;
@@ -5585,7 +5585,7 @@ static void GameServer_AddClientToClosedList(NBN_Connection *client)
     else
     {
         // list is not empty, add node at the end
-        NBN_ConnectionListNode *tail = nbn_game_server.closed_clients_head;
+        NBN_ConnectionListNode* tail = nbn_game_server.closed_clients_head;
 
         while (tail->next != NULL) tail = tail->next;
 
@@ -5599,7 +5599,7 @@ static inline unsigned int GameServer_GetClientCount(void)
     return nbn_game_server.clients->count;
 }
 
-static int GameServer_ProcessReceivedMessage(NBN_Message *message, NBN_Connection *client)
+static int GameServer_ProcessReceivedMessage(NBN_Message* message, NBN_Connection* client)
 {
     NBN_Event ev;
 
@@ -5607,7 +5607,7 @@ static int GameServer_ProcessReceivedMessage(NBN_Message *message, NBN_Connectio
 
     if (message->header.type == NBN_MESSAGE_CHUNK_TYPE)
     {
-        NBN_Channel *channel = client->channels[message->header.channel_id];
+        NBN_Channel* channel = client->channels[message->header.channel_id];
 
         if (!NBN_Channel_AddChunk(channel, message))
             return 0;
@@ -5621,13 +5621,13 @@ static int GameServer_ProcessReceivedMessage(NBN_Message *message, NBN_Connectio
             return NBN_ERROR;
         }
 
-        NBN_MessageInfo msg_info = {complete_message.header.type, complete_message.header.channel_id, complete_message.data, client->id};
+        NBN_MessageInfo msg_info = { complete_message.header.type, complete_message.header.channel_id, complete_message.data, client->id };
 
         ev.data.message_info = msg_info;
     }
     else
     {
-        NBN_MessageInfo msg_info = {message->header.type, message->header.channel_id, message->data, client->id};
+        NBN_MessageInfo msg_info = { message->header.type, message->header.channel_id, message->data, client->id };
 
         ev.data.message_info = msg_info;
     }
@@ -5642,7 +5642,7 @@ static int GameServer_CloseStaleClientConnections(void)
 {
     for (unsigned int i = 0; i < nbn_game_server.clients->count; i++)
     {
-        NBN_Connection *client = nbn_game_server.clients->connections[i];
+        NBN_Connection* client = nbn_game_server.clients->connections[i];
 
         if (!client->is_stale && NBN_Connection_CheckIfStale(client, nbn_game_server.endpoint.time))
         {
@@ -5660,13 +5660,13 @@ static int GameServer_CloseStaleClientConnections(void)
 
 static void GameServer_RemoveClosedClientConnections(void)
 {
-    NBN_ConnectionListNode *current = nbn_game_server.closed_clients_head;
+    NBN_ConnectionListNode* current = nbn_game_server.closed_clients_head;
 
     while (current)
     {
-        NBN_ConnectionListNode *prev = current->prev;
-        NBN_ConnectionListNode *next = current->next;
-        NBN_Connection *client = current->conn;
+        NBN_ConnectionListNode* prev = current->prev;
+        NBN_ConnectionListNode* next = current->next;
+        NBN_Connection* client = current->conn;
 
         assert(client->id > 0);
 
@@ -5705,7 +5705,7 @@ static void GameServer_RemoveClosedClientConnections(void)
             if (current == nbn_game_server.closed_clients_head)
             {
                 // delete the head of the list
-                NBN_ConnectionListNode *new_head = next;
+                NBN_ConnectionListNode* new_head = next;
 
                 if (new_head)
                 {
@@ -5737,7 +5737,7 @@ static int GameServer_HandleEvent(void)
 static int GameServer_HandleMessageReceivedEvent(void)
 {
     NBN_MessageInfo message_info = nbn_game_server.last_event.data.message_info;
-    NBN_Connection *sender = NBN_ConnectionTable_Get(nbn_game_server.clients_table, message_info.sender);
+    NBN_Connection* sender = NBN_ConnectionTable_Get(nbn_game_server.clients_table, message_info.sender);
 
     if (sender == NULL)
     {
@@ -5773,13 +5773,13 @@ static int GameServer_HandleMessageReceivedEvent(void)
     {
         ret = NBN_NO_EVENT;
 
-        Connection_HandleReceivedRPC(message_info.sender, &nbn_game_server.endpoint, (NBN_RPC_Message *)message_info.data);
+        Connection_HandleReceivedRPC(message_info.sender, &nbn_game_server.endpoint, (NBN_RPC_Message*)message_info.data);
     }
     else if (message_info.type == NBN_CONNECTION_REQUEST_MESSAGE_TYPE)
     {
         ret = NBN_NO_EVENT;
 
-        NBN_ConnectionRequestMessage *msg = (NBN_ConnectionRequestMessage *)message_info.data;
+        NBN_ConnectionRequestMessage* msg = (NBN_ConnectionRequestMessage*)message_info.data;
 
         nbn_game_server.last_connection_data_len = msg->length;
         memcpy(nbn_game_server.last_connection_data, msg->data, msg->length);
@@ -5800,7 +5800,7 @@ static int GameServer_HandleMessageReceivedEvent(void)
 
 #pragma region Game server driver
 
-static int ServerDriver_OnClientConnected(NBN_Connection *client)
+static int ServerDriver_OnClientConnected(NBN_Connection* client)
 {
     if (GameServer_AddClient(client) < 0)
     {
@@ -5812,7 +5812,7 @@ static int ServerDriver_OnClientConnected(NBN_Connection *client)
     return 0;
 }
 
-static int ServerDriver_OnClientPacketReceived(NBN_Packet *packet)
+static int ServerDriver_OnClientPacketReceived(NBN_Packet* packet)
 {
     if (Endpoint_ProcessReceivedPacket(&nbn_game_server.endpoint, packet, packet->sender) < 0)
     {
@@ -5836,13 +5836,13 @@ static int ServerDriver_OnClientPacketReceived(NBN_Packet *packet)
 #ifdef NBNET_WINDOWS
 DWORD WINAPI PacketSimulator_Routine(LPVOID);
 #else
-static void *PacketSimulator_Routine(void *);
+static void* PacketSimulator_Routine(void*);
 #endif
 
-static int PacketSimulator_SendPacket(NBN_PacketSimulator *, NBN_Packet *, NBN_Connection *receiver);
-static unsigned int PacketSimulator_GetRandomDuplicatePacketCount(NBN_PacketSimulator *);
+static int PacketSimulator_SendPacket(NBN_PacketSimulator*, NBN_Packet*, NBN_Connection* receiver);
+static unsigned int PacketSimulator_GetRandomDuplicatePacketCount(NBN_PacketSimulator*);
 
-void NBN_PacketSimulator_Init(NBN_PacketSimulator *packet_simulator, NBN_Endpoint *endpoint)
+void NBN_PacketSimulator_Init(NBN_PacketSimulator* packet_simulator, NBN_Endpoint* endpoint)
 {
     packet_simulator->endpoint = endpoint;
     packet_simulator->running = false;
@@ -5862,7 +5862,7 @@ void NBN_PacketSimulator_Init(NBN_PacketSimulator *packet_simulator, NBN_Endpoin
 #endif
 }
 
-int NBN_PacketSimulator_EnqueuePacket(NBN_PacketSimulator *packet_simulator, NBN_Packet *packet, NBN_Connection *receiver)
+int NBN_PacketSimulator_EnqueuePacket(NBN_PacketSimulator* packet_simulator, NBN_Packet* packet, NBN_Connection* receiver)
 {
 #ifdef NBNET_WINDOWS
     WaitForSingleObject(packet_simulator->queue_mutex, INFINITE);
@@ -5878,7 +5878,7 @@ int NBN_PacketSimulator_EnqueuePacket(NBN_PacketSimulator *packet_simulator, NBN
 
     jitter = (jitter > 0) ? (rand() % (jitter * 2)) - jitter : 0;
 
-    NBN_PacketSimulatorEntry *entry = (NBN_PacketSimulatorEntry *)MemoryManager_Alloc(NBN_MEM_PACKET_SIMULATOR_ENTRY);
+    NBN_PacketSimulatorEntry* entry = (NBN_PacketSimulatorEntry*)MemoryManager_Alloc(NBN_MEM_PACKET_SIMULATOR_ENTRY);
 
     entry->delay = packet_simulator->ping + (double)jitter / 1000; /* and converted back to seconds */
     entry->receiver = receiver;
@@ -5914,7 +5914,7 @@ int NBN_PacketSimulator_EnqueuePacket(NBN_PacketSimulator *packet_simulator, NBN
     return 0;
 }
 
-void NBN_PacketSimulator_Start(NBN_PacketSimulator *packet_simulator)
+void NBN_PacketSimulator_Start(NBN_PacketSimulator* packet_simulator)
 {
 #ifdef NBNET_WINDOWS
     packet_simulator->thread = CreateThread(NULL, 0, PacketSimulator_Routine, packet_simulator, 0, NULL);
@@ -5925,7 +5925,7 @@ void NBN_PacketSimulator_Start(NBN_PacketSimulator *packet_simulator)
     packet_simulator->running = true;
 }
 
-void NBN_PacketSimulator_Stop(NBN_PacketSimulator *packet_simulator)
+void NBN_PacketSimulator_Stop(NBN_PacketSimulator* packet_simulator)
 {
     packet_simulator->running = false;
 
@@ -5939,10 +5939,10 @@ void NBN_PacketSimulator_Stop(NBN_PacketSimulator *packet_simulator)
 #ifdef NBNET_WINDOWS
 DWORD WINAPI PacketSimulator_Routine(LPVOID arg)
 #else
-static void *PacketSimulator_Routine(void *arg)
+static void* PacketSimulator_Routine(void* arg)
 #endif
 {
-    NBN_PacketSimulator *packet_simulator = (NBN_PacketSimulator *)arg;
+    NBN_PacketSimulator* packet_simulator = (NBN_PacketSimulator*)arg;
 
     while (packet_simulator->running)
     {
@@ -5952,11 +5952,11 @@ static void *PacketSimulator_Routine(void *arg)
         pthread_mutex_lock(&packet_simulator->queue_mutex);
 #endif
 
-        NBN_PacketSimulatorEntry *entry = packet_simulator->head_packet;
+        NBN_PacketSimulatorEntry* entry = packet_simulator->head_packet;
 
         while (entry)
         {
-            NBN_PacketSimulatorEntry *next = entry->next;
+            NBN_PacketSimulatorEntry* next = entry->next;
 
             if (packet_simulator->endpoint->time - entry->enqueued_at < entry->delay)
             {
@@ -5977,7 +5977,7 @@ static void *PacketSimulator_Routine(void *arg)
             // remove the entry from the packet list
             if (entry == packet_simulator->head_packet) // it's the head of the list
             {
-                NBN_PacketSimulatorEntry *new_head = entry->next;
+                NBN_PacketSimulatorEntry* new_head = entry->next;
 
                 if (new_head)
                     new_head->prev = NULL;
@@ -5988,7 +5988,7 @@ static void *PacketSimulator_Routine(void *arg)
             }
             else if (entry == packet_simulator->tail_packet) // it's the tail of the list
             {
-                NBN_PacketSimulatorEntry *new_tail = entry->prev;
+                NBN_PacketSimulatorEntry* new_tail = entry->prev;
 
                 new_tail->next = NULL;
                 packet_simulator->tail_packet = new_tail;
@@ -6022,7 +6022,7 @@ static void *PacketSimulator_Routine(void *arg)
 }
 
 static int PacketSimulator_SendPacket(
-    NBN_PacketSimulator *packet_simulator, NBN_Packet *packet, NBN_Connection *receiver)
+    NBN_PacketSimulator* packet_simulator, NBN_Packet* packet, NBN_Connection* receiver)
 {
     if (RAND_RATIO < packet_simulator->packet_loss_ratio)
     {
@@ -6032,7 +6032,7 @@ static int PacketSimulator_SendPacket(
         return 0;
     }
 
-    NBN_Driver *driver = receiver->driver;
+    NBN_Driver* driver = receiver->driver;
 
     if (receiver->endpoint->is_server)
     {
@@ -6047,7 +6047,7 @@ static int PacketSimulator_SendPacket(
     }
 }
 
-static unsigned int PacketSimulator_GetRandomDuplicatePacketCount(NBN_PacketSimulator *packet_simulator)
+static unsigned int PacketSimulator_GetRandomDuplicatePacketCount(NBN_PacketSimulator* packet_simulator)
 {
     if (RAND_RATIO < packet_simulator->packet_duplication_ratio)
         return rand() % 10 + 1;

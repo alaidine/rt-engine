@@ -1,5 +1,5 @@
-set(CLIENT_SOURCE_FILES client.cpp)
-set(SERVER_SOURCE_FILES server.cpp)
+set(CLIENT_SOURCE_FILES client.cpp shared.cpp)
+set(SERVER_SOURCE_FILES server.cpp shared.cpp)
 file(GLOB_RECURSE HEADER_FILES CONFIGURE_DEPENDS *.h)
 
 target_sources(${CLIENT} PRIVATE ${CLIENT_SOURCE_FILES} ${HEADER_FILES})
