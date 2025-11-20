@@ -370,6 +370,7 @@
     <ResourceCompile Include="..\..\..\src\raylib_game.rc" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\..\..\src\client.h" />
     <ClInclude Include="..\..\..\src\nbnet.h" />
     <ClInclude Include="..\..\..\src\shared.h" />
   </ItemGroup>

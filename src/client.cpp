@@ -466,7 +466,6 @@ void UpdateAndDraw()
     case TITLE: {
         if (IsKeyPressed(KEY_ENTER) || IsGestureDetected(GESTURE_TAP))
         {
-            TraceLog(LOG_INFO, "foobar");
             currentScreen = IP_ADDRESS;
         }
 
@@ -600,7 +599,6 @@ int main(int argc, char* argv[])
 
     // Stop the client
     NBN_GameClient_Stop();
-
     CloseWindow();
 
     return 0;

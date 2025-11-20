@@ -7,5 +7,6 @@
   <ItemGroup>
     <ClInclude Include="..\..\..\src\nbnet.h" />
     <ClInclude Include="..\..\..\src\shared.h" />
+    <ClInclude Include="..\..\..\src\server.h" />
   </ItemGroup>
 </Project>

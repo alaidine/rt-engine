@@ -1,76 +1,36 @@
-#if defined(_WIN32) || defined(_WIN64)
+#include "server.h"
 
-#define WIN32_LEAN_AND_MEAN
-#define NOGDI          // Exclude GDI definitions to prevent Rectangle conflicts
-#define NOUSER         // Exclude USER definitions to prevent function name conflicts
-
-#endif
-
-#include <stdio.h>
-#include <signal.h>
-
-#if defined(_WIN32) || defined(_WIN64)
-#include <winsock2.h>
-#include <windows.h>
-#include <synchapi.h> 
-#else
-#include <time.h>
-#endif
-
-// Undefine any remaining conflicts just to be safe
-#if defined(_WIN32) || defined(_WIN64)
-
-#ifdef Rectangle
-#undef Rectangle
-#endif
-#ifdef CloseWindow
-#undef CloseWindow
-#endif
-#ifdef ShowCursor
-#undef ShowCursor
-#endif
-#ifdef LoadImage
-#undef LoadImage
-#endif
-#ifdef DrawText
-#undef DrawText
-#endif
-#ifdef DrawTextEx
-#undef DrawTextEx
-#endif
-#ifdef PlaySound
-#undef PlaySound
-#endif
-
-#endif
-
-#include "shared.h"
-
-// A simple structure to represent connected clients
-typedef struct
+// Add this at the top of the file, before Server constructor
+static void SigintHandler(int dummy)
 {
-    // Underlying nbnet connection handle, used to send messages to that particular client
-    NBN_ConnectionHandle client_handle;
+    // Use a static/global pointer to the server instance
+    extern Server* g_serverInstance;
+    g_serverInstance->running = false;
+}
 
-    // Client state
-    ClientState state;
-} Client;
+// Add this global pointer
+Server* g_serverInstance= nullptr;
 
-// Array of connected clients, NULL means that the slot is free (i.e no clients)
-static Client* clients[MAX_CLIENTS] = { NULL };
+Server::Server()
+{
+    g_serverInstance = this; // Set global instance pointer
+    signal(SIGINT, SigintHandler);
 
-// Number of currently connected clients
-static unsigned int client_count = 0;
+    m_clients = {};
+    m_spawns = {
+        {50, 50},
+        {GAME_WIDTH - 100, 50},
+        {50, GAME_HEIGHT - 100},
+        {GAME_WIDTH - 100, GAME_HEIGHT - 100}
+    };
+}
 
-// Spawn positions
-static Vector2 spawns[] = {
-    {50, 50},
-    {GAME_WIDTH - 100, 50},
-    {50, GAME_HEIGHT - 100},
-    {GAME_WIDTH - 100, GAME_HEIGHT - 100}
-};
+Server::~Server()
+{
 
-static void AcceptConnection(unsigned int x, unsigned int y, NBN_ConnectionHandle conn)
+}
+
+void Server::AcceptConnection(unsigned int x, unsigned int y, NBN_ConnectionHandle conn)
 {
     NBN_WriteStream ws;
     uint8_t data[32];
@@ -85,12 +45,12 @@ static void AcceptConnection(unsigned int x, unsigned int y, NBN_ConnectionHandl
     NBN_GameServer_AcceptIncomingConnectionWithData(data, sizeof(data));
 }
 
-static int HandleNewConnection(void)
+int Server::HandleNewConnection(void)
 {
     TraceLog(LOG_INFO, "New connection");
 
     // If the server is full
-    if (client_count == MAX_CLIENTS)
+    if (m_clientCount== MAX_CLIENTS)
     {
         // Reject the connection (send a SERVER_FULL_CODE code to the client)
         TraceLog(LOG_INFO, "Connection rejected");
@@ -106,7 +66,7 @@ static int HandleNewConnection(void)
     client_handle = NBN_GameServer_GetIncomingConnection();
 
     // Get a spawning position for the client
-    Vector2 spawn = spawns[client_handle % MAX_CLIENTS];
+    Vector2 spawn = m_spawns[client_handle % MAX_CLIENTS];
 
     // Build some "initial" data that will be sent to the connected client
 
@@ -122,10 +82,10 @@ static int HandleNewConnection(void)
     // Find a free slot in the clients array and create a new client
     for (int i = 0; i < MAX_CLIENTS; i++)
     {
-        if (clients[i] == NULL)
+        if (m_clients[i] == NULL)
         {
             client = (Client*)malloc(sizeof(Client));
-            clients[i] = client;
+            m_clients[i] = client;
 
             break;
         }
@@ -142,29 +102,29 @@ static int HandleNewConnection(void)
     client->state.color = CLI_RED;
     client->state.val = 0;
 
-    client_count++;
+    m_clientCount++;
 
     return 0;
 }
 
-static Client* FindClientById(uint32_t client_id)
+Client* Server::FindClientById(uint32_t client_id)
 {
     for (int i = 0; i < MAX_CLIENTS; i++)
     {
-        if (clients[i] && clients[i]->state.client_id == client_id)
-            return clients[i];
+        if (m_clients[i] && m_clients[i]->state.client_id == client_id)
+            return m_clients[i];
     }
 
     return NULL;
 }
 
-static void DestroyClient(Client* client)
+void Server::DestroyClient(Client* client)
 {
     for (int i = 0; i < MAX_CLIENTS; i++)
     {
-        if (clients[i] && clients[i]->state.client_id == client->state.client_id)
+        if (m_clients[i] && m_clients[i]->state.client_id == client->state.client_id)
         {
-            clients[i] = NULL;
+            m_clients[i] = NULL;
 
             return;
         }
@@ -173,7 +133,7 @@ static void DestroyClient(Client* client)
     free(client);
 }
 
-static void HandleClientDisconnection()
+void Server::HandleClientDisconnection()
 {
     NBN_ConnectionHandle client_handle = NBN_GameServer_GetDisconnectedClient(); // Get the disconnected client
 
@@ -185,10 +145,10 @@ static void HandleClientDisconnection()
 
     DestroyClient(client);
 
-    client_count--;
+    m_clientCount--;
 }
 
-static void HandleUpdateStateMessage(UpdateStateMessage* msg, Client* sender)
+void Server::HandleUpdateStateMessage(UpdateStateMessage * msg, Client * sender)
 {
     // Update the state of the client with the data from the received UpdateStateMessage message
     sender->state.x = msg->x;
@@ -198,7 +158,7 @@ static void HandleUpdateStateMessage(UpdateStateMessage* msg, Client* sender)
     UpdateStateMessage_Destroy(msg);
 }
 
-static void HandleChangeColorMessage(ChangeColorMessage* msg, Client* sender)
+void Server::HandleChangeColorMessage(ChangeColorMessage* msg, Client* sender)
 {
     // Update the client color
     sender->state.color = msg->color;
@@ -206,7 +166,7 @@ static void HandleChangeColorMessage(ChangeColorMessage* msg, Client* sender)
     ChangeColorMessage_Destroy(msg);
 }
 
-static void HandleReceivedMessage(void)
+void Server::HandleReceivedMessage(void)
 {
     // Fetch info about the last received message
     NBN_MessageInfo msg_info = NBN_GameServer_GetMessageInfo();
@@ -230,7 +190,7 @@ static void HandleReceivedMessage(void)
     }
 }
 
-static int HandleGameServerEvent(int ev)
+int Server::HandleGameServerEvent(int ev)
 {
     switch (ev)
     {
@@ -255,7 +215,7 @@ static int HandleGameServerEvent(int ev)
 }
 
 // Broadcasts the latest game state to all connected clients
-static int BroadcastGameState(void)
+int Server::BroadcastGameState(void)
 {
     ClientState client_states[MAX_CLIENTS];
     unsigned int client_index = 0;
@@ -263,7 +223,7 @@ static int BroadcastGameState(void)
     // Loop over the clients and build an array of ClientState
     for (int i = 0; i < MAX_CLIENTS; i++)
     {
-        Client* client = clients[i];
+        Client* client = m_clients[i];
 
         if (client == NULL) continue;
 
@@ -275,20 +235,20 @@ static int BroadcastGameState(void)
         client_index++;
     }
 
-    assert(client_index == client_count);
+    assert(client_index == m_clientCount);
 
     // Broadcast the game state to all clients
     for (int i = 0; i < MAX_CLIENTS; i++)
     {
-        Client* client = clients[i];
+        Client* client = m_clients[i];
 
         if (client == NULL) continue;
 
         GameStateMessage* msg = GameStateMessage_Create();
 
         // Fill message data
-        msg->client_count = client_count;
-        memcpy(msg->client_states, client_states, sizeof(ClientState) * client_count);
+        msg->client_count = m_clientCount;
+        memcpy(msg->client_states, client_states, sizeof(ClientState) * m_clientCount);
 
         // Unreliably send the message to all connected clients
         NBN_GameServer_SendUnreliableMessageTo(client->client_handle, GAME_STATE_MESSAGE, msg);
@@ -299,23 +259,16 @@ static int BroadcastGameState(void)
     return 0;
 }
 
-static bool running = true;
-
-static void SigintHandler(int dummy)
-{
-    running = false;
-}
 
 int main(int argc, char* argv[])
 {
-    signal(SIGINT, SigintHandler);
+    Server server;
 
     // Read command line arguments
     if (ReadCommandLine(argc, argv))
     {
         printf("Usage: server [--packet_loss=<value>] [--packet_duplication=<value>] [--ping=<value>] \
                 [--jitter=<value>]\n");
-
         return 1;
     }
 
@@ -357,7 +310,7 @@ int main(int argc, char* argv[])
 
     float tick_dt = 1.f / TICK_RATE; // Tick delta time
 
-    while (running)
+    while (server.running)
     {
         int ev;
 
@@ -371,12 +324,12 @@ int main(int argc, char* argv[])
                 break;
             }
 
-            if (HandleGameServerEvent(ev) < 0)
+            if (server.HandleGameServerEvent(ev) < 0)
                 break;
         }
 
         // Broadcast latest game state
-        if (BroadcastGameState() < 0)
+        if (server.BroadcastGameState() < 0)
         {
             TraceLog(LOG_ERROR, "An occured while broadcasting game states. Exit");
 
