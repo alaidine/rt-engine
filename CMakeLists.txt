@@ -21,7 +21,14 @@ FetchContent_Declare(
     FIND_PACKAGE_ARGS
 )
 
-FetchContent_MakeAvailable(raylib)
+# Sol2 dependency
+FetchContent_Declare(
+    sol2
+    GIT_REPOSITORY https://github.com/ThePhD/sol2.git
+    GIT_TAG        develop
+)
+
+FetchContent_MakeAvailable(raylib sol2)
 
 add_executable(${CLIENT})
 add_executable(${SERVER})
@@ -29,7 +36,6 @@ add_subdirectory(src)
 
 set_target_properties(${CLIENT} PROPERTIES
     RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/${PROJECT_NAME})
-
 
 set_target_properties(${SERVER} PROPERTIES
     RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/${PROJECT_NAME})
@@ -43,9 +49,25 @@ add_custom_command(
 )
 #DEPENDS ${PROJECT_NAME}
 
+# Lua setup
+set(LUA_INCLUDE_DIR ${CMAKE_SOURCE_DIR}/lua/include)
+set(LUA_LIBRARY_DIR ${CMAKE_SOURCE_DIR}/lua)
+
+# Find lua54 library
+if(WIN32)
+    set(LUA_LIBRARY ${LUA_LIBRARY_DIR}/lua54.lib)
+else()
+    set(LUA_LIBRARY ${LUA_LIBRARY_DIR}/liblua54.a)
+endif()
+
+# Include directories
+target_include_directories(${CLIENT} PRIVATE ${LUA_INCLUDE_DIR})
+target_include_directories(${SERVER} PRIVATE ${LUA_INCLUDE_DIR})
+
 #set(raylib_VERBOSE 1)
-target_link_libraries(${CLIENT} raylib)
-target_link_libraries(${SERVER} raylib)
+
+target_link_libraries(${CLIENT} raylib ${LUA_LIBRARY} sol2::sol2)
+target_link_libraries(${SERVER} raylib ${LUA_LIBRARY} sol2::sol2)
 
 # Platform-specific libraries
 if(WIN32)

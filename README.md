@@ -7,6 +7,20 @@ When setting up this template on linux for the first time, install the dependenc
 
 You can use this templates in a few ways: using Visual Studio, using CMake, or make your own build setup. This repository comes with Visual Studio and CMake already set up.
 
+### Visual Studio
+
+- After extracting the zip or cloning the repository, the parent folder `r-type` should exist in the same directory as `raylib` and `sol2` themselves.  So, your file structure should look like this:
+    - Some parent directory
+        - `sol2`
+            - the contents of https://github.com/ThePhD/sol2
+        - `raylib`
+            - the contents of https://github.com/raysan5/raylib
+        - `r-type`
+            - this `README.md` and all other r-type files
+- If using Visual Studio, open projects/VS2022/r-type.sln
+- The solution is setup to start both the client and server projects at the same time.
+- Now you're all set up!  Click `Start` with the green play arrow and the project will run.
+
 ### CMake
 
 - Type the follow command:
@@ -26,7 +40,7 @@ cmake --build build
 - Inside the build folder is another folder (named the same as the project name on CMakeLists.txt) with the executable and resources folder.
 - In order for resources to load properly, cd to `src` and run the executable (`../build/${PROJECT_NAME}/${PROJECT_NAME}`) from there.
 
-- cmake will automatically download a current release of raylib but if you want to use your local version you can pass `-DFETCHCONTENT_SOURCE_DIR_RAYLIB=<dir_with_raylib>` 
+- cmake will automatically download a current release of raylib and sol2 but if you want to use your local version you can pass `-DFETCHCONTENT_SOURCE_DIR_RAYLIB=<dir_with_raylib>` and `-DFETCHCONTENT_SOURCE_DIR_SOL2=<dir_with_sol2>` to the cmake command.
 
 ## R-Type
 

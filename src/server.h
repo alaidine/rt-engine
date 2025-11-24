@@ -49,6 +49,8 @@
 
 #include <vector>
 #include <array>
+#include <memory>
+#include <sol/sol.hpp>
 
 #include "shared.h"
 

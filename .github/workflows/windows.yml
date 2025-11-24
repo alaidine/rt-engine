@@ -31,11 +31,30 @@ jobs:
         with:
           path: ${{ env.PROJECT_NAME }}
 
-      - name: Checkout raylib repo
-        uses: actions/checkout@v4
+      # Cache dependencies to speed up builds
+      - name: Cache dependencies
+        uses: actions/cache@v3
         with:
-          repository: raysan5/raylib
-          path: raylib
+          path: |
+            raylib
+            sol2
+          key: ${{ runner.os }}-deps-${{ hashFiles('projects/VS2022/**/*.vcxproj', 'projects/VS2022/**/*.sln') }}
+          restore-keys: |
+            ${{ runner.os }}-deps-
+
+      - name: Setup dependencies
+        run: |
+          if (!(Test-Path "raylib")) {
+            git clone --depth 1 https://github.com/raysan5/raylib.git raylib
+          } else {
+            Write-Host "Using cached raylib dependency"
+          }
+          if (!(Test-Path "sol2")) {
+            git clone --depth 1 https://github.com/ThePhD/sol2.git sol2
+          } else {
+            Write-Host "Using cached sol2 dependency"
+          }
+        shell: pwsh
 
       # NOTE: Visual Studio project build configuration already defines all required directories where project is generated:
       # $(SolutionDir)\build\$(ProjectName)\bin\$(Platform)\$(Configuration)\

@@ -30,7 +30,29 @@ jobs:
         with:
           path: ${{ env.PROJECT_NAME }}
 
+      # Cache dependencies to speed up builds
+      - name: Cache dependencies
+        uses: actions/cache@v3
+        with:
+          path: |
+            deps
+            ~/.cmake
+          key: ${{ runner.os }}-deps-${{ hashFiles('**/CMakeLists.txt') }}
+          restore-keys: |
+            ${{ runner.os }}-deps-
 
+      - name: Setup dependencies
+        run: |
+          if [ ! -d "deps" ]; then
+            mkdir deps
+            cd deps
+            git clone --depth 1 https://github.com/raysan5/raylib.git raylib
+            git clone --depth 1 https://github.com/ThePhD/sol2.git sol2
+            cd ..
+          else
+            echo "Using cached dependencies"
+          fi
+        shell: bash
 
       - name: Setup Release Paths
         run: |
@@ -49,7 +71,9 @@ jobs:
       - name: Configure CMake
         run: |
           cd ${{ env.PROJECT_NAME }}
-          cmake -B build -DCMAKE_BUILD_TYPE=Release
+          cmake -B build -DCMAKE_BUILD_TYPE=Release \
+            -DFETCHCONTENT_SOURCE_DIR_RAYLIB=${{ github.workspace }}/deps/raylib \
+            -DFETCHCONTENT_SOURCE_DIR_SOL2=${{ github.workspace }}/deps/sol2
 
       - name: Build Product
         run: |

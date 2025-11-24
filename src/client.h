@@ -1,7 +1,10 @@
 #pragma once
 
 #include <stdio.h>
+
 #include <array>
+#include <sol/sol.hpp>
+#include <memory>
 
 #include "shared.h"
 
@@ -11,12 +14,14 @@
 class Client
 {
 private:
-	typedef enum {
+	typedef enum
+	{
 		TITLE = 0,
 		IP_ADDRESS,
 		GAMEPLAY
 	} GameScreen;
 
+	bool m_clientInitialized;
 	bool m_connected;               // Connected to the server
 	bool m_disconnected;            // Got disconnected from the server
 	bool m_spawned;                 // Has spawned
@@ -27,16 +32,15 @@ private:
 	std::array<int, MAX_CLIENTS> m_updatedIds;
 	unsigned int m_clientCount;
 	bool m_colorKeyPressed;
-
 	double m_tickDt; // Tick delta time (in seconds)
 	double m_acc;
-
 	char m_serverIp[MAX_INPUT_CHARS + 1]; // NOTE: One extra space required for null terminator char '\0'
 	int m_letterCount;
-
 	Rectangle m_textBox;
-
 	int m_framesCounter;
+	bool m_displayHUD;
+	Texture2D m_player;
+	Texture2D m_background;
 
 public:
 	Client();
@@ -58,10 +62,14 @@ public:
 	void HandleGameClientEvent(int ev);
 	int SendPositionUpdate(void);
 	int SendColorUpdate(void);
+
 	int Update(void);
+	
+	void UpdateAndDraw(void);
 	void DrawClient(ClientState* state, bool is_local);
 	void DrawHUD(void);
 	void Draw(void);
+	void DrawBackground(void);
+
 	void InitClient(char* serverIp);
-	void UpdateAndDraw(void);
 };

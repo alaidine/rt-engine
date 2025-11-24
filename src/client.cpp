@@ -1,5 +1,3 @@
-#include <memory>
-
 #include "client.h"
 
 // Conversion table between client color values and raylib colors
@@ -15,6 +13,7 @@ Color client_colors_to_raylib_colors[] = {
 
 Client::Client()
 {
+    m_clientInitialized = false;
     m_connected = false;         // Connected to the server
     m_disconnected = false;      // Got disconnected from the server
     m_spawned = false;           // Has spawned
@@ -24,24 +23,29 @@ Client::Client()
     m_updatedIds = {};
     m_clientCount = 0;
     m_colorKeyPressed = false;
-
     m_localClientState = { 0 };
-
     m_tickDt = 1.0 / TICK_RATE; // Tick delta time (in seconds)
     m_acc = 0;
+    m_letterCount = 0;
+    m_textBox = { GAME_WIDTH / 2.0f - 170, 180, 365, 50 };
+    m_framesCounter = 0;
+    m_displayHUD = false;
+    m_player = { 0 };
+    m_background = { 0 };
 
     memset(m_serverIp, 0, MAX_INPUT_CHARS + 1);
-    m_letterCount = 0;
-
-    m_textBox = { GAME_WIDTH / 2.0f - 100, 180, 225, 50 };
-
-    m_framesCounter = 0;
 }
 
 Client::~Client()
 {
-    // Stop the client
-    NBN_GameClient_Stop();
+    // Unload textures
+    UnloadTexture(m_player);
+    UnloadTexture(m_background);
+    if (m_clientInitialized)
+    {
+        // Stop the client
+        NBN_GameClient_Stop();
+    }
     CloseWindow();
 }
 
@@ -188,7 +192,6 @@ void Client::DestroyDisconnectedClients(void)
             if ((int)client_id == m_updatedIds[j])
             {
                 disconnected = false;
-
                 break;
             }
         }
@@ -302,14 +305,14 @@ int Client::Update(void)
         return 0;
 
     // Movement code
-    if (IsKeyDown(KEY_UP))
+    if (IsKeyDown(KEY_UP) || IsKeyDown(KEY_W))
         m_localClientState.y = MAX(0, m_localClientState.y - 5);
-    else if (IsKeyDown(KEY_DOWN))
+    else if (IsKeyDown(KEY_DOWN) || IsKeyDown(KEY_S))
         m_localClientState.y = MIN(GAME_HEIGHT - 50, m_localClientState.y + 5);
 
-    if (IsKeyDown(KEY_LEFT))
+    if (IsKeyDown(KEY_LEFT) || IsKeyDown(KEY_A))
         m_localClientState.x = MAX(0, m_localClientState.x - 5);
-    else if (IsKeyDown(KEY_RIGHT))
+    else if (IsKeyDown(KEY_RIGHT) || IsKeyDown(KEY_D))
         m_localClientState.x = MIN(GAME_WIDTH - 50, m_localClientState.x + 5);
 
     // Color switching
@@ -351,17 +354,21 @@ int Client::Update(void)
 
 void Client::DrawClient(ClientState* state, bool is_local)
 {
-    Color color = client_colors_to_raylib_colors[state->color];
-    const char* text = TextFormat("%.3f", state->val);
-    int font_size = 20;
-    int text_width = MeasureText(text, font_size);
-    Rectangle rect = { (float)state->x, (float)state->y, 50, 50 };
+    float frameWidth = 32;
+    float frameHeight = 22.0f;
+    Rectangle sourceRec = { 0.0f, 30.0f, frameWidth, frameHeight };
+    Rectangle rec = { (float)state->x, (float)state->y, frameWidth * 2.0f, frameHeight * 2.0f };
+    Rectangle destRec = { (float)state->x, (float)state->y, frameWidth * 2.0f, frameHeight * 2.0f};
+    Vector2 origin = { 0.0f, 0.0f };
 
-    DrawText(text, (state->x + 25) - text_width / 2, state->y - 20, font_size, color);
-    DrawRectangle(state->x, state->y, 50, 50, color);
-
+    // NOTE: Using DrawTexturePro() we can easily rotate and scale the part of the texture we draw
+    // source_rect defines the part of the texture we use for drawing
+    // dest_rect defines the rectangle where our texture part will fit (scaling it to fit)
+    // origin defines the point of the texture used as reference for rotation and scaling
+    // rotation defines the texture rotation (using origin as rotation point)
+    DrawTexturePro(m_player, sourceRec, destRec, origin, 0.0f, WHITE);
     if (is_local)
-        DrawRectangleLinesEx(rect, 3, DARKBROWN);
+        DrawRectangleLinesEx(rec, 3, DARKBROWN);
 }
 
 void Client::DrawHUD(void)
@@ -375,6 +382,17 @@ void Client::DrawHUD(void)
     DrawText(TextFormat("Packet loss: %d %%", packet_loss), 450, 450, 32, MAROON);
     DrawText(TextFormat("Upload: %.1f Bps", stats.upload_bandwidth), 450, 500, 32, MAROON);
     DrawText(TextFormat("Download: %.1f Bps", stats.download_bandwidth), 450, 550, 32, MAROON);
+}
+
+void Client::DrawBackground(void)
+{
+    float frameWidth = GAME_WIDTH / 4;
+    float frameHeight = GAME_HEIGHT / 4;
+    Rectangle source_rect = { 0.0f, 0.0f, (float)frameWidth, (float)frameHeight };
+    Rectangle dest_rect = { 0.0f , 0.0f, GAME_WIDTH, GAME_HEIGHT};
+    Vector2 origin = { 0.0f, 0.0f };
+
+    DrawTexturePro(m_background, source_rect, dest_rect, origin, 0.0f, WHITE);
 }
 
 void Client::Draw(void)
@@ -398,7 +416,10 @@ void Client::Draw(void)
     }
     else if (m_connected && m_spawned)
     {
-        // Start by drawing the remote clients
+        // Start by drawing the background
+        DrawBackground();
+
+        // Draw the remote clients
         for (int i = 0; i < MAX_CLIENTS - 1; i++)
         {
             if (m_clients[i])
@@ -407,6 +428,12 @@ void Client::Draw(void)
 
         // Then draw the local client
         DrawClient(&m_localClientState, true);
+
+        // Draw hud if m_hudDisplay variable is true
+        if (m_displayHUD)
+        {
+            DrawHUD();
+        }
     }
     else
     {
@@ -416,52 +443,12 @@ void Client::Draw(void)
     EndDrawing();
 }
 
-void Client::InitClient(char *serverIp)
-{
-    NBN_UDP_Register();
-
-    // Initialize the client with a protocol name (must be the same than the one used by the server), the server ip address and port
-
-    // Start the client with a protocol name (must be the same than the one used by the server)
-    // the server host and port
-    if (NBN_GameClient_StartEx(PROTOCOL_NAME, serverIp, PORT, NULL, 0) < 0)
-    {
-        TraceLog(LOG_WARNING, "Game client failed to start. Exit");
-
-        return;
-    }
-
-    // Register messages, have to be done after NBN_GameClient_StartEx
-    // Messages need to be registered on both client and server side
-    NBN_GameClient_RegisterMessage(
-        CHANGE_COLOR_MESSAGE,
-        (NBN_MessageBuilder)ChangeColorMessage_Create,
-        (NBN_MessageDestructor)ChangeColorMessage_Destroy,
-        (NBN_MessageSerializer)ChangeColorMessage_Serialize);
-    NBN_GameClient_RegisterMessage(
-        UPDATE_STATE_MESSAGE,
-        (NBN_MessageBuilder)UpdateStateMessage_Create,
-        (NBN_MessageDestructor)UpdateStateMessage_Destroy,
-        (NBN_MessageSerializer)UpdateStateMessage_Serialize);
-    NBN_GameClient_RegisterMessage(
-        GAME_STATE_MESSAGE,
-        (NBN_MessageBuilder)GameStateMessage_Create,
-        (NBN_MessageDestructor)GameStateMessage_Destroy,
-        (NBN_MessageSerializer)GameStateMessage_Serialize);
-
-    // Network conditions simulated variables (read from the command line, default is always 0)
-    NBN_GameClient_SetPing(GetOptions().ping);
-    NBN_GameClient_SetJitter(GetOptions().jitter);
-    NBN_GameClient_SetPacketLoss(GetOptions().packet_loss);
-    NBN_GameClient_SetPacketDuplication(GetOptions().packet_duplication);
-}
-
-
 void Client::UpdateAndDraw(void)
 {
     switch (m_currentScreen)
     {
-    case TITLE: {
+    case TITLE:
+    {
         if (IsKeyPressed(KEY_ENTER) || IsGestureDetected(GESTURE_TAP))
         {
             m_currentScreen = IP_ADDRESS;
@@ -474,7 +461,8 @@ void Client::UpdateAndDraw(void)
 
         EndDrawing();
     } break;
-    case IP_ADDRESS: {
+    case IP_ADDRESS:
+    {
         if (IsKeyPressed(KEY_ENTER))
         {
             InitClient(m_serverIp);
@@ -530,7 +518,8 @@ void Client::UpdateAndDraw(void)
 
         EndDrawing();
     } break;
-    case GAMEPLAY: {
+    case GAMEPLAY:
+    {
         // Very basic fixed timestep implementation.
         // Target FPS is 100 but the simulation runs at
         // TICK_RATE ticks per second.
@@ -581,11 +570,57 @@ void Client::UpdateAndDraw(void)
     }
 }
 
+void Client::InitClient(char* serverIp)
+{
+    NBN_UDP_Register();
+
+    // Initialize the client with a protocol name (must be the same than the one used by the server), the server ip address and port
+
+    // Start the client with a protocol name (must be the same than the one used by the server)
+    // the server host and port
+    if (NBN_GameClient_StartEx(PROTOCOL_NAME, serverIp, PORT, NULL, 0) < 0)
+    {
+        TraceLog(LOG_WARNING, "Game client failed to start. Exit");
+
+        return;
+    }
+
+    // Register messages, have to be done after NBN_GameClient_StartEx
+    // Messages need to be registered on both client and server side
+    NBN_GameClient_RegisterMessage(
+        CHANGE_COLOR_MESSAGE,
+        (NBN_MessageBuilder)ChangeColorMessage_Create,
+        (NBN_MessageDestructor)ChangeColorMessage_Destroy,
+        (NBN_MessageSerializer)ChangeColorMessage_Serialize);
+    NBN_GameClient_RegisterMessage(
+        UPDATE_STATE_MESSAGE,
+        (NBN_MessageBuilder)UpdateStateMessage_Create,
+        (NBN_MessageDestructor)UpdateStateMessage_Destroy,
+        (NBN_MessageSerializer)UpdateStateMessage_Serialize);
+    NBN_GameClient_RegisterMessage(
+        GAME_STATE_MESSAGE,
+        (NBN_MessageBuilder)GameStateMessage_Create,
+        (NBN_MessageDestructor)GameStateMessage_Destroy,
+        (NBN_MessageSerializer)GameStateMessage_Serialize);
+
+    // Network conditions simulated variables (read from the command line, default is always 0)
+    NBN_GameClient_SetPing(GetOptions().ping);
+    NBN_GameClient_SetJitter(GetOptions().jitter);
+    NBN_GameClient_SetPacketLoss(GetOptions().packet_loss);
+    NBN_GameClient_SetPacketDuplication(GetOptions().packet_duplication);
+
+    m_clientInitialized = true;
+}
+
 void Client::Init(void)
 {
     SetTraceLogLevel(LOG_DEBUG);
     InitWindow(GAME_WIDTH, GAME_HEIGHT, "R-Type");
     SetTargetFPS(TARGET_FPS);
+
+    // Load textures
+    m_player = LoadTexture("resources/sprites/player_r-9c_war-head.png");
+    m_background = LoadTexture("resources/sprites/space_background.png");
 }
 
 void Client::Run(void)
