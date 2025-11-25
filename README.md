@@ -41,7 +41,6 @@ cmake -S . -B build \
 #### Running:
 - Executables are in `build/r-type/`
 - Resources are automatically copied to the output directory
-- Run from anywhere: `./build/r-type/r-type_client`
 
 ### Visual Studio (Legacy)
 

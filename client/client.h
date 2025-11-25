@@ -8,6 +8,10 @@
 
 #include "shared.h"
 
+// Window size, used to display window but also to cap the serialized position values within messages
+#define GAME_WIDTH 800
+#define GAME_HEIGHT 600
+
 #define TARGET_FPS 60
 #define MAX_INPUT_CHARS 15
 

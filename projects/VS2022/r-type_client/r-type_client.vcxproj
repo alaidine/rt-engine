@@ -204,7 +204,7 @@
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalLibraryDirectories>$(SolutionDir)\build\r-type_core\bin\$(Platform)\$(Configuration)\;$(SolutionDir)\build\raylib\bin\$(Platform)\$(Configuration)\;$(SolutionDir)..\..\lua;$(SolutionDir)\build\raylib\bin\$(Platform)\$(Configuration)\</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>$(SolutionDir)\build\r-type_core\bin\$(Platform)\$(Configuration)\;$(SolutionDir)\build\raylib\bin\$(Platform)\$(Configuration)\</AdditionalLibraryDirectories>
       <AdditionalDependencies>r-type_core.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
@@ -243,7 +243,7 @@
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalLibraryDirectories>$(SolutionDir)\build\r-type_core\bin\$(Platform)\$(Configuration)\;$(SolutionDir)\build\raylib\bin\$(Platform)\$(Configuration)\;$(SolutionDir)\lua;$(SolutionDir)\build\raylib\bin\$(Platform)\$(Configuration)\</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>$(SolutionDir)\build\r-type_core\bin\$(Platform)\$(Configuration)\;$(SolutionDir)\build\raylib\bin\$(Platform)\$(Configuration)\</AdditionalLibraryDirectories>
       <AdditionalDependencies>r-type_core.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <PostBuildEvent>
@@ -297,7 +297,7 @@
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalDependencies>r-type_core.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <AdditionalLibraryDirectories>$(SolutionDir)\build\r-type_core\bin\$(Platform)\$(Configuration)\;$(SolutionDir)\build\raylib\bin\$(Platform)\$(Configuration)\;$(SolutionDir)..\..\lua;$(SolutionDir)\build\raylib\bin\$(Platform)\$(Configuration)\</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>$(SolutionDir)\build\r-type_core\bin\$(Platform)\$(Configuration)\;$(SolutionDir)\build\raylib\bin\$(Platform)\$(Configuration)\</AdditionalLibraryDirectories>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release.DLL|Win32'">
@@ -348,7 +348,7 @@
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalDependencies>r-type_core.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <AdditionalLibraryDirectories>$(SolutionDir)\build\r-type_core\bin\$(Platform)\$(Configuration)\;$(SolutionDir)\build\raylib\bin\$(Platform)\$(Configuration)\;$(SolutionDir)..\..\lua;$(SolutionDir)\build\raylib\bin\$(Platform)\$(Configuration)\</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>$(SolutionDir)\build\r-type_core\bin\$(Platform)\$(Configuration)\;$(SolutionDir)\build\raylib\bin\$(Platform)\$(Configuration)\</AdditionalLibraryDirectories>
     </Link>
     <PostBuildEvent>
       <Command>xcopy /y /d  "$(SolutionDir)\build\raylib\bin\$(Platform)\$(Configuration)\raylib.dll" "$(SolutionDir)\build\$(ProjectName)\bin\$(Platform)\$(Configuration)"</Command>
@@ -364,12 +364,9 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\client\client.cpp" />
-    <ClCompile Include="..\..\..\core\shared.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\..\client\client.h" />
-    <ClInclude Include="..\..\..\core\nbnet.h" />
-    <ClInclude Include="..\..\..\core\shared.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
