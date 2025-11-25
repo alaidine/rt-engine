@@ -47,16 +47,37 @@ jobs:
 
       - name: Setup dependencies
         run: |
-          if [ ! -d "deps" ]; then
-            mkdir deps
-            cd deps
+          mkdir -p deps
+          cd deps
+          
+          # Clone raylib if not present
+          if [ ! -d "raylib" ] || [ ! -f "raylib/CMakeLists.txt" ]; then
+            echo "Cloning raylib..."
+            rm -rf raylib
             git clone --depth 1 --branch 5.0 https://github.com/raysan5/raylib.git raylib
-            git clone --depth 1 --branch v3.3.0 https://github.com/ThePhD/sol2.git sol2
-            git clone --depth 1 --branch v3.1.1 https://github.com/erincatto/box2d.git box2d
-            cd ..
           else
-            echo "Using cached dependencies"
+            echo "Using cached raylib"
           fi
+          
+          # Clone sol2 if not present  
+          if [ ! -d "sol2" ] || [ ! -f "sol2/CMakeLists.txt" ]; then
+            echo "Cloning sol2..."
+            rm -rf sol2
+            git clone --depth 1 --branch v3.3.0 https://github.com/ThePhD/sol2.git sol2
+          else
+            echo "Using cached sol2"
+          fi
+          
+          # Clone box2d if not present
+          if [ ! -d "box2d" ] || [ ! -f "box2d/CMakeLists.txt" ]; then
+            echo "Cloning box2d..."
+            rm -rf box2d
+            git clone --depth 1 --branch v3.1.1 https://github.com/erincatto/box2d.git box2d
+          else
+            echo "Using cached box2d"
+          fi
+          
+          cd ..
         shell: bash
 
       - name: Setup Release Paths
@@ -73,13 +94,37 @@ jobs:
           ls
         shell: bash
 
+      - name: Verify Dependencies
+        run: |
+          echo "Checking dependency directories..."
+          ls -la deps/
+          echo "Raylib contents:"
+          ls -la deps/raylib/ | head -10
+          echo "Sol2 contents:"
+          ls -la deps/sol2/ | head -10
+          echo "Box2D contents:"
+          ls -la deps/box2d/ | head -10
+        shell: bash
+
       - name: Configure CMake
         run: |
           cd ${{ env.PROJECT_NAME }}
-          cmake -B build -DCMAKE_BUILD_TYPE=Release \
-            -DFETCHCONTENT_SOURCE_DIR_RAYLIB=${{ github.workspace }}/deps/raylib \
-            -DFETCHCONTENT_SOURCE_DIR_SOL2=${{ github.workspace }}/deps/sol2 \
-            -DFETCHCONTENT_SOURCE_DIR_BOX2D=${{ github.workspace }}/deps/box2d
+          # Build CMake arguments conditionally based on available dependencies
+          CMAKE_ARGS="-B build -DCMAKE_BUILD_TYPE=Release"
+          if [ -d "${{ github.workspace }}/deps/raylib" ]; then
+            CMAKE_ARGS="$CMAKE_ARGS -DFETCHCONTENT_SOURCE_DIR_RAYLIB=${{ github.workspace }}/deps/raylib"
+            echo "Using local raylib"
+          fi
+          if [ -d "${{ github.workspace }}/deps/sol2" ]; then
+            CMAKE_ARGS="$CMAKE_ARGS -DFETCHCONTENT_SOURCE_DIR_SOL2=${{ github.workspace }}/deps/sol2"
+            echo "Using local sol2"
+          fi
+          if [ -d "${{ github.workspace }}/deps/box2d" ]; then
+            CMAKE_ARGS="$CMAKE_ARGS -DFETCHCONTENT_SOURCE_DIR_BOX2D=${{ github.workspace }}/deps/box2d"
+            echo "Using local box2d"
+          fi
+          echo "CMake command: cmake $CMAKE_ARGS"
+          cmake $CMAKE_ARGS
 
       - name: Build Product
         run: |

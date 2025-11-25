@@ -76,6 +76,10 @@ typedef struct tagMSG* LPMSG;
 
 #define TICK_RATE 60 // Simulation tick rate
 
+// Window size, used to display window but also to cap the serialized position values within messages
+#define GAME_WIDTH 800
+#define GAME_HEIGHT 600
+
 #define MIN_FLOAT_VAL -5 // Minimum value of networked client float value
 #define MAX_FLOAT_VAL 5 // Maximum value of networked client float value
 
