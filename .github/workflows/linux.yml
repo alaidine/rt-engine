@@ -89,12 +89,15 @@ jobs:
           cp ${{ env.PROJECT_BUILD_PATH }}/${{ env.PROJECT_NAME }}/${{ env.PROJECT_NAME }}_server ${{ env.PROJECT_RELEASE_PATH }}/${{ env.PROJECT_NAME }}_server
           if [ -d "${{ env.PROJECT_NAME }}/${{ env.PROJECT_RESOURCES_PATH }}" ]; then
             cp -r ${{ env.PROJECT_NAME }}/${{ env.PROJECT_RESOURCES_PATH }} ${{ env.PROJECT_RELEASE_PATH }}/
+            echo "Resources copied successfully:"
+            find ${{ env.PROJECT_RELEASE_PATH }}/resources -type f -name "*.png" -o -name "*.lua" | sort
           else
             echo "No resources folder found, skipping..."
           fi
           cp ${{ env.PROJECT_NAME }}/README.md ${{ env.PROJECT_RELEASE_PATH }}/
           cp ${{ env.PROJECT_NAME }}/LICENSE ${{ env.PROJECT_RELEASE_PATH }}/
-          ls ${{ env.PROJECT_RELEASE_PATH }}
+          echo "Final artifact contents:"
+          ls -la ${{ env.PROJECT_RELEASE_PATH }}
           7z a ./${{ env.PROJECT_RELEASE_PATH }}.zip ./${{ env.PROJECT_RELEASE_PATH }}
 
       - name: Upload Artifacts
