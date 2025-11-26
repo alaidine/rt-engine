@@ -1,58 +1,6 @@
 #pragma once
 
-#if defined(_WIN32) || defined(_WIN64)
-
-#define WIN32_LEAN_AND_MEAN
-#define NOGDI          // Exclude GDI definitions to prevent Rectangle conflicts
-#define NOUSER         // Exclude USER definitions to prevent function name conflicts
-
-#endif
-
-#include <stdio.h>
-#include <signal.h>
-
-#if defined(_WIN32) || defined(_WIN64)
-#include <winsock2.h>
-#include <windows.h>
-#include <synchapi.h> 
-#else
-#include <time.h>
-#endif
-
-// Undefine any remaining conflicts just to be safe
-#if defined(_WIN32) || defined(_WIN64)
-
-#ifdef Rectangle
-#undef Rectangle
-#endif
-#ifdef CloseWindow
-#undef CloseWindow
-#endif
-#ifdef ShowCursor
-#undef ShowCursor
-#endif
-#ifdef LoadImage
-#undef LoadImage
-#endif
-#ifdef DrawText
-#undef DrawText
-#endif
-#ifdef DrawTextEx
-#undef DrawTextEx
-#endif
-#ifdef PlaySound
-#undef PlaySound
-#endif
-
-#endif
-
-
-#include <vector>
-#include <array>
-#include <memory>
-#include <sol/sol.hpp>
-
-#include "shared.h"
+#include "pch.h"
 
 // A simple structure to represent connected clients
 typedef struct

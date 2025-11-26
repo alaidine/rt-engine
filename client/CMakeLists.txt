@@ -4,6 +4,9 @@ add_executable(${CLIENT}
     client.h
 )
 
+# REUSE pch.h from core library
+target_precompile_headers(${CLIENT} REUSE_FROM ${CORE_LIB})
+
 # Link with core library (provides all shared dependencies)
 target_link_libraries(${CLIENT} PRIVATE ${CORE_LIB})
 

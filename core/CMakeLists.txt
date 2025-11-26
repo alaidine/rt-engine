@@ -2,9 +2,14 @@
 add_library(${CORE_LIB} STATIC
     shared.cpp
     shared.h
+    pch.cpp
+    pch.h
+    framework.h
     nbnet.h
     udp.h
 )
+
+target_precompile_headers(${CORE_LIB} PRIVATE pch.h)
 
 # Link all shared dependencies
 target_link_libraries(${CORE_LIB} PUBLIC 

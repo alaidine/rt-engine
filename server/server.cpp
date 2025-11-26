@@ -1,5 +1,3 @@
-#include <memory>
-
 #include "server.h"
 
 Server* g_serverInstance = nullptr;

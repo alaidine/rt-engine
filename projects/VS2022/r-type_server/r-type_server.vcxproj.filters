@@ -2,11 +2,8 @@
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
     <ClCompile Include="..\..\..\server\server.cpp" />
-    <ClCompile Include="..\..\..\core\shared.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\..\..\core\nbnet.h" />
     <ClInclude Include="..\..\..\server\server.h" />
-    <ClInclude Include="..\..\..\core\shared.h" />
   </ItemGroup>
 </Project>

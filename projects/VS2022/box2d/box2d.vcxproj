@@ -18,6 +18,66 @@
       <Platform>x64</Platform>
     </ProjectConfiguration>
   </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\..\..\..\box2d\src\aabb.c" />
+    <ClCompile Include="..\..\..\..\box2d\src\arena_allocator.c" />
+    <ClCompile Include="..\..\..\..\box2d\src\array.c" />
+    <ClCompile Include="..\..\..\..\box2d\src\bitset.c" />
+    <ClCompile Include="..\..\..\..\box2d\src\body.c" />
+    <ClCompile Include="..\..\..\..\box2d\src\broad_phase.c" />
+    <ClCompile Include="..\..\..\..\box2d\src\constraint_graph.c" />
+    <ClCompile Include="..\..\..\..\box2d\src\contact.c" />
+    <ClCompile Include="..\..\..\..\box2d\src\contact_solver.c" />
+    <ClCompile Include="..\..\..\..\box2d\src\core.c" />
+    <ClCompile Include="..\..\..\..\box2d\src\distance.c" />
+    <ClCompile Include="..\..\..\..\box2d\src\distance_joint.c" />
+    <ClCompile Include="..\..\..\..\box2d\src\dynamic_tree.c" />
+    <ClCompile Include="..\..\..\..\box2d\src\geometry.c" />
+    <ClCompile Include="..\..\..\..\box2d\src\hull.c" />
+    <ClCompile Include="..\..\..\..\box2d\src\id_pool.c" />
+    <ClCompile Include="..\..\..\..\box2d\src\island.c" />
+    <ClCompile Include="..\..\..\..\box2d\src\joint.c" />
+    <ClCompile Include="..\..\..\..\box2d\src\manifold.c" />
+    <ClCompile Include="..\..\..\..\box2d\src\math_functions.c" />
+    <ClCompile Include="..\..\..\..\box2d\src\motor_joint.c" />
+    <ClCompile Include="..\..\..\..\box2d\src\mover.c" />
+    <ClCompile Include="..\..\..\..\box2d\src\physics_world.c" />
+    <ClCompile Include="..\..\..\..\box2d\src\prismatic_joint.c" />
+    <ClCompile Include="..\..\..\..\box2d\src\revolute_joint.c" />
+    <ClCompile Include="..\..\..\..\box2d\src\sensor.c" />
+    <ClCompile Include="..\..\..\..\box2d\src\shape.c" />
+    <ClCompile Include="..\..\..\..\box2d\src\solver.c" />
+    <ClCompile Include="..\..\..\..\box2d\src\solver_set.c" />
+    <ClCompile Include="..\..\..\..\box2d\src\table.c" />
+    <ClCompile Include="..\..\..\..\box2d\src\timer.c" />
+    <ClCompile Include="..\..\..\..\box2d\src\types.c" />
+    <ClCompile Include="..\..\..\..\box2d\src\weld_joint.c" />
+    <ClCompile Include="..\..\..\..\box2d\src\wheel_joint.c" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\..\..\..\box2d\src\aabb.h" />
+    <ClInclude Include="..\..\..\..\box2d\src\arena_allocator.h" />
+    <ClInclude Include="..\..\..\..\box2d\src\array.h" />
+    <ClInclude Include="..\..\..\..\box2d\src\atomic.h" />
+    <ClInclude Include="..\..\..\..\box2d\src\bitset.h" />
+    <ClInclude Include="..\..\..\..\box2d\src\body.h" />
+    <ClInclude Include="..\..\..\..\box2d\src\broad_phase.h" />
+    <ClInclude Include="..\..\..\..\box2d\src\constants.h" />
+    <ClInclude Include="..\..\..\..\box2d\src\constraint_graph.h" />
+    <ClInclude Include="..\..\..\..\box2d\src\contact.h" />
+    <ClInclude Include="..\..\..\..\box2d\src\contact_solver.h" />
+    <ClInclude Include="..\..\..\..\box2d\src\core.h" />
+    <ClInclude Include="..\..\..\..\box2d\src\ctz.h" />
+    <ClInclude Include="..\..\..\..\box2d\src\id_pool.h" />
+    <ClInclude Include="..\..\..\..\box2d\src\island.h" />
+    <ClInclude Include="..\..\..\..\box2d\src\joint.h" />
+    <ClInclude Include="..\..\..\..\box2d\src\physics_world.h" />
+    <ClInclude Include="..\..\..\..\box2d\src\sensor.h" />
+    <ClInclude Include="..\..\..\..\box2d\src\shape.h" />
+    <ClInclude Include="..\..\..\..\box2d\src\solver.h" />
+    <ClInclude Include="..\..\..\..\box2d\src\solver_set.h" />
+    <ClInclude Include="..\..\..\..\box2d\src\table.h" />
+  </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>17.0</VCProjectVersion>
     <Keyword>Win32Proj</Keyword>
@@ -114,12 +174,6 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
     </Link>
   </ItemDefinitionGroup>
-  <ItemGroup>
-    <ClCompile Include="$(ProjectDir)..\..\..\..\box2d\src\*.c" />
-  </ItemGroup>
-  <ItemGroup>
-    <ClInclude Include="$(ProjectDir)..\..\..\..\box2d\include\**\*.h" />
-  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>

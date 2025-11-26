@@ -19,11 +19,14 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\..\..\core\framework.h" />
     <ClInclude Include="..\..\..\core\nbnet.h" />
+    <ClInclude Include="..\..\..\core\pch.h" />
     <ClInclude Include="..\..\..\core\shared.h" />
     <ClInclude Include="..\..\..\core\udp.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="..\..\..\core\pch.cpp" />
     <ClCompile Include="..\..\..\core\shared.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -157,9 +160,8 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;WIN32;NDEBUG;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <PrecompiledHeader>NotUsing</PrecompiledHeader>
-      <PrecompiledHeaderFile>
-      </PrecompiledHeaderFile>
+      <PrecompiledHeader>Create</PrecompiledHeader>
+      <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
       <AdditionalIncludeDirectories>$(SolutionDir)..\..\core;$(SolutionDir)..\..\..\raylib\src;$(SolutionDir)..\..\..\sol2\include;$(SolutionDir)..\..\lua\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpp20</LanguageStandard>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>

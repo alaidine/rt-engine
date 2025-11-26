@@ -9,5 +9,15 @@
 
 // add headers that you want to pre-compile here
 #include "framework.h"
+#include "shared.h"
+
+#include <vector>
+#include <array>
+#include <memory>
+#include <sol/sol.hpp>
+
+extern "C" {
+#include <stdio.h>
+}
 
 #endif //PCH_H

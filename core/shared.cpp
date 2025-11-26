@@ -1,10 +1,11 @@
+#include "shared.h"
+
 #include <stdlib.h>
 #include <limits.h>
 
-// nbnet implementation
-#define NBNET_IMPL 
-
-#include "shared.h"
+#define NBNET_IMPL
+#include "nbnet.h"
+#include "udp.h"
 
 // Command line options
 enum
