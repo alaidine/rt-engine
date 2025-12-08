@@ -86,3 +86,5 @@ android.*
 # Docs files
 docs
 .vscode
+rtype
+*.txt
