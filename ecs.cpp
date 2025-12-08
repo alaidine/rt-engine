@@ -44,9 +44,9 @@ int main() {
     
     srand(time(NULL));
 
-    Entity enemy1[1000];
+    Entity enemy1[5000];
 
-    for (int i = 0; i < 1000; i++)
+    for (int i = 0; i < 5000; i++)
         enemy1[i] = Prefab::MakeEnemy(_core, rand() % 800 + 1, rand() % 450+ 1);
  
     SetTargetFPS(60);
