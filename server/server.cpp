@@ -19,6 +19,15 @@ Server::Server()
         {GAME_WIDTH - 100, GAME_HEIGHT - 100}
     };
     tick_dt = 1.0f / TICK_RATE; // Tick delta time
+
+    // Initialize mobs
+    m_mobCount = 0;
+    m_nextMobId = 0;
+    m_mobSpawnTimer = 0;
+    for (auto& mob : m_mobs)
+    {
+        mob.active = false;
+    }
 }
 
 Server::~Server()
@@ -200,6 +209,99 @@ int Server::HandleGameServerEvent(int ev)
     return 0;
 }
 
+void Server::SpawnMob(void)
+{
+    // Find an inactive slot for the new mob
+    for (unsigned int i = 0; i < MAX_MOBS; i++)
+    {
+        if (!m_mobs[i].active)
+        {
+            m_mobs[i].mob_id = m_nextMobId++;
+            m_mobs[i].x = (float)GAME_WIDTH; // Spawn on the right side
+            m_mobs[i].y = (float)(rand() % (GAME_HEIGHT - MOB_HEIGHT)); // Random Y position
+            m_mobs[i].active = true;
+            m_mobCount++;
+
+            TraceLog(LOG_INFO, "Spawned mob (ID: %d) at position (%f, %f)", m_mobs[i].mob_id, m_mobs[i].x, m_mobs[i].y);
+            break;
+        }
+    }
+}
+
+void Server::UpdateMobs(void)
+{
+    // Spawn new mobs periodically
+    m_mobSpawnTimer++;
+    if (m_mobSpawnTimer >= MOB_SPAWN_INTERVAL && m_mobCount < MAX_MOBS)
+    {
+        SpawnMob();
+        m_mobSpawnTimer = 0;
+    }
+
+    // Update mob positions (move left)
+    for (unsigned int i = 0; i < MAX_MOBS; i++)
+    {
+        if (m_mobs[i].active)
+        {
+            m_mobs[i].x -= MOB_SPEED;
+
+            // Deactivate mob if it goes off screen
+            if (m_mobs[i].x < -MOB_WIDTH)
+            {
+                m_mobs[i].active = false;
+                m_mobCount--;
+                TraceLog(LOG_INFO, "Mob (ID: %d) went off screen", m_mobs[i].mob_id);
+            }
+        }
+    }
+}
+
+void Server::CheckMissileCollisions(void)
+{
+    // Check collisions between all client missiles and mobs
+    for (int c = 0; c < MAX_CLIENTS; c++)
+    {
+        Client* client = m_clients[c];
+        if (client == NULL) continue;
+
+        for (unsigned int m = 0; m < client->state.missile_count; m++)
+        {
+            Missile& missile = client->state.missiles[m];
+            Rectangle missileRect = {
+                missile.pos.x,
+                missile.pos.y,
+                missile.rect.width * 2.0f, // Scale matches client rendering
+                missile.rect.height * 2.0f
+            };
+
+            for (unsigned int i = 0; i < MAX_MOBS; i++)
+            {
+                if (m_mobs[i].active)
+                {
+                    Rectangle mobRect = {
+                        m_mobs[i].x,
+                        m_mobs[i].y,
+                        (float)MOB_WIDTH,
+                        (float)MOB_HEIGHT
+                    };
+
+                    // Simple AABB collision detection
+                    if (missileRect.x < mobRect.x + mobRect.width &&
+                        missileRect.x + missileRect.width > mobRect.x &&
+                        missileRect.y < mobRect.y + mobRect.height &&
+                        missileRect.y + missileRect.height > mobRect.y)
+                    {
+                        // Collision detected - destroy the mob
+                        m_mobs[i].active = false;
+                        m_mobCount--;
+                        TraceLog(LOG_INFO, "Mob (ID: %d) destroyed by client %d", m_mobs[i].mob_id, client->state.client_id);
+                    }
+                }
+            }
+        }
+    }
+}
+
 // Broadcasts the latest game state to all connected clients
 int Server::BroadcastGameState(void)
 {
@@ -226,6 +328,21 @@ int Server::BroadcastGameState(void)
 
     assert(client_index == m_clientCount);
 
+    // Build mob states array
+    MobState mob_states[MAX_MOBS];
+    unsigned int mob_index = 0;
+    for (unsigned int i = 0; i < MAX_MOBS; i++)
+    {
+        if (m_mobs[i].active)
+        {
+            mob_states[mob_index].mob_id = m_mobs[i].mob_id;
+            mob_states[mob_index].x = m_mobs[i].x;
+            mob_states[mob_index].y = m_mobs[i].y;
+            mob_states[mob_index].active = true;
+            mob_index++;
+        }
+    }
+
     // Broadcast the game state to all clients
     for (int i = 0; i < MAX_CLIENTS; i++)
     {
@@ -238,6 +355,10 @@ int Server::BroadcastGameState(void)
         // Fill message data
         msg->client_count = m_clientCount;
         memcpy(msg->client_states, client_states, sizeof(ClientState) * m_clientCount);
+
+        // Fill mob data
+        msg->mob_count = mob_index;
+        memcpy(msg->mobs, mob_states, sizeof(MobState) * mob_index);
 
         // Unreliably send the message to all connected clients
         NBN_GameServer_SendUnreliableMessageTo(client->client_handle, GAME_STATE_MESSAGE, msg);
@@ -267,6 +388,12 @@ void Server::Run(void)
             if (HandleGameServerEvent(ev) < 0)
                 break;
         }
+
+        // Update mobs
+        UpdateMobs();
+
+        // Check missile-mob collisions
+        CheckMissileCollisions();
 
         // Broadcast latest game state
         if (BroadcastGameState() < 0)
@@ -344,9 +471,9 @@ void Server::Init(int argc, char **argv)
 
 int main(int argc, char* argv[])
 {
-    std::unique_ptr<Server> server = std::make_unique<Server>();
+    Server server;
 
-    server->Init(argc, argv);
-    server->Run();
+    server.Init(argc, argv);
+    server.Run();
     return 0;
 }

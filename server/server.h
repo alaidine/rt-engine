@@ -17,11 +17,26 @@ typedef struct
 	ClientState state;
 } Client;
 
+// Mob structure for server-side management
+typedef struct
+{
+	uint32_t mob_id;
+	float x;
+	float y;
+	bool active;
+} Mob;
+
 class Server
 {
 private:
 	unsigned int m_clientCount = 0;
 	std::array<Client*, MAX_CLIENTS> m_clients;
+
+	// Mob management
+	std::array<Mob, MAX_MOBS> m_mobs;
+	unsigned int m_mobCount = 0;
+	uint32_t m_nextMobId = 0;
+	unsigned int m_mobSpawnTimer = 0;
 
 	float tick_dt;
 
@@ -45,4 +60,9 @@ public:
 	void HandleReceivedMessage(void);
 	int HandleGameServerEvent(int ev);
 	int BroadcastGameState(void);
+
+	// Mob management
+	void SpawnMob(void);
+	void UpdateMobs(void);
+	void CheckMissileCollisions(void);
 };

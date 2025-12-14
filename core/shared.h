@@ -36,6 +36,19 @@
 // Max number of missiles that can be sent to the server
 #define MAX_MISSILES_CLIENT 100
 
+// Max number of mobs in the game
+#define MAX_MOBS 20
+
+// Mob spawn interval in ticks
+#define MOB_SPAWN_INTERVAL 120
+
+// Mob movement speed
+#define MOB_SPEED 2
+
+// Mob size
+#define MOB_WIDTH 40
+#define MOB_HEIGHT 40
+
 // A code passed by the server when closing a client connection due to being full (max client count reached)
 #define SERVER_FULL_CODE 42
 
@@ -55,6 +68,15 @@ typedef struct
     uint32_t framesSpeed;
     uint32_t framesCounter;
 } Missile;
+
+// Mob state, represents an enemy mob over the network
+typedef struct
+{
+    uint32_t mob_id;
+    float x;
+    float y;
+    bool active;
+} MobState;
 
 // Messages
 
@@ -80,6 +102,8 @@ typedef struct
 {
     unsigned int client_count;
     ClientState client_states[MAX_CLIENTS];
+    unsigned int mob_count;
+    MobState mobs[MAX_MOBS];
 } GameStateMessage;
 
 // Store all options from the command line

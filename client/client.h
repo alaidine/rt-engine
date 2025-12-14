@@ -34,6 +34,9 @@ private:
 	std::unordered_map<uint32_t, Entity> m_clientEntities; // Maps client_id to Entity
 	std::unordered_map<uint32_t, std::vector<Missile>> m_remoteMissiles; // Maps client_id to their missiles
 
+	// Mob storage (received from server)
+	std::vector<MobState> m_mobs;
+
 	bool m_clientInitialized;
 	bool m_connected;               // Connected to the server
 	bool m_disconnected;            // Got disconnected from the server
@@ -68,6 +71,7 @@ public:
 
 	void Fire(void);
 	void DrawMissiles(void);
+	void DrawMobs(void);
 
 	void SpawnLocalClient(int x, int y, uint32_t client_id);
 	bool ClientExists(uint32_t client_id);

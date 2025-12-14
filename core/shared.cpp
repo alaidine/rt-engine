@@ -94,6 +94,17 @@ int GameStateMessage_Serialize(GameStateMessage* msg, NBN_Stream* stream)
         }
     }
 
+    // Serialize mobs
+    NBN_SerializeUInt(stream, msg->mob_count, 0, MAX_MOBS);
+
+    for (unsigned int i = 0; i < msg->mob_count; i++)
+    {
+        NBN_SerializeUInt(stream, msg->mobs[i].mob_id, 0, UINT_MAX);
+        NBN_SerializeFloat(stream, msg->mobs[i].x, MIN_FLOAT_VAL, MAX_FLOAT_VAL, 3);
+        NBN_SerializeFloat(stream, msg->mobs[i].y, MIN_FLOAT_VAL, MAX_FLOAT_VAL, 3);
+        NBN_SerializeBool(stream, msg->mobs[i].active);
+    }
+
     return 0;
 }
 

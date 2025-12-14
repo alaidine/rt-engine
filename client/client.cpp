@@ -241,6 +241,13 @@ void Client::HandleGameStateMessage(GameStateMessage* msg)
         }
     }
 
+    // Update mobs from server
+    m_mobs.clear();
+    for (unsigned int i = 0; i < msg->mob_count; i++)
+    {
+        m_mobs.push_back(msg->mobs[i]);
+    }
+
     // Destroy disconnected clients
     DestroyDisconnectedClients();
 
@@ -404,6 +411,9 @@ void Client::DrawGameplay(void)
 
         // Draw the missiles
         DrawMissiles();
+
+        // Draw the mobs
+        DrawMobs();
 
         // Draw hud if m_hudDisplay variable is true
         if (m_displayHUD)
@@ -681,14 +691,30 @@ void Client::DrawMissiles(void)
     }
 }
 
+void Client::DrawMobs(void)
+{
+    for (const MobState& mob : m_mobs)
+    {
+        if (mob.active)
+        {
+            // Draw mob as a red rectangle (simple representation)
+            Rectangle mobRect = {
+                mob.x,
+                mob.y,
+                (float)MOB_WIDTH,
+                (float)MOB_HEIGHT
+            };
+            DrawRectangleRec(mobRect, RED);
+            DrawRectangleLinesEx(mobRect, 2, DARKBROWN);
+        }
+    }
+}
+
 int main(int argc, char* argv[])
 {
-    (void)argc;
-    (void)argv;
+    Client client;
 
-    std::unique_ptr<Client> client = std::make_unique<Client>();
-
-    client->Init();
-    client->Run();
+    client.Init();
+    client.Run();
     return 0;
 }

@@ -3,13 +3,8 @@ name: Linux
 on:
   workflow_dispatch:
   push:
-    paths:
-      - "client/**"
-      - "server/**"
-      - "core/**"
-      - "resources/**"
-      - "CMakeLists.txt"
-      - ".github/workflows/linux.yml"
+    tags:
+      - '*'
   release:
     types: [published]
 

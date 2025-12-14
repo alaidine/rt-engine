@@ -3,13 +3,8 @@ name: Windows
 on:
   workflow_dispatch:
   push:
-    paths:
-      - "client/**"
-      - "server/**"  
-      - "core/**"
-      - "resources/**"
-      - "CMakeLists.txt"
-      - ".github/workflows/windows.yml"
+    tags:
+      - '*'
   release:
     types: [published]
 
