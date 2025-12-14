@@ -155,6 +155,13 @@ void Client::UpdateClient(ClientState state)
     auto& pos = m_ecsCore.GetComponent<Position>(entity);
     pos.position.x = (float)state.x;
     pos.position.y = (float)state.y;
+
+    // Update missiles for this remote client
+    m_remoteMissiles[state.client_id].clear();
+    for (unsigned int i = 0; i < state.missile_count; i++)
+    {
+        m_remoteMissiles[state.client_id].push_back(state.missiles[i]);
+    }
 }
 
 void Client::DestroyClient(uint32_t client_id)
@@ -166,6 +173,7 @@ void Client::DestroyClient(uint32_t client_id)
 
         m_ecsCore.DestroyEntity(it->second);
         m_clientEntities.erase(it);
+        m_remoteMissiles.erase(client_id); // Clean up missiles for this client
         m_clientCount--;
     }
 }
@@ -651,7 +659,6 @@ void Client::DrawMissiles(void)
         float frameWidth = missile.rect.width;
         float frameHeight = missile.rect.height;
         Rectangle sourceRec = { missile.rect.x, missile.rect.y, frameWidth, frameHeight };
-        Rectangle rec = { (float)missile.pos.x, (float)missile.pos.y, frameWidth * 2.0f, frameHeight * 2.0f };
         Rectangle destRec = { (float)missile.pos.x, (float)missile.pos.y, frameWidth * 2.0f, frameHeight * 2.0f };
         Vector2 origin = { 0.0f, 0.0f };
 
@@ -659,14 +666,18 @@ void Client::DrawMissiles(void)
     }
 
     // Draw missiles from remote clients
-    for (auto& [client_id, entity] : m_clientEntities)
+    for (auto& [client_id, missiles] : m_remoteMissiles)
     {
-        // Skip local client missiles (already drawn above)
-        if (client_id == m_localClientId)
-            continue;
+        for (const Missile& missile : missiles)
+        {
+            float frameWidth = missile.rect.width;
+            float frameHeight = missile.rect.height;
+            Rectangle sourceRec = { missile.rect.x, missile.rect.y, frameWidth, frameHeight };
+            Rectangle destRec = { (float)missile.pos.x, (float)missile.pos.y, frameWidth * 2.0f, frameHeight * 2.0f };
+            Vector2 origin = { 0.0f, 0.0f };
 
-        // Remote client missiles would need to be synced via network
-        // This is a placeholder for future network missile sync
+            DrawTexturePro(m_player, sourceRec, destRec, origin, 0.0f, WHITE);
+        }
     }
 }
 

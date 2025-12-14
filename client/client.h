@@ -32,6 +32,7 @@ private:
 	std::shared_ptr<ClientRendererSystem> m_clientRendererSystem;
 	Entity m_localPlayerEntity;
 	std::unordered_map<uint32_t, Entity> m_clientEntities; // Maps client_id to Entity
+	std::unordered_map<uint32_t, std::vector<Missile>> m_remoteMissiles; // Maps client_id to their missiles
 
 	bool m_clientInitialized;
 	bool m_connected;               // Connected to the server
