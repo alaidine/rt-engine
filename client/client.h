@@ -59,6 +59,9 @@ private:
 	Texture2D m_player;
 	Texture2D m_background;
 
+	Texture2D m_mob;
+	Rectangle m_mobBox;
+
 	// ECS initialization
 	void InitECS(void);
 	

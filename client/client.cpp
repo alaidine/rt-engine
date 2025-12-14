@@ -29,6 +29,8 @@ Client::Client()
     m_missileAnimationRectangles[4] = { 151, 128, 72, 22 };
 
     memset(m_serverIp, 0, MAX_INPUT_CHARS + 1);
+
+    m_mobBox = { 22, 115, 33, 29 };
 }
 
 Client::~Client()
@@ -36,6 +38,7 @@ Client::~Client()
     // Unload textures
     UnloadTexture(m_player);
     UnloadTexture(m_background);
+    UnloadTexture(m_mob);
     if (m_clientInitialized)
     {
         // Stop the client
@@ -602,6 +605,7 @@ void Client::Init(void)
     // Load textures
     m_player = LoadTexture("resources/sprites/player_r-9c_war-head.png");
     m_background = LoadTexture("resources/sprites/space_background.png");
+    m_mob = LoadTexture("resources/sprites/mob_bydo_minions.png");
 
     // Initialize ECS after textures are loaded
     InitECS();
@@ -697,15 +701,13 @@ void Client::DrawMobs(void)
     {
         if (mob.active)
         {
-            // Draw mob as a red rectangle (simple representation)
-            Rectangle mobRect = {
-                mob.x,
-                mob.y,
-                (float)MOB_WIDTH,
-                (float)MOB_HEIGHT
-            };
-            DrawRectangleRec(mobRect, RED);
-            DrawRectangleLinesEx(mobRect, 2, DARKBROWN);
+            float frameWidth = m_mobBox.width;
+            float frameHeight = m_mobBox.height;
+            Rectangle sourceRec = { m_mobBox.x, m_mobBox.y, frameWidth, frameHeight };
+            Rectangle destRec = { mob.x, mob.y, (float)MOB_WIDTH, (float)MOB_HEIGHT };
+            Vector2 origin = { 0.0f, 0.0f };
+
+            DrawTexturePro(m_mob, sourceRec, destRec, origin, 0.0f, WHITE);
         }
     }
 }

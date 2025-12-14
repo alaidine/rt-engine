@@ -24,6 +24,7 @@ Server::Server()
     m_mobCount = 0;
     m_nextMobId = 0;
     m_mobSpawnTimer = 0;
+    m_mobs = {};
     for (auto& mob : m_mobs)
     {
         mob.active = false;
