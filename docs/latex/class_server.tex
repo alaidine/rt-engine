@@ -1,0 +1,50 @@
+\doxysection{Server Class Reference}
+\hypertarget{class_server}{}\label{class_server}\index{Server@{Server}}
+\doxysubsubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\Hypertarget{class_server_a8a97aa86487a27e8239007d9bcf2022b}\label{class_server_a8a97aa86487a27e8239007d9bcf2022b} 
+void {\bfseries Init} (int argc, char \texorpdfstring{$\ast$}{*}\texorpdfstring{$\ast$}{*}argv)
+\item 
+\Hypertarget{class_server_ac0c30e4f02b7b7ddf0b7518c5ddda060}\label{class_server_ac0c30e4f02b7b7ddf0b7518c5ddda060} 
+void {\bfseries Run} (void)
+\item 
+\Hypertarget{class_server_ab50ff2bfe1738e5f3fce0cc9339ec865}\label{class_server_ab50ff2bfe1738e5f3fce0cc9339ec865} 
+void {\bfseries Accept\+Connection} (unsigned int x, unsigned int y, NBN\+\_\+\+Connection\+Handle conn)
+\item 
+\Hypertarget{class_server_a36ab154b6ac875d3379119338ffe78da}\label{class_server_a36ab154b6ac875d3379119338ffe78da} 
+int {\bfseries Handle\+New\+Connection} (void)
+\item 
+\Hypertarget{class_server_acda5574c91894baa2066dd5d7d73b05d}\label{class_server_acda5574c91894baa2066dd5d7d73b05d} 
+\mbox{\hyperlink{class_client}{Client}} \texorpdfstring{$\ast$}{*} {\bfseries Find\+Client\+By\+Id} (uint32\+\_\+t client\+\_\+id)
+\item 
+\Hypertarget{class_server_a12ee198e0b9756a893d1a8f0a7befa68}\label{class_server_a12ee198e0b9756a893d1a8f0a7befa68} 
+void {\bfseries Destroy\+Client} (\mbox{\hyperlink{class_client}{Client}} \texorpdfstring{$\ast$}{*}client)
+\item 
+\Hypertarget{class_server_aad94c4e4ba10747dfab451ddb93e3884}\label{class_server_aad94c4e4ba10747dfab451ddb93e3884} 
+void {\bfseries Handle\+Client\+Disconnection} ()
+\item 
+\Hypertarget{class_server_a6c5aec38594e8e5512c3c2f62f4aa5f1}\label{class_server_a6c5aec38594e8e5512c3c2f62f4aa5f1} 
+void {\bfseries Handle\+Update\+State\+Message} (\mbox{\hyperlink{struct_update_state_message}{Update\+State\+Message}} \texorpdfstring{$\ast$}{*}msg, \mbox{\hyperlink{class_client}{Client}} \texorpdfstring{$\ast$}{*}sender)
+\item 
+\Hypertarget{class_server_a924a3406a923af5603a7159f282fb273}\label{class_server_a924a3406a923af5603a7159f282fb273} 
+void {\bfseries Handle\+Received\+Message} (void)
+\item 
+\Hypertarget{class_server_ac32573076c66a6379897b9f33d7a8966}\label{class_server_ac32573076c66a6379897b9f33d7a8966} 
+int {\bfseries Handle\+Game\+Server\+Event} (int ev)
+\item 
+\Hypertarget{class_server_addbdb5f228415e3a230e66d6a37cca6d}\label{class_server_addbdb5f228415e3a230e66d6a37cca6d} 
+int {\bfseries Broadcast\+Game\+State} (void)
+\end{DoxyCompactItemize}
+\doxysubsubsection*{Public Attributes}
+\begin{DoxyCompactItemize}
+\item 
+\Hypertarget{class_server_a4db32e1a16e0423cf619d7914fa9b8c2}\label{class_server_a4db32e1a16e0423cf619d7914fa9b8c2} 
+bool {\bfseries running} = true
+\end{DoxyCompactItemize}
+
+
+The documentation for this class was generated from the following files\+:\begin{DoxyCompactItemize}
+\item 
+server/server.\+h\item 
+server/server.\+cpp\end{DoxyCompactItemize}

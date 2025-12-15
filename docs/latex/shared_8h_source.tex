@@ -1,0 +1,109 @@
+\doxysection{shared.\+h}
+\hypertarget{shared_8h_source}{}\label{shared_8h_source}\index{core/shared.h@{core/shared.h}}
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00001\ \textcolor{preprocessor}{\#pragma\ once}}
+\DoxyCodeLine{00002\ }
+\DoxyCodeLine{00003\ \textcolor{preprocessor}{\#include\ "{}raylib.h"{}}}
+\DoxyCodeLine{00004\ \textcolor{preprocessor}{\#include\ "{}framework.h"{}}}
+\DoxyCodeLine{00005\ }
+\DoxyCodeLine{00006\ \textcolor{preprocessor}{\#define\ NBN\_LogInfo(...)\ TraceLog(LOG\_INFO,\ \_\_VA\_ARGS\_\_)}}
+\DoxyCodeLine{00007\ \textcolor{preprocessor}{\#define\ NBN\_LogError(...)\ TraceLog(LOG\_ERROR,\ \_\_VA\_ARGS\_\_)}}
+\DoxyCodeLine{00008\ \textcolor{preprocessor}{\#define\ NBN\_LogWarning(...)\ TraceLog(LOG\_WARNING,\ \_\_VA\_ARGS\_\_)}}
+\DoxyCodeLine{00009\ \textcolor{preprocessor}{\#define\ NBN\_LogDebug(...)\ TraceLog(LOG\_DEBUG,\ \_\_VA\_ARGS\_\_)}}
+\DoxyCodeLine{00010\ \textcolor{preprocessor}{\#define\ NBN\_LogTrace(...)\ TraceLog(LOG\_TRACE,\ \_\_VA\_ARGS\_\_)}}
+\DoxyCodeLine{00011\ }
+\DoxyCodeLine{00012\ \textcolor{preprocessor}{\#include\ "{}nbnet.h"{}}}
+\DoxyCodeLine{00013\ \textcolor{preprocessor}{\#include\ "{}udp.h"{}}}
+\DoxyCodeLine{00014\ }
+\DoxyCodeLine{00015\ \textcolor{preprocessor}{\#define\ PROTOCOL\_NAME\ "{}rt-\/protocol"{}}}
+\DoxyCodeLine{00016\ \textcolor{preprocessor}{\#define\ PORT\ 42042}}
+\DoxyCodeLine{00017\ }
+\DoxyCodeLine{00018\ \textcolor{preprocessor}{\#define\ TICK\_RATE\ 60\ }\textcolor{comment}{//\ Simulation\ tick\ rate}}
+\DoxyCodeLine{00019\ }
+\DoxyCodeLine{00020\ \textcolor{comment}{//\ Window\ size,\ used\ to\ display\ window\ but\ also\ to\ cap\ the\ serialized\ position\ values\ within\ messages}}
+\DoxyCodeLine{00021\ \textcolor{preprocessor}{\#define\ GAME\_WIDTH\ 800}}
+\DoxyCodeLine{00022\ \textcolor{preprocessor}{\#define\ GAME\_HEIGHT\ 600}}
+\DoxyCodeLine{00023\ }
+\DoxyCodeLine{00024\ \textcolor{preprocessor}{\#define\ MIN\_FLOAT\_VAL\ -\/1000\ }\textcolor{comment}{//\ Minimum\ value\ of\ networked\ client\ float\ value}}
+\DoxyCodeLine{00025\ \textcolor{preprocessor}{\#define\ MAX\_FLOAT\_VAL\ 1000\ }\textcolor{comment}{//\ Maximum\ value\ of\ networked\ client\ float\ value}}
+\DoxyCodeLine{00026\ }
+\DoxyCodeLine{00027\ \textcolor{comment}{//\ Maximum\ number\ of\ connected\ clients\ at\ a\ time}}
+\DoxyCodeLine{00028\ \textcolor{preprocessor}{\#define\ MAX\_CLIENTS\ 4}}
+\DoxyCodeLine{00029\ }
+\DoxyCodeLine{00030\ \textcolor{comment}{//\ Max\ number\ of\ colors\ for\ client\ to\ switch\ between}}
+\DoxyCodeLine{00031\ \textcolor{preprocessor}{\#define\ MAX\_COLORS\ 7}}
+\DoxyCodeLine{00032\ }
+\DoxyCodeLine{00033\ \textcolor{comment}{//\ Max\ number\ of\ missiles\ that\ can\ be\ handled\ by\ the\ server}}
+\DoxyCodeLine{00034\ \textcolor{preprocessor}{\#define\ MAX\_MISSILES\ 400}}
+\DoxyCodeLine{00035\ }
+\DoxyCodeLine{00036\ \textcolor{comment}{//\ Max\ number\ of\ missiles\ that\ can\ be\ sent\ to\ the\ server}}
+\DoxyCodeLine{00037\ \textcolor{preprocessor}{\#define\ MAX\_MISSILES\_CLIENT\ 100}}
+\DoxyCodeLine{00038\ }
+\DoxyCodeLine{00039\ \textcolor{comment}{//\ A\ code\ passed\ by\ the\ server\ when\ closing\ a\ client\ connection\ due\ to\ being\ full\ (max\ client\ count\ reached)}}
+\DoxyCodeLine{00040\ \textcolor{preprocessor}{\#define\ SERVER\_FULL\_CODE\ 42}}
+\DoxyCodeLine{00041\ }
+\DoxyCodeLine{00042\ \textcolor{comment}{//\ Message\ ids}}
+\DoxyCodeLine{00043\ \textcolor{keyword}{enum}}
+\DoxyCodeLine{00044\ \{}
+\DoxyCodeLine{00045\ \ \ \ \ UPDATE\_STATE\_MESSAGE,}
+\DoxyCodeLine{00046\ \ \ \ \ MISSILES\_STATE\_MESSAGE,}
+\DoxyCodeLine{00047\ \ \ \ \ GAME\_STATE\_MESSAGE}
+\DoxyCodeLine{00048\ \};}
+\DoxyCodeLine{00049\ }
+\DoxyCodeLine{00050\ \textcolor{keyword}{typedef}\ \textcolor{keyword}{struct}}
+\DoxyCodeLine{00051\ \{}
+\DoxyCodeLine{00052\ \ \ \ \ Vector2\ pos;}
+\DoxyCodeLine{00053\ \ \ \ \ Rectangle\ rect;}
+\DoxyCodeLine{00054\ \ \ \ \ uint32\_t\ currentFrame;}
+\DoxyCodeLine{00055\ \ \ \ \ uint32\_t\ framesSpeed;}
+\DoxyCodeLine{00056\ \ \ \ \ uint32\_t\ framesCounter;}
+\DoxyCodeLine{00057\ \}\ \mbox{\hyperlink{struct_missile}{Missile}};}
+\DoxyCodeLine{00058\ }
+\DoxyCodeLine{00059\ \textcolor{comment}{//\ Messages}}
+\DoxyCodeLine{00060\ }
+\DoxyCodeLine{00061\ \textcolor{keyword}{typedef}\ \textcolor{keyword}{struct}}
+\DoxyCodeLine{00062\ \{}
+\DoxyCodeLine{00063\ \ \ \ \ \textcolor{keywordtype}{int}\ x;}
+\DoxyCodeLine{00064\ \ \ \ \ \textcolor{keywordtype}{int}\ y;}
+\DoxyCodeLine{00065\ \ \ \ \ \textcolor{keywordtype}{unsigned}\ \textcolor{keywordtype}{int}\ missile\_count;}
+\DoxyCodeLine{00066\ \ \ \ \ \mbox{\hyperlink{struct_missile}{Missile}}\ missiles[MAX\_MISSILES\_CLIENT];}
+\DoxyCodeLine{00067\ \}\ \mbox{\hyperlink{struct_update_state_message}{UpdateStateMessage}};}
+\DoxyCodeLine{00068\ }
+\DoxyCodeLine{00069\ \textcolor{comment}{//\ Client\ state,\ represents\ a\ client\ over\ the\ network}}
+\DoxyCodeLine{00070\ \textcolor{keyword}{typedef}\ \textcolor{keyword}{struct}}
+\DoxyCodeLine{00071\ \{}
+\DoxyCodeLine{00072\ \ \ \ \ uint32\_t\ client\_id;}
+\DoxyCodeLine{00073\ \ \ \ \ \textcolor{keywordtype}{int}\ x;}
+\DoxyCodeLine{00074\ \ \ \ \ \textcolor{keywordtype}{int}\ y;}
+\DoxyCodeLine{00075\ \ \ \ \ \textcolor{keywordtype}{unsigned}\ \textcolor{keywordtype}{int}\ missile\_count;}
+\DoxyCodeLine{00076\ \ \ \ \ \mbox{\hyperlink{struct_missile}{Missile}}\ missiles[MAX\_MISSILES\_CLIENT];}
+\DoxyCodeLine{00077\ \}\ \mbox{\hyperlink{struct_client_state}{ClientState}};}
+\DoxyCodeLine{00078\ }
+\DoxyCodeLine{00079\ \textcolor{keyword}{typedef}\ \textcolor{keyword}{struct}}
+\DoxyCodeLine{00080\ \{}
+\DoxyCodeLine{00081\ \ \ \ \ \textcolor{keywordtype}{unsigned}\ \textcolor{keywordtype}{int}\ client\_count;}
+\DoxyCodeLine{00082\ \ \ \ \ \mbox{\hyperlink{struct_client_state}{ClientState}}\ client\_states[MAX\_CLIENTS];}
+\DoxyCodeLine{00083\ \}\ \mbox{\hyperlink{struct_game_state_message}{GameStateMessage}};}
+\DoxyCodeLine{00084\ }
+\DoxyCodeLine{00085\ \textcolor{comment}{//\ Store\ all\ options\ from\ the\ command\ line}}
+\DoxyCodeLine{00086\ \textcolor{keyword}{typedef}\ \textcolor{keyword}{struct}}
+\DoxyCodeLine{00087\ \{}
+\DoxyCodeLine{00088\ \ \ \ \ \textcolor{keywordtype}{float}\ packet\_loss;}
+\DoxyCodeLine{00089\ \ \ \ \ \textcolor{keywordtype}{float}\ packet\_duplication;}
+\DoxyCodeLine{00090\ \ \ \ \ \textcolor{keywordtype}{float}\ ping;}
+\DoxyCodeLine{00091\ \ \ \ \ \textcolor{keywordtype}{float}\ jitter;}
+\DoxyCodeLine{00092\ \}\ \mbox{\hyperlink{struct_options}{Options}};}
+\DoxyCodeLine{00093\ }
+\DoxyCodeLine{00094\ \mbox{\hyperlink{struct_update_state_message}{UpdateStateMessage}}*\ UpdateStateMessage\_Create(\textcolor{keywordtype}{void});}
+\DoxyCodeLine{00095\ \textcolor{keywordtype}{void}\ UpdateStateMessage\_Destroy(\mbox{\hyperlink{struct_update_state_message}{UpdateStateMessage}}*);}
+\DoxyCodeLine{00096\ \textcolor{keywordtype}{int}\ UpdateStateMessage\_Serialize(\mbox{\hyperlink{struct_update_state_message}{UpdateStateMessage}}*,\ NBN\_Stream*);}
+\DoxyCodeLine{00097\ }
+\DoxyCodeLine{00098\ \mbox{\hyperlink{struct_game_state_message}{GameStateMessage}}*\ GameStateMessage\_Create(\textcolor{keywordtype}{void});}
+\DoxyCodeLine{00099\ \textcolor{keywordtype}{void}\ GameStateMessage\_Destroy(\mbox{\hyperlink{struct_game_state_message}{GameStateMessage}}*);}
+\DoxyCodeLine{00100\ \textcolor{keywordtype}{int}\ GameStateMessage\_Serialize(\mbox{\hyperlink{struct_game_state_message}{GameStateMessage}}*,\ NBN\_Stream*);}
+\DoxyCodeLine{00101\ }
+\DoxyCodeLine{00102\ \textcolor{keywordtype}{int}\ ReadCommandLine(\textcolor{keywordtype}{int},\ \textcolor{keywordtype}{char}*\ []);}
+\DoxyCodeLine{00103\ \mbox{\hyperlink{struct_options}{Options}}\ GetOptions(\textcolor{keywordtype}{void});}
+
+\end{DoxyCode}

@@ -1,0 +1,108 @@
+\chapter{CPP Coding Style Conventions }
+\hypertarget{md__c_o_n_v_e_n_t_i_o_n_s}{}\label{md__c_o_n_v_e_n_t_i_o_n_s}\index{CPP Coding Style Conventions@{CPP Coding Style Conventions}}
+\label{md__c_o_n_v_e_n_t_i_o_n_s_autotoc_md0}%
+\Hypertarget{md__c_o_n_v_e_n_t_i_o_n_s_autotoc_md0}%
+
+
+
+\begin{DoxyTable}{3}{}{}{1}
+\SetCell{c,bg=\tableheadbgcolor,font=\bfseries}Code element  &\SetCell{c,bg=\tableheadbgcolor,font=\bfseries}Convention  &\SetCell{c,bg=\tableheadbgcolor,font=\bfseries}Example  \\
+Defines  &\SetCell{c}ALL\+\_\+\+CAPS  &{\ttfamily \#define PLATFORM\+\_\+\+DESKTOP}  \\
+Macros  &\SetCell{c}ALL\+\_\+\+CAPS  &{\ttfamily \#define MIN(a,b) (((a)\texorpdfstring{$<$}{<}(b))?(a)\+:(b))}  \\
+Variables  &\SetCell{c}lower\+Case  &{\ttfamily int screen\+Width = 0;}, {\ttfamily float target\+Frame\+Time = 0.\+016f;}  \\
+Local variables  &\SetCell{c}lower\+Case  &{\ttfamily Vector2 player\+Position = \{ 0 \};}  \\
+Global variables  &\SetCell{c}lower\+Case  &{\ttfamily bool fullscreen = false;}  \\
+Constants  &\SetCell{c}lower\+Case  &{\ttfamily const int max\+Value = 8;}  \\
+Pointers  &\SetCell{c}My\+Type \texorpdfstring{$\ast$}{*}pointer  &{\ttfamily Texture2D \texorpdfstring{$\ast$}{*}array = NULL;}  \\
+float values  &\SetCell{c}always x.\+xf  &{\ttfamily float gravity = 10.\+0f}  \\
+Operators  &\SetCell{c}value1\texorpdfstring{$\ast$}{*}value2  &{\ttfamily int product = value\texorpdfstring{$\ast$}{*}6;}  \\
+Operators  &\SetCell{c}value1/value2  &{\ttfamily int division = value/4;}  \\
+Operators  &\SetCell{c}value1 + value2  &{\ttfamily int sum = value + 10;}  \\
+Operators  &\SetCell{c}value1 -\/ value2  &{\ttfamily int res = value -\/ 5;}  \\
+Enum  &\SetCell{c}Title\+Case  &{\ttfamily enum Texture\+Format}  \\
+Enum members  &\SetCell{c}ALL\+\_\+\+CAPS  &{\ttfamily PIXELFORMAT\+\_\+\+UNCOMPRESSED\+\_\+\+R8\+G8\+B8}  \\
+Struct  &\SetCell{c}Title\+Case  &{\ttfamily struct Texture2D}, {\ttfamily struct Material}  \\
+Struct typedef  &\SetCell{c}Title\+Case  &{\ttfamily typedef struct Texture \{ ... \} Texture;}  \\
+Struct members  &\SetCell{c}lower\+Case  &{\ttfamily texture.\+width}, {\ttfamily color.\+r}  \\
+Functions  &\SetCell{c}Title\+Case  &{\ttfamily Init\+Window()}, {\ttfamily Load\+Image\+From\+Memory()}  \\
+Functions params  &\SetCell{c}lower\+Case  &{\ttfamily width}, {\ttfamily height}  \\
+Ternary Operator  &\SetCell{c}(condition)? result1 \+: result2  &{\ttfamily printf("{}Value is 0\+: s"{}, (value == 0)? "{}yes"{} \+: "{}no"{});}  \\
+Classes  &\SetCell{c}Title\+Case  &{\ttfamily class Player}, {\ttfamily class Enemy}  \\
+Class members  &\SetCell{c}lower\+Case with m\+\_\+ prefix  &{\ttfamily m\+\_\+health}, {\ttfamily m\+\_\+position}  \\
+\end{DoxyTable}
+
+
+Other conventions\+:
+\begin{DoxyItemize}
+\item All defined variables are ALWAYS initialized
+\item Four spaces are used, instead of TABS
+\item Trailing spaces are always avoided
+\item Control flow statements are followed {\bfseries{by a space}}\+: 
+\begin{DoxyCode}{0}
+\DoxyCodeLine{\textcolor{keywordflow}{if}\ (condition)\ value\ =\ 0;}
+\DoxyCodeLine{}
+\DoxyCodeLine{\textcolor{keywordflow}{while}\ (!WindowShouldClose())}
+\DoxyCodeLine{\{}
+\DoxyCodeLine{}
+\DoxyCodeLine{\}}
+\DoxyCodeLine{}
+\DoxyCodeLine{\textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{int}\ i\ =\ 0;\ i\ <\ NUM\_VALUES;\ i++)\ printf(\textcolor{stringliteral}{"{}\%i"{}},\ i);}
+\DoxyCodeLine{}
+\DoxyCodeLine{\textcolor{keywordflow}{switch}\ (value)}
+\DoxyCodeLine{\{}
+\DoxyCodeLine{\ \ \ \ \textcolor{keywordflow}{case}\ 0:}
+\DoxyCodeLine{\ \ \ \ \{}
+\DoxyCodeLine{}
+\DoxyCodeLine{\ \ \ \ \}\ \textcolor{keywordflow}{break};}
+\DoxyCodeLine{\ \ \ \ \textcolor{keywordflow}{case}\ 2:\ \textcolor{keywordflow}{break};}
+\DoxyCodeLine{\ \ \ \ \textcolor{keywordflow}{default}:\ \textcolor{keywordflow}{break};}
+\DoxyCodeLine{\}}
+
+\end{DoxyCode}
+
+\item All conditions are always between parenthesis, but not boolean values\+: 
+\begin{DoxyCode}{0}
+\DoxyCodeLine{\textcolor{keywordflow}{if}\ ((value\ >\ 1)\ \&\&\ (value\ <\ 50)\ \&\&\ valueActive)}
+\DoxyCodeLine{\{}
+\DoxyCodeLine{}
+\DoxyCodeLine{\}}
+
+\end{DoxyCode}
+
+\item Braces and curly brackets always open-\/close in aligned mode\+: 
+\begin{DoxyCode}{0}
+\DoxyCodeLine{\textcolor{keywordtype}{void}\ SomeFunction()}
+\DoxyCodeLine{\{}
+\DoxyCodeLine{\ \ \ \textcolor{comment}{//\ TODO:\ Do\ something\ here!}}
+\DoxyCodeLine{\}}
+
+\end{DoxyCode}
+
+\end{DoxyItemize}\hypertarget{md__c_o_n_v_e_n_t_i_o_n_s_autotoc_md1}{}\doxysection{\texorpdfstring{Files and Directories Naming Conventions}{Files and Directories Naming Conventions}}\label{md__c_o_n_v_e_n_t_i_o_n_s_autotoc_md1}
+
+\begin{DoxyItemize}
+\item Directories are named using {\ttfamily snake\+\_\+case}\+: {\ttfamily resources/models}, {\ttfamily resources/fonts}
+\item Files are named using {\ttfamily snake\+\_\+case}\+: {\ttfamily main\+\_\+title.\+png}, {\ttfamily cubicmap.\+png}, {\ttfamily sound.\+wav}
+\end{DoxyItemize}
+
+{\itshape NOTE\+: Spaces and special characters are always avoided in the files/dir naming!}\hypertarget{md__c_o_n_v_e_n_t_i_o_n_s_autotoc_md2}{}\doxysection{\texorpdfstring{Games/\+Examples Directories Organization Conventions}{Games/\+Examples Directories Organization Conventions}}\label{md__c_o_n_v_e_n_t_i_o_n_s_autotoc_md2}
+
+\begin{DoxyItemize}
+\item Resource files are organized by context and usage in the game. Loading requirements for data are also considered (grouping data when required).
+\item Descriptive names are used for the files, just reading the name of the file it should be possible to know what is that file and where fits in the game.
+\end{DoxyItemize}
+
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{resources/audio/fx/long\_jump.wav}
+\DoxyCodeLine{resources/audio/music/main\_theme.ogg}
+\DoxyCodeLine{resources/screens/logo/logo.png}
+\DoxyCodeLine{resources/screens/title/title.png}
+\DoxyCodeLine{resources/screens/gameplay/background.png}
+\DoxyCodeLine{resources/characters/player.png}
+\DoxyCodeLine{resources/characters/enemy\_slime.png}
+\DoxyCodeLine{resources/common/font\_arial.ttf}
+\DoxyCodeLine{resources/common/gui.png}
+
+\end{DoxyCode}
+ {\itshape NOTE\+: Some resources require to be loaded all at once while other require to be loaded only at initialization (gui, font).} 

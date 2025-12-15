@@ -1,0 +1,55 @@
+\doxysection{client/client.h File Reference}
+\hypertarget{client_8h}{}\label{client_8h}\index{client/client.h@{client/client.h}}
+
+
+R-\/\+Type game client implementation.  
+
+
+{\ttfamily \#include $<$vector$>$}\newline
+{\ttfamily \#include $<$array$>$}\newline
+{\ttfamily \#include $<$memory$>$}\newline
+{\ttfamily \#include $<$sol/sol.\+hpp$>$}\newline
+{\ttfamily \#include "{}shared.\+h"{}}\newline
+{\ttfamily \#include "{}network.\+h"{}}\newline
+\doxysubsubsection*{Classes}
+\begin{DoxyCompactItemize}
+\item 
+struct \mbox{\hyperlink{class_client}{Client}}
+\begin{DoxyCompactList}\small\item\em Main game client class. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\doxysubsubsection*{Macros}
+\begin{DoxyCompactItemize}
+\item 
+\#define \mbox{\hyperlink{client_8h_acef24ae9a88131f27f1554acfd6ad976}{TARGET\+\_\+\+FPS}}~100
+\begin{DoxyCompactList}\small\item\em Target frame rate for rendering. \end{DoxyCompactList}\item 
+\#define \mbox{\hyperlink{client_8h_a19d1cde30d244bba7ead3bff2f2a3b0f}{MAX\+\_\+\+INPUT\+\_\+\+CHARS}}~15
+\begin{DoxyCompactList}\small\item\em Maximum characters for IP address input. \end{DoxyCompactList}\end{DoxyCompactItemize}
+
+
+\doxysubsection{Detailed Description}
+R-\/\+Type game client implementation. 
+
+This file contains the \doxylink{class_client}{Client} class which handles all client-\/side game logic including rendering, input processing, and network communication with the game server. 
+
+\label{doc-define-members}
+\Hypertarget{client_8h_doc-define-members}
+\doxysubsection{Macro Definition Documentation}
+\Hypertarget{client_8h_a19d1cde30d244bba7ead3bff2f2a3b0f}\index{client.h@{client.h}!MAX\_INPUT\_CHARS@{MAX\_INPUT\_CHARS}}
+\index{MAX\_INPUT\_CHARS@{MAX\_INPUT\_CHARS}!client.h@{client.h}}
+\doxysubsubsection{\texorpdfstring{MAX\_INPUT\_CHARS}{MAX\_INPUT\_CHARS}}
+{\footnotesize\ttfamily \label{client_8h_a19d1cde30d244bba7ead3bff2f2a3b0f} 
+\#define MAX\+\_\+\+INPUT\+\_\+\+CHARS~15}
+
+
+
+Maximum characters for IP address input. 
+
+\Hypertarget{client_8h_acef24ae9a88131f27f1554acfd6ad976}\index{client.h@{client.h}!TARGET\_FPS@{TARGET\_FPS}}
+\index{TARGET\_FPS@{TARGET\_FPS}!client.h@{client.h}}
+\doxysubsubsection{\texorpdfstring{TARGET\_FPS}{TARGET\_FPS}}
+{\footnotesize\ttfamily \label{client_8h_acef24ae9a88131f27f1554acfd6ad976} 
+\#define TARGET\+\_\+\+FPS~100}
+
+
+
+Target frame rate for rendering. 
+

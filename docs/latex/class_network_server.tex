@@ -1,0 +1,366 @@
+\doxysection{Network\+Server Class Reference}
+\hypertarget{class_network_server}{}\label{class_network_server}\index{NetworkServer@{NetworkServer}}
+
+
+Network server for hosting game sessions.  
+
+
+
+
+{\ttfamily \#include $<$network.\+h$>$}
+
+Inheritance diagram for Network\+Server\+:\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[height=2.000000cm]{class_network_server}
+\end{center}
+\end{figure}
+\doxysubsubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\hyperlink{class_network_server_af2966322d5f1ffed528e197ba2e31e91}{Network\+Server}} ()
+\item 
+\mbox{\hyperlink{class_network_server_ab8b208b058433cbe41cf5a22242a0a48}{\texorpdfstring{$\sim$}{\string~}\+Network\+Server}} () override
+\item 
+bool \mbox{\hyperlink{class_network_server_a9e0b9c86a5f846fb15770d8c0fb362a6}{Start}} (uint16\+\_\+t port)
+\begin{DoxyCompactList}\small\item\em Start the server and begin listening for connections. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{class_network_server_af0fc5b202d9f4cdd28b859feb080f7be}{Stop}} ()
+\begin{DoxyCompactList}\small\item\em Stop the server and disconnect all clients. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{class_network_server_a2defcde92c83b45f6bd5393df24b6f2a}{Poll}} ()
+\begin{DoxyCompactList}\small\item\em Poll for network events. \end{DoxyCompactList}\item 
+bool \mbox{\hyperlink{class_network_server_aca6684af264f402c2c0517679648d4b9}{Send\+Message\+To}} (HSteam\+Net\+Connection conn, const uint8\+\_\+t \texorpdfstring{$\ast$}{*}data, size\+\_\+t size, bool reliable=false)
+\begin{DoxyCompactList}\small\item\em Send a message to a specific client. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{class_network_server_a8b88290c360bd04bedac445ac555bc66}{Broadcast\+Message}} (const uint8\+\_\+t \texorpdfstring{$\ast$}{*}data, size\+\_\+t size, bool reliable=false)
+\begin{DoxyCompactList}\small\item\em Broadcast a message to all connected clients. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{class_network_server_ad5c506de37f9ed1d5e0fcc3ad8826b88}{Disconnect\+Client}} (HSteam\+Net\+Connection conn, int reason=0)
+\begin{DoxyCompactList}\small\item\em Disconnect a specific client. \end{DoxyCompactList}\item 
+uint32\+\_\+t \mbox{\hyperlink{class_network_server_ad843d56860fea419356e87525e776595}{Get\+Client\+Id}} (HSteam\+Net\+Connection conn) const
+\begin{DoxyCompactList}\small\item\em Get client ID from connection handle. \end{DoxyCompactList}\item 
+HSteam\+Net\+Connection \mbox{\hyperlink{class_network_server_a37c3a489f3465642d05cd9fb62c1939e}{Get\+Connection\+By\+Client\+Id}} (uint32\+\_\+t client\+Id) const
+\begin{DoxyCompactList}\small\item\em Get connection handle from client ID. \end{DoxyCompactList}\item 
+size\+\_\+t \mbox{\hyperlink{class_network_server_a56f6797d09195a82127a6d633eb3c371}{Get\+Client\+Count}} () const
+\begin{DoxyCompactList}\small\item\em Get the number of connected clients. \end{DoxyCompactList}\item 
+const std\+::map$<$ HSteam\+Net\+Connection, uint32\+\_\+t $>$ \& \mbox{\hyperlink{class_network_server_a27ff1aa9ba1315c15d9cd0095463dd5e}{Get\+Clients}} () const
+\begin{DoxyCompactList}\small\item\em Get read-\/only access to the client map. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\begin{Indent}\textbf{ Callback Setters}\par
+\begin{DoxyCompactItemize}
+\item 
+void \mbox{\hyperlink{class_network_server_a83ee0f8ad315f80b8ed7c995b220656c}{Set\+On\+New\+Connection}} (std\+::function$<$ bool(HSteam\+Net\+Connection, uint32\+\_\+t)$>$ callback)
+\begin{DoxyCompactList}\small\item\em Set callback for new connection requests. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{class_network_server_a8237ad0b2d3dd0121cf7f93a34f5f874}{Set\+On\+Client\+Connected}} (std\+::function$<$ void(HSteam\+Net\+Connection, uint32\+\_\+t)$>$ callback)
+\begin{DoxyCompactList}\small\item\em Set callback for when client is fully connected. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{class_network_server_a86fe4fbcabe3d9e35a51e271ca80bbc6}{Set\+On\+Client\+Disconnected}} (std\+::function$<$ void(HSteam\+Net\+Connection, uint32\+\_\+t)$>$ callback)
+\begin{DoxyCompactList}\small\item\em Set callback for client disconnection. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{class_network_server_a1a838965bc23381c1583e064e597724f}{Set\+On\+Message\+Received}} (std\+::function$<$ void(HSteam\+Net\+Connection, uint32\+\_\+t, const uint8\+\_\+t \texorpdfstring{$\ast$}{*}, size\+\_\+t)$>$ callback)
+\begin{DoxyCompactList}\small\item\em Set callback for incoming messages. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\end{Indent}
+\doxysubsection*{Public Member Functions inherited from \mbox{\hyperlink{class_network_base}{Network\+Base}}}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\hyperlink{class_network_base_a396d957f549c9be51ca44ed73a7db772}{Network\+Base}} ()=default
+\item 
+virtual \mbox{\hyperlink{class_network_base_afaa354e6c18ace5bb929e26917f12bbe}{\texorpdfstring{$\sim$}{\string~}\+Network\+Base}} ()
+\item 
+bool \mbox{\hyperlink{class_network_base_ac76d7d5de8a01629b402eba367376cb2}{Is\+Initialized}} () const
+\begin{DoxyCompactList}\small\item\em Check if the network instance is initialized. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\doxysubsubsection*{Additional Inherited Members}
+\doxysubsection*{Static Public Member Functions inherited from \mbox{\hyperlink{class_network_base}{Network\+Base}}}
+\begin{DoxyCompactItemize}
+\item 
+static void \mbox{\hyperlink{class_network_base_a4489c4321d3f2d982e13d968f093ad1c}{Init\+Steam\+Networking\+Sockets}} ()
+\begin{DoxyCompactList}\small\item\em Initialize the Game\+Networking\+Sockets library. \end{DoxyCompactList}\item 
+static void \mbox{\hyperlink{class_network_base_aaf040d84a94cf752ee294c70bb7d4f2d}{Shutdown\+Steam\+Networking\+Sockets}} ()
+\begin{DoxyCompactList}\small\item\em Shutdown the Game\+Networking\+Sockets library. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\doxysubsection*{Static Protected Member Functions inherited from \mbox{\hyperlink{class_network_base}{Network\+Base}}}
+\begin{DoxyCompactItemize}
+\item 
+static void \mbox{\hyperlink{class_network_base_a2f3439b30e0445e567f172d08e710458}{Debug\+Output}} (ESteam\+Networking\+Sockets\+Debug\+Output\+Type e\+Type, const char \texorpdfstring{$\ast$}{*}psz\+Msg)
+\begin{DoxyCompactList}\small\item\em Debug output callback for Game\+Networking\+Sockets. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\doxysubsection*{Protected Attributes inherited from \mbox{\hyperlink{class_network_base}{Network\+Base}}}
+\begin{DoxyCompactItemize}
+\item 
+ISteam\+Networking\+Sockets \texorpdfstring{$\ast$}{*} \mbox{\hyperlink{class_network_base_a509aa444e2804a319ba51d93d967f275}{m\+\_\+p\+Interface}} = nullptr
+\begin{DoxyCompactList}\small\item\em Game\+Networking\+Sockets interface. \end{DoxyCompactList}\item 
+bool \mbox{\hyperlink{class_network_base_a857ba7a430771f043d1bdb9b585c2f5a}{m\+\_\+initialized}} = false
+\begin{DoxyCompactList}\small\item\em Initialization state flag. \end{DoxyCompactList}\end{DoxyCompactItemize}
+
+
+\doxysubsection{Detailed Description}
+Network server for hosting game sessions. 
+
+Provides server-\/side networking functionality including listening for connections, managing multiple clients, and broadcasting messages. Uses a callback-\/based architecture for handling network events.
+
+\begin{DoxyParagraph}{Example Usage\+:}
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{\mbox{\hyperlink{class_network_server_af2966322d5f1ffed528e197ba2e31e91}{NetworkServer}}\ server;}
+\DoxyCodeLine{server.\mbox{\hyperlink{class_network_server_a83ee0f8ad315f80b8ed7c995b220656c}{SetOnNewConnection}}([](HSteamNetConnection\ conn,\ uint32\_t\ \textcolor{keywordtype}{id})\ -\/>\ \textcolor{keywordtype}{bool}\ \{}
+\DoxyCodeLine{\ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{keyword}{true};\ \textcolor{comment}{//\ Accept\ all\ connections}}
+\DoxyCodeLine{\});}
+\DoxyCodeLine{server.\mbox{\hyperlink{class_network_server_a8237ad0b2d3dd0121cf7f93a34f5f874}{SetOnClientConnected}}([](HSteamNetConnection\ conn,\ uint32\_t\ \textcolor{keywordtype}{id})\ \{}
+\DoxyCodeLine{\ \ \ \ \textcolor{comment}{//\ Send\ initial\ game\ state\ to\ new\ client}}
+\DoxyCodeLine{\});}
+\DoxyCodeLine{server.\mbox{\hyperlink{class_network_server_a1a838965bc23381c1583e064e597724f}{SetOnMessageReceived}}([](HSteamNetConnection\ conn,\ uint32\_t\ \textcolor{keywordtype}{id},\ }
+\DoxyCodeLine{\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ uint8\_t*\ data,\ \textcolor{keywordtype}{size\_t}\ size)\ \{}
+\DoxyCodeLine{\ \ \ \ \textcolor{comment}{//\ Handle\ client\ message}}
+\DoxyCodeLine{\});}
+\DoxyCodeLine{}
+\DoxyCodeLine{\textcolor{keywordflow}{if}\ (server.\mbox{\hyperlink{class_network_server_a9e0b9c86a5f846fb15770d8c0fb362a6}{Start}}(42042))\ \{}
+\DoxyCodeLine{\ \ \ \ \textcolor{keywordflow}{while}\ (running)\ \{}
+\DoxyCodeLine{\ \ \ \ \ \ \ \ server.\mbox{\hyperlink{class_network_server_a2defcde92c83b45f6bd5393df24b6f2a}{Poll}}();}
+\DoxyCodeLine{\ \ \ \ \ \ \ \ \textcolor{comment}{//\ Game\ loop...}}
+\DoxyCodeLine{\ \ \ \ \}}
+\DoxyCodeLine{\ \ \ \ server.\mbox{\hyperlink{class_network_server_af0fc5b202d9f4cdd28b859feb080f7be}{Stop}}();}
+\DoxyCodeLine{\}}
+
+\end{DoxyCode}
+ 
+\end{DoxyParagraph}
+
+
+\label{doc-constructors}
+\Hypertarget{class_network_server_doc-constructors}
+\doxysubsection{Constructor \& Destructor Documentation}
+\Hypertarget{class_network_server_af2966322d5f1ffed528e197ba2e31e91}\index{NetworkServer@{NetworkServer}!NetworkServer@{NetworkServer}}
+\index{NetworkServer@{NetworkServer}!NetworkServer@{NetworkServer}}
+\doxysubsubsection{\texorpdfstring{NetworkServer()}{NetworkServer()}}
+{\footnotesize\ttfamily \label{class_network_server_af2966322d5f1ffed528e197ba2e31e91} 
+Network\+Server\+::\+Network\+Server (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption})}
+
+\Hypertarget{class_network_server_ab8b208b058433cbe41cf5a22242a0a48}\index{NetworkServer@{NetworkServer}!````~NetworkServer@{\texorpdfstring{$\sim$}{\string~}NetworkServer}}
+\index{````~NetworkServer@{\texorpdfstring{$\sim$}{\string~}NetworkServer}!NetworkServer@{NetworkServer}}
+\doxysubsubsection{\texorpdfstring{\texorpdfstring{$\sim$}{\string~}NetworkServer()}{\string~NetworkServer()}}
+{\footnotesize\ttfamily \label{class_network_server_ab8b208b058433cbe41cf5a22242a0a48} 
+Network\+Server\+::\texorpdfstring{$\sim$}{\string~}\+Network\+Server (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [override]}}
+
+
+
+\label{doc-func-members}
+\Hypertarget{class_network_server_doc-func-members}
+\doxysubsection{Member Function Documentation}
+\Hypertarget{class_network_server_a8b88290c360bd04bedac445ac555bc66}\index{NetworkServer@{NetworkServer}!BroadcastMessage@{BroadcastMessage}}
+\index{BroadcastMessage@{BroadcastMessage}!NetworkServer@{NetworkServer}}
+\doxysubsubsection{\texorpdfstring{BroadcastMessage()}{BroadcastMessage()}}
+{\footnotesize\ttfamily \label{class_network_server_a8b88290c360bd04bedac445ac555bc66} 
+void Network\+Server\+::\+Broadcast\+Message (\begin{DoxyParamCaption}\item[{const uint8\+\_\+t \texorpdfstring{$\ast$}{*}}]{data}{, }\item[{size\+\_\+t}]{size}{, }\item[{bool}]{reliable}{ = {\ttfamily false}}\end{DoxyParamCaption})}
+
+
+
+Broadcast a message to all connected clients. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em data} & Pointer to the message data \\
+\hline
+{\em size} & Size of the message in bytes \\
+\hline
+{\em reliable} & If true, use reliable delivery; if false, use unreliable \\
+\hline
+\end{DoxyParams}
+\Hypertarget{class_network_server_ad5c506de37f9ed1d5e0fcc3ad8826b88}\index{NetworkServer@{NetworkServer}!DisconnectClient@{DisconnectClient}}
+\index{DisconnectClient@{DisconnectClient}!NetworkServer@{NetworkServer}}
+\doxysubsubsection{\texorpdfstring{DisconnectClient()}{DisconnectClient()}}
+{\footnotesize\ttfamily \label{class_network_server_ad5c506de37f9ed1d5e0fcc3ad8826b88} 
+void Network\+Server\+::\+Disconnect\+Client (\begin{DoxyParamCaption}\item[{HSteam\+Net\+Connection}]{conn}{, }\item[{int}]{reason}{ = {\ttfamily 0}}\end{DoxyParamCaption})}
+
+
+
+Disconnect a specific client. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em conn} & Connection handle of the client to disconnect \\
+\hline
+{\em reason} & Optional reason code to send to the client \\
+\hline
+\end{DoxyParams}
+\Hypertarget{class_network_server_a56f6797d09195a82127a6d633eb3c371}\index{NetworkServer@{NetworkServer}!GetClientCount@{GetClientCount}}
+\index{GetClientCount@{GetClientCount}!NetworkServer@{NetworkServer}}
+\doxysubsubsection{\texorpdfstring{GetClientCount()}{GetClientCount()}}
+{\footnotesize\ttfamily \label{class_network_server_a56f6797d09195a82127a6d633eb3c371} 
+size\+\_\+t Network\+Server\+::\+Get\+Client\+Count (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Get the number of connected clients. 
+
+\begin{DoxyReturn}{Returns}
+Number of currently connected clients 
+\end{DoxyReturn}
+\Hypertarget{class_network_server_ad843d56860fea419356e87525e776595}\index{NetworkServer@{NetworkServer}!GetClientId@{GetClientId}}
+\index{GetClientId@{GetClientId}!NetworkServer@{NetworkServer}}
+\doxysubsubsection{\texorpdfstring{GetClientId()}{GetClientId()}}
+{\footnotesize\ttfamily \label{class_network_server_ad843d56860fea419356e87525e776595} 
+uint32\+\_\+t Network\+Server\+::\+Get\+Client\+Id (\begin{DoxyParamCaption}\item[{HSteam\+Net\+Connection}]{conn}{}\end{DoxyParamCaption}) const}
+
+
+
+Get client ID from connection handle. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em conn} & Connection handle \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+\doxylink{class_client}{Client} ID, or 0 if not found 
+\end{DoxyReturn}
+\Hypertarget{class_network_server_a27ff1aa9ba1315c15d9cd0095463dd5e}\index{NetworkServer@{NetworkServer}!GetClients@{GetClients}}
+\index{GetClients@{GetClients}!NetworkServer@{NetworkServer}}
+\doxysubsubsection{\texorpdfstring{GetClients()}{GetClients()}}
+{\footnotesize\ttfamily \label{class_network_server_a27ff1aa9ba1315c15d9cd0095463dd5e} 
+const std\+::map$<$ HSteam\+Net\+Connection, uint32\+\_\+t $>$ \& Network\+Server\+::\+Get\+Clients (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Get read-\/only access to the client map. 
+
+\begin{DoxyReturn}{Returns}
+Const reference to the connection-\/to-\/client\+ID map 
+\end{DoxyReturn}
+\Hypertarget{class_network_server_a37c3a489f3465642d05cd9fb62c1939e}\index{NetworkServer@{NetworkServer}!GetConnectionByClientId@{GetConnectionByClientId}}
+\index{GetConnectionByClientId@{GetConnectionByClientId}!NetworkServer@{NetworkServer}}
+\doxysubsubsection{\texorpdfstring{GetConnectionByClientId()}{GetConnectionByClientId()}}
+{\footnotesize\ttfamily \label{class_network_server_a37c3a489f3465642d05cd9fb62c1939e} 
+HSteam\+Net\+Connection Network\+Server\+::\+Get\+Connection\+By\+Client\+Id (\begin{DoxyParamCaption}\item[{uint32\+\_\+t}]{client\+Id}{}\end{DoxyParamCaption}) const}
+
+
+
+Get connection handle from client ID. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em client\+Id} & \doxylink{class_client}{Client} ID to look up \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+Connection handle, or k\+\_\+\+HSteam\+Net\+Connection\+\_\+\+Invalid if not found 
+\end{DoxyReturn}
+\Hypertarget{class_network_server_a2defcde92c83b45f6bd5393df24b6f2a}\index{NetworkServer@{NetworkServer}!Poll@{Poll}}
+\index{Poll@{Poll}!NetworkServer@{NetworkServer}}
+\doxysubsubsection{\texorpdfstring{Poll()}{Poll()}}
+{\footnotesize\ttfamily \label{class_network_server_a2defcde92c83b45f6bd5393df24b6f2a} 
+void Network\+Server\+::\+Poll (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption})}
+
+
+
+Poll for network events. 
+
+Must be called regularly (typically once per tick) to process incoming messages and connection state changes. \Hypertarget{class_network_server_aca6684af264f402c2c0517679648d4b9}\index{NetworkServer@{NetworkServer}!SendMessageTo@{SendMessageTo}}
+\index{SendMessageTo@{SendMessageTo}!NetworkServer@{NetworkServer}}
+\doxysubsubsection{\texorpdfstring{SendMessageTo()}{SendMessageTo()}}
+{\footnotesize\ttfamily \label{class_network_server_aca6684af264f402c2c0517679648d4b9} 
+bool Network\+Server\+::\+Send\+Message\+To (\begin{DoxyParamCaption}\item[{HSteam\+Net\+Connection}]{conn}{, }\item[{const uint8\+\_\+t \texorpdfstring{$\ast$}{*}}]{data}{, }\item[{size\+\_\+t}]{size}{, }\item[{bool}]{reliable}{ = {\ttfamily false}}\end{DoxyParamCaption})}
+
+
+
+Send a message to a specific client. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em conn} & Connection handle of the target client \\
+\hline
+{\em data} & Pointer to the message data \\
+\hline
+{\em size} & Size of the message in bytes \\
+\hline
+{\em reliable} & If true, use reliable delivery; if false, use unreliable \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+true if the message was queued successfully, false otherwise 
+\end{DoxyReturn}
+\Hypertarget{class_network_server_a8237ad0b2d3dd0121cf7f93a34f5f874}\index{NetworkServer@{NetworkServer}!SetOnClientConnected@{SetOnClientConnected}}
+\index{SetOnClientConnected@{SetOnClientConnected}!NetworkServer@{NetworkServer}}
+\doxysubsubsection{\texorpdfstring{SetOnClientConnected()}{SetOnClientConnected()}}
+{\footnotesize\ttfamily \label{class_network_server_a8237ad0b2d3dd0121cf7f93a34f5f874} 
+void Network\+Server\+::\+Set\+On\+Client\+Connected (\begin{DoxyParamCaption}\item[{std\+::function$<$ void(HSteam\+Net\+Connection, uint32\+\_\+t)$>$}]{callback}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Set callback for when client is fully connected. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em callback} & Function to call when connection is fully established \\
+\hline
+\end{DoxyParams}
+\Hypertarget{class_network_server_a86fe4fbcabe3d9e35a51e271ca80bbc6}\index{NetworkServer@{NetworkServer}!SetOnClientDisconnected@{SetOnClientDisconnected}}
+\index{SetOnClientDisconnected@{SetOnClientDisconnected}!NetworkServer@{NetworkServer}}
+\doxysubsubsection{\texorpdfstring{SetOnClientDisconnected()}{SetOnClientDisconnected()}}
+{\footnotesize\ttfamily \label{class_network_server_a86fe4fbcabe3d9e35a51e271ca80bbc6} 
+void Network\+Server\+::\+Set\+On\+Client\+Disconnected (\begin{DoxyParamCaption}\item[{std\+::function$<$ void(HSteam\+Net\+Connection, uint32\+\_\+t)$>$}]{callback}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Set callback for client disconnection. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em callback} & Function to call when a client disconnects \\
+\hline
+\end{DoxyParams}
+\Hypertarget{class_network_server_a1a838965bc23381c1583e064e597724f}\index{NetworkServer@{NetworkServer}!SetOnMessageReceived@{SetOnMessageReceived}}
+\index{SetOnMessageReceived@{SetOnMessageReceived}!NetworkServer@{NetworkServer}}
+\doxysubsubsection{\texorpdfstring{SetOnMessageReceived()}{SetOnMessageReceived()}}
+{\footnotesize\ttfamily \label{class_network_server_a1a838965bc23381c1583e064e597724f} 
+void Network\+Server\+::\+Set\+On\+Message\+Received (\begin{DoxyParamCaption}\item[{std\+::function$<$ void(HSteam\+Net\+Connection, uint32\+\_\+t, const uint8\+\_\+t \texorpdfstring{$\ast$}{*}, size\+\_\+t)$>$}]{callback}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Set callback for incoming messages. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em callback} & Function to call when a message is received from a client \\
+\hline
+\end{DoxyParams}
+\Hypertarget{class_network_server_a83ee0f8ad315f80b8ed7c995b220656c}\index{NetworkServer@{NetworkServer}!SetOnNewConnection@{SetOnNewConnection}}
+\index{SetOnNewConnection@{SetOnNewConnection}!NetworkServer@{NetworkServer}}
+\doxysubsubsection{\texorpdfstring{SetOnNewConnection()}{SetOnNewConnection()}}
+{\footnotesize\ttfamily \label{class_network_server_a83ee0f8ad315f80b8ed7c995b220656c} 
+void Network\+Server\+::\+Set\+On\+New\+Connection (\begin{DoxyParamCaption}\item[{std\+::function$<$ bool(HSteam\+Net\+Connection, uint32\+\_\+t)$>$}]{callback}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Set callback for new connection requests. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em callback} & Function to call on new connection (return true to accept, false to reject) \\
+\hline
+\end{DoxyParams}
+\Hypertarget{class_network_server_a9e0b9c86a5f846fb15770d8c0fb362a6}\index{NetworkServer@{NetworkServer}!Start@{Start}}
+\index{Start@{Start}!NetworkServer@{NetworkServer}}
+\doxysubsubsection{\texorpdfstring{Start()}{Start()}}
+{\footnotesize\ttfamily \label{class_network_server_a9e0b9c86a5f846fb15770d8c0fb362a6} 
+bool Network\+Server\+::\+Start (\begin{DoxyParamCaption}\item[{uint16\+\_\+t}]{port}{}\end{DoxyParamCaption})}
+
+
+
+Start the server and begin listening for connections. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em port} & Port number to listen on \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+true if server started successfully, false otherwise 
+\end{DoxyReturn}
+\Hypertarget{class_network_server_af0fc5b202d9f4cdd28b859feb080f7be}\index{NetworkServer@{NetworkServer}!Stop@{Stop}}
+\index{Stop@{Stop}!NetworkServer@{NetworkServer}}
+\doxysubsubsection{\texorpdfstring{Stop()}{Stop()}}
+{\footnotesize\ttfamily \label{class_network_server_af0fc5b202d9f4cdd28b859feb080f7be} 
+void Network\+Server\+::\+Stop (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption})}
+
+
+
+Stop the server and disconnect all clients. 
+
+Closes all active connections and stops listening for new ones. 
+
+The documentation for this class was generated from the following files\+:\begin{DoxyCompactItemize}
+\item 
+core/\mbox{\hyperlink{network_8h}{network.\+h}}\item 
+core/\mbox{\hyperlink{network_8cpp}{network.\+cpp}}\end{DoxyCompactItemize}

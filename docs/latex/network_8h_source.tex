@@ -1,0 +1,37 @@
+\doxysection{network.\+h}
+\hypertarget{network_8h_source}{}\label{network_8h_source}\index{core/network.h@{core/network.h}}
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00001\ \textcolor{preprocessor}{\#pragma\ once}}
+\DoxyCodeLine{00002\ }
+\DoxyCodeLine{00003\ \textcolor{preprocessor}{\#include\ "{}raylib.h"{}}}
+\DoxyCodeLine{00004\ \textcolor{preprocessor}{\#include\ "{}framework.h"{}}}
+\DoxyCodeLine{00005\ }
+\DoxyCodeLine{00006\ \textcolor{preprocessor}{\#define\ NBN\_LogInfo(...)\ TraceLog(LOG\_INFO,\ \_\_VA\_ARGS\_\_)}}
+\DoxyCodeLine{00007\ \textcolor{preprocessor}{\#define\ NBN\_LogError(...)\ TraceLog(LOG\_ERROR,\ \_\_VA\_ARGS\_\_)}}
+\DoxyCodeLine{00008\ \textcolor{preprocessor}{\#define\ NBN\_LogWarning(...)\ TraceLog(LOG\_WARNING,\ \_\_VA\_ARGS\_\_)}}
+\DoxyCodeLine{00009\ \textcolor{preprocessor}{\#define\ NBN\_LogDebug(...)\ TraceLog(LOG\_DEBUG,\ \_\_VA\_ARGS\_\_)}}
+\DoxyCodeLine{00010\ \textcolor{preprocessor}{\#define\ NBN\_LogTrace(...)\ TraceLog(LOG\_TRACE,\ \_\_VA\_ARGS\_\_)}}
+\DoxyCodeLine{00011\ }
+\DoxyCodeLine{00012\ \textcolor{preprocessor}{\#include\ "{}nbnet.h"{}}}
+\DoxyCodeLine{00013\ \textcolor{preprocessor}{\#include\ "{}udp.h"{}}}
+\DoxyCodeLine{00014\ }
+\DoxyCodeLine{00015\ \textcolor{keyword}{enum}\ NetworkMode}
+\DoxyCodeLine{00016\ \{}
+\DoxyCodeLine{00017\ \ \ \ \ SERVER,}
+\DoxyCodeLine{00018\ \ \ \ \ CLIENT,}
+\DoxyCodeLine{00019\ \};}
+\DoxyCodeLine{00020\ }
+\DoxyCodeLine{00021\ \textcolor{keyword}{class\ }Network}
+\DoxyCodeLine{00022\ \{}
+\DoxyCodeLine{00023\ \textcolor{keyword}{private}:}
+\DoxyCodeLine{00024\ \ \ \ \ NetworkMode\ m\_mode;}
+\DoxyCodeLine{00025\ \textcolor{keyword}{public}:}
+\DoxyCodeLine{00026\ \ \ \ \ Network(NetworkMode\ mode);}
+\DoxyCodeLine{00027\ \ \ \ \ \string~Network(\textcolor{keywordtype}{void});}
+\DoxyCodeLine{00028\ }
+\DoxyCodeLine{00029\ \ \ \ \ \textcolor{keywordtype}{void}\ Init();}
+\DoxyCodeLine{00030\ \ \ \ \ \textcolor{keywordtype}{void}\ Init(\textcolor{keywordtype}{int}\ argc,\ \textcolor{keywordtype}{char}**\ argv);}
+\DoxyCodeLine{00031\ \};}
+
+\end{DoxyCode}

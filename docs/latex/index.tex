@@ -1,0 +1,88 @@
+\chapter{R-\/\+Type Network Game Documentation }
+\hypertarget{index}{}\label{index}\index{R-\/Type Network Game Documentation@{R-\/Type Network Game Documentation}}
+\hypertarget{index_intro_sec}{}\doxysection{\texorpdfstring{Introduction}{Introduction}}\label{index_intro_sec}
+R-\/\+Type is a multiplayer networked game inspired by the classic arcade shooter. This project implements a client-\/server architecture using Valve\textquotesingle{}s Game\+Networking\+Sockets library for reliable UDP communication.\hypertarget{index_arch_sec}{}\doxysection{\texorpdfstring{Architecture Overview}{Architecture Overview}}\label{index_arch_sec}
+The project is organized into three main components\+:\hypertarget{index_core_subsec}{}\doxysubsection{\texorpdfstring{Core Library (r-\/type\+\_\+core)}{Core Library (r-\/type\+\_\+core)}}\label{index_core_subsec}
+The core library contains shared code used by both the client and server\+:
+\begin{DoxyItemize}
+\item \doxylink{class_network_base}{Network\+Base}, \doxylink{class_network_client}{Network\+Client}, \doxylink{class_network_server}{Network\+Server} -\/ Network abstraction layer over Game\+Networking\+Sockets
+\item \doxylink{class_message_buffer}{Message\+Buffer} -\/ Binary serialization/deserialization utilities
+\item \doxylink{struct_client_state}{Client\+State}, \doxylink{struct_game_state_message}{Game\+State\+Message}, \doxylink{struct_update_state_message}{Update\+State\+Message} -\/ Message structures
+\item Shared constants and configuration values
+\end{DoxyItemize}\hypertarget{index_client_subsec}{}\doxysubsection{\texorpdfstring{Client Application (r-\/type\+\_\+client)}{Client Application (r-\/type\+\_\+client)}}\label{index_client_subsec}
+The game client handles\+:
+\begin{DoxyItemize}
+\item Rendering using raylib
+\item Player input processing
+\item Network communication with the server
+\item Local game state interpolation
+\end{DoxyItemize}\hypertarget{index_server_subsec}{}\doxysubsection{\texorpdfstring{Server Application (r-\/type\+\_\+server)}{Server Application (r-\/type\+\_\+server)}}\label{index_server_subsec}
+The dedicated server handles\+:
+\begin{DoxyItemize}
+\item \doxylink{class_client}{Client} connection management
+\item Game state synchronization
+\item Broadcasting updates to all connected clients
+\end{DoxyItemize}\hypertarget{index_network_sec}{}\doxysection{\texorpdfstring{Network Protocol}{Network Protocol}}\label{index_network_sec}
+The game uses a custom binary protocol over Game\+Networking\+Sockets (reliable UDP)\+:
+
+
+\begin{DoxyTable}{3}{}{}{1}
+\SetCell{c,bg=\tableheadbgcolor,font=\bfseries}Message Type  &\SetCell{c,bg=\tableheadbgcolor,font=\bfseries}Direction  &\SetCell{c,bg=\tableheadbgcolor,font=\bfseries}Description  \\
+\doxylink{group__messages_gga1bc3ccf4d567ca83c993c3aaa8124904af0852c94a31df4599d0a8f86a51d8f05}{MSG\+\_\+\+SPAWN\+\_\+\+INFO}  &\doxylink{class_server}{Server} → \doxylink{class_client}{Client}  &Sends spawn position and client ID on connection  \\
+\doxylink{group__messages_gga1bc3ccf4d567ca83c993c3aaa8124904a76d028255d41850de2248c1a10292b40}{MSG\+\_\+\+UPDATE\+\_\+\+STATE}  &\doxylink{class_client}{Client} → \doxylink{class_server}{Server}  &Player position and missile updates  \\
+\doxylink{group__messages_gga1bc3ccf4d567ca83c993c3aaa8124904a753eedb66b5690973aa5d78f1279ca53}{MSG\+\_\+\+GAME\+\_\+\+STATE}  &\doxylink{class_server}{Server} → \doxylink{class_client}{Client}  &Complete game state with all players  \\
+\end{DoxyTable}
+\hypertarget{index_build_sec}{}\doxysection{\texorpdfstring{Building the Project}{Building the Project}}\label{index_build_sec}
+\hypertarget{index_prereq_subsec}{}\doxysubsection{\texorpdfstring{Prerequisites}{Prerequisites}}\label{index_prereq_subsec}
+
+\begin{DoxyItemize}
+\item CMake 3.\+16 or higher
+\item C++20 compatible compiler
+\item vcpkg with protobuf and openssl packages
+\end{DoxyItemize}\hypertarget{index_build_steps_subsec}{}\doxysubsection{\texorpdfstring{Build Steps}{Build Steps}}\label{index_build_steps_subsec}
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{mkdir\ build}
+\DoxyCodeLine{cd\ build}
+\DoxyCodeLine{cmake\ ..\ -\/DCMAKE\_TOOLCHAIN\_FILE="{}path/to/vcpkg/scripts/buildsystems/vcpkg.cmake"{}}
+\DoxyCodeLine{cmake\ -\/-\/build\ .\ -\/-\/config\ Release}
+
+\end{DoxyCode}
+\hypertarget{index_usage_sec}{}\doxysection{\texorpdfstring{Usage}{Usage}}\label{index_usage_sec}
+\hypertarget{index_server_usage}{}\doxysubsection{\texorpdfstring{Starting the Server}{Starting the Server}}\label{index_server_usage}
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{r-\/type\_server.exe}
+
+\end{DoxyCode}
+ The server listens on port \doxylink{group__config_ga614217d263be1fb1a5f76e2ff7be19a2}{PORT} (default\+: 42042)\hypertarget{index_client_usage}{}\doxysubsection{\texorpdfstring{Starting the Client}{Starting the Client}}\label{index_client_usage}
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{r-\/type\_client.exe}
+
+\end{DoxyCode}
+ Enter the server IP address when prompted.\hypertarget{index_config_sec}{}\doxysection{\texorpdfstring{Configuration}{Configuration}}\label{index_config_sec}
+Key configuration values (defined in \doxylink{shared_8h}{shared.\+h})\+:
+\begin{DoxyItemize}
+\item \doxylink{group__config_ga0a8f91f93d75a07f0ae45077db45b3eb}{MAX\+\_\+\+CLIENTS} -\/ Maximum concurrent players (4)
+\item \doxylink{group__config_gaf4021b95b18dc511ba274a310fe66d08}{TICK\+\_\+\+RATE} -\/ \doxylink{class_server}{Server} simulation rate (60 Hz)
+\item \doxylink{group__config_ga614217d263be1fb1a5f76e2ff7be19a2}{PORT} -\/ Default network port (42042)
+\item \doxylink{group__config_ga693f306b88f7336281e4d1f07754579c}{GAME\+\_\+\+WIDTH} / \doxylink{group__config_gaddffa3e327bacbc3da87278442b2b507}{GAME\+\_\+\+HEIGHT} -\/ Game window dimensions
+\end{DoxyItemize}\hypertarget{index_deps_sec}{}\doxysection{\texorpdfstring{Dependencies}{Dependencies}}\label{index_deps_sec}
+
+\begin{DoxyItemize}
+\item {\bfseries{Game\+Networking\+Sockets}} -\/ Valve\textquotesingle{}s networking library (via CPM)
+\item {\bfseries{raylib}} -\/ Graphics and input library (via CPM)
+\item {\bfseries{sol2}} -\/ Lua binding library (via CPM)
+\item {\bfseries{box2d}} -\/ Physics engine (via CPM)
+\item {\bfseries{protobuf}} -\/ Protocol buffers (via vcpkg)
+\item {\bfseries{Open\+SSL}} -\/ Cryptography (via vcpkg)
+\end{DoxyItemize}\hypertarget{index_license_sec}{}\doxysection{\texorpdfstring{License}{License}}\label{index_license_sec}
+See LICENSE file in the project root for license information.
+
+\begin{DoxyAuthor}{Author}
+R-\/\+Type Development Team 
+\end{DoxyAuthor}
+\begin{DoxyVersion}{Version}
+1.\+0 
+\end{DoxyVersion}

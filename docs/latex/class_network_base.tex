@@ -1,0 +1,158 @@
+\doxysection{Network\+Base Class Reference}
+\hypertarget{class_network_base}{}\label{class_network_base}\index{NetworkBase@{NetworkBase}}
+
+
+Base network class with common functionality.  
+
+
+
+
+{\ttfamily \#include $<$network.\+h$>$}
+
+Inheritance diagram for Network\+Base\+:\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[height=2.000000cm]{class_network_base}
+\end{center}
+\end{figure}
+\doxysubsubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\hyperlink{class_network_base_a396d957f549c9be51ca44ed73a7db772}{Network\+Base}} ()=default
+\item 
+virtual \mbox{\hyperlink{class_network_base_afaa354e6c18ace5bb929e26917f12bbe}{\texorpdfstring{$\sim$}{\string~}\+Network\+Base}} ()
+\item 
+bool \mbox{\hyperlink{class_network_base_ac76d7d5de8a01629b402eba367376cb2}{Is\+Initialized}} () const
+\begin{DoxyCompactList}\small\item\em Check if the network instance is initialized. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\doxysubsubsection*{Static Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+static void \mbox{\hyperlink{class_network_base_a4489c4321d3f2d982e13d968f093ad1c}{Init\+Steam\+Networking\+Sockets}} ()
+\begin{DoxyCompactList}\small\item\em Initialize the Game\+Networking\+Sockets library. \end{DoxyCompactList}\item 
+static void \mbox{\hyperlink{class_network_base_aaf040d84a94cf752ee294c70bb7d4f2d}{Shutdown\+Steam\+Networking\+Sockets}} ()
+\begin{DoxyCompactList}\small\item\em Shutdown the Game\+Networking\+Sockets library. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\doxysubsubsection*{Static Protected Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+static void \mbox{\hyperlink{class_network_base_a2f3439b30e0445e567f172d08e710458}{Debug\+Output}} (ESteam\+Networking\+Sockets\+Debug\+Output\+Type e\+Type, const char \texorpdfstring{$\ast$}{*}psz\+Msg)
+\begin{DoxyCompactList}\small\item\em Debug output callback for Game\+Networking\+Sockets. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\doxysubsubsection*{Protected Attributes}
+\begin{DoxyCompactItemize}
+\item 
+ISteam\+Networking\+Sockets \texorpdfstring{$\ast$}{*} \mbox{\hyperlink{class_network_base_a509aa444e2804a319ba51d93d967f275}{m\+\_\+p\+Interface}} = nullptr
+\begin{DoxyCompactList}\small\item\em Game\+Networking\+Sockets interface. \end{DoxyCompactList}\item 
+bool \mbox{\hyperlink{class_network_base_a857ba7a430771f043d1bdb9b585c2f5a}{m\+\_\+initialized}} = false
+\begin{DoxyCompactList}\small\item\em Initialization state flag. \end{DoxyCompactList}\end{DoxyCompactItemize}
+
+
+\doxysubsection{Detailed Description}
+Base network class with common functionality. 
+
+Provides shared initialization and shutdown logic for both \doxylink{class_network_client}{Network\+Client} and \doxylink{class_network_server}{Network\+Server} classes. Manages the underlying ISteam\+Networking\+Sockets interface.
+
+\begin{DoxyNote}{Note}
+This class should not be instantiated directly. Use \doxylink{class_network_client}{Network\+Client} or \doxylink{class_network_server}{Network\+Server} instead. 
+\end{DoxyNote}
+
+
+\label{doc-constructors}
+\Hypertarget{class_network_base_doc-constructors}
+\doxysubsection{Constructor \& Destructor Documentation}
+\Hypertarget{class_network_base_a396d957f549c9be51ca44ed73a7db772}\index{NetworkBase@{NetworkBase}!NetworkBase@{NetworkBase}}
+\index{NetworkBase@{NetworkBase}!NetworkBase@{NetworkBase}}
+\doxysubsubsection{\texorpdfstring{NetworkBase()}{NetworkBase()}}
+{\footnotesize\ttfamily \label{class_network_base_a396d957f549c9be51ca44ed73a7db772} 
+Network\+Base\+::\+Network\+Base (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [default]}}
+
+\Hypertarget{class_network_base_afaa354e6c18ace5bb929e26917f12bbe}\index{NetworkBase@{NetworkBase}!````~NetworkBase@{\texorpdfstring{$\sim$}{\string~}NetworkBase}}
+\index{````~NetworkBase@{\texorpdfstring{$\sim$}{\string~}NetworkBase}!NetworkBase@{NetworkBase}}
+\doxysubsubsection{\texorpdfstring{\texorpdfstring{$\sim$}{\string~}NetworkBase()}{\string~NetworkBase()}}
+{\footnotesize\ttfamily \label{class_network_base_afaa354e6c18ace5bb929e26917f12bbe} 
+Network\+Base\+::\texorpdfstring{$\sim$}{\string~}\+Network\+Base (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [virtual]}}
+
+
+
+\label{doc-func-members}
+\Hypertarget{class_network_base_doc-func-members}
+\doxysubsection{Member Function Documentation}
+\Hypertarget{class_network_base_a2f3439b30e0445e567f172d08e710458}\index{NetworkBase@{NetworkBase}!DebugOutput@{DebugOutput}}
+\index{DebugOutput@{DebugOutput}!NetworkBase@{NetworkBase}}
+\doxysubsubsection{\texorpdfstring{DebugOutput()}{DebugOutput()}}
+{\footnotesize\ttfamily \label{class_network_base_a2f3439b30e0445e567f172d08e710458} 
+void Network\+Base\+::\+Debug\+Output (\begin{DoxyParamCaption}\item[{ESteam\+Networking\+Sockets\+Debug\+Output\+Type}]{e\+Type}{, }\item[{const char \texorpdfstring{$\ast$}{*}}]{psz\+Msg}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [static]}, {\ttfamily [protected]}}
+
+
+
+Debug output callback for Game\+Networking\+Sockets. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em e\+Type} & The type/severity of the debug message \\
+\hline
+{\em psz\+Msg} & The debug message string \\
+\hline
+\end{DoxyParams}
+\Hypertarget{class_network_base_a4489c4321d3f2d982e13d968f093ad1c}\index{NetworkBase@{NetworkBase}!InitSteamNetworkingSockets@{InitSteamNetworkingSockets}}
+\index{InitSteamNetworkingSockets@{InitSteamNetworkingSockets}!NetworkBase@{NetworkBase}}
+\doxysubsubsection{\texorpdfstring{InitSteamNetworkingSockets()}{InitSteamNetworkingSockets()}}
+{\footnotesize\ttfamily \label{class_network_base_a4489c4321d3f2d982e13d968f093ad1c} 
+void Network\+Base\+::\+Init\+Steam\+Networking\+Sockets (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [static]}}
+
+
+
+Initialize the Game\+Networking\+Sockets library. 
+
+Must be called once before creating any \doxylink{class_network_client}{Network\+Client} or \doxylink{class_network_server}{Network\+Server} instances. Sets up the global Game\+Networking\+Sockets state. \Hypertarget{class_network_base_ac76d7d5de8a01629b402eba367376cb2}\index{NetworkBase@{NetworkBase}!IsInitialized@{IsInitialized}}
+\index{IsInitialized@{IsInitialized}!NetworkBase@{NetworkBase}}
+\doxysubsubsection{\texorpdfstring{IsInitialized()}{IsInitialized()}}
+{\footnotesize\ttfamily \label{class_network_base_ac76d7d5de8a01629b402eba367376cb2} 
+bool Network\+Base\+::\+Is\+Initialized (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Check if the network instance is initialized. 
+
+\begin{DoxyReturn}{Returns}
+true if initialized and ready for use, false otherwise 
+\end{DoxyReturn}
+\Hypertarget{class_network_base_aaf040d84a94cf752ee294c70bb7d4f2d}\index{NetworkBase@{NetworkBase}!ShutdownSteamNetworkingSockets@{ShutdownSteamNetworkingSockets}}
+\index{ShutdownSteamNetworkingSockets@{ShutdownSteamNetworkingSockets}!NetworkBase@{NetworkBase}}
+\doxysubsubsection{\texorpdfstring{ShutdownSteamNetworkingSockets()}{ShutdownSteamNetworkingSockets()}}
+{\footnotesize\ttfamily \label{class_network_base_aaf040d84a94cf752ee294c70bb7d4f2d} 
+void Network\+Base\+::\+Shutdown\+Steam\+Networking\+Sockets (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [static]}}
+
+
+
+Shutdown the Game\+Networking\+Sockets library. 
+
+Should be called once when the application is closing, after all network instances have been destroyed. 
+
+\label{doc-variable-members}
+\Hypertarget{class_network_base_doc-variable-members}
+\doxysubsection{Member Data Documentation}
+\Hypertarget{class_network_base_a857ba7a430771f043d1bdb9b585c2f5a}\index{NetworkBase@{NetworkBase}!m\_initialized@{m\_initialized}}
+\index{m\_initialized@{m\_initialized}!NetworkBase@{NetworkBase}}
+\doxysubsubsection{\texorpdfstring{m\_initialized}{m\_initialized}}
+{\footnotesize\ttfamily \label{class_network_base_a857ba7a430771f043d1bdb9b585c2f5a} 
+bool Network\+Base\+::m\+\_\+initialized = false\hspace{0.3cm}{\ttfamily [protected]}}
+
+
+
+Initialization state flag. 
+
+\Hypertarget{class_network_base_a509aa444e2804a319ba51d93d967f275}\index{NetworkBase@{NetworkBase}!m\_pInterface@{m\_pInterface}}
+\index{m\_pInterface@{m\_pInterface}!NetworkBase@{NetworkBase}}
+\doxysubsubsection{\texorpdfstring{m\_pInterface}{m\_pInterface}}
+{\footnotesize\ttfamily \label{class_network_base_a509aa444e2804a319ba51d93d967f275} 
+ISteam\+Networking\+Sockets\texorpdfstring{$\ast$}{*} Network\+Base\+::m\+\_\+p\+Interface = nullptr\hspace{0.3cm}{\ttfamily [protected]}}
+
+
+
+Game\+Networking\+Sockets interface. 
+
+
+
+The documentation for this class was generated from the following files\+:\begin{DoxyCompactItemize}
+\item 
+core/\mbox{\hyperlink{network_8h}{network.\+h}}\item 
+core/\mbox{\hyperlink{network_8cpp}{network.\+cpp}}\end{DoxyCompactItemize}

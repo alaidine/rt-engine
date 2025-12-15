@@ -78,13 +78,12 @@ android.*
 # WebAssembly release files
 *.data
 *.wasm
-*.html
+# *.html
 *.js
 !src/minshell.html
 !src/shell.html
 
 # Docs files
-docs
 .vscode
 rtype
 *.txt

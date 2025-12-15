@@ -1,0 +1,86 @@
+\doxysection{client.\+h}
+\hypertarget{client_8h_source}{}\label{client_8h_source}\index{client/client.h@{client/client.h}}
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00001\ \textcolor{preprocessor}{\#pragma\ once}}
+\DoxyCodeLine{00002\ }
+\DoxyCodeLine{00003\ \textcolor{preprocessor}{\#include\ <vector>}}
+\DoxyCodeLine{00004\ \textcolor{preprocessor}{\#include\ <array>}}
+\DoxyCodeLine{00005\ \textcolor{preprocessor}{\#include\ <memory>}}
+\DoxyCodeLine{00006\ \textcolor{preprocessor}{\#include\ <sol/sol.hpp>}}
+\DoxyCodeLine{00007\ }
+\DoxyCodeLine{00008\ \textcolor{preprocessor}{\#include\ "{}shared.h"{}}}
+\DoxyCodeLine{00009\ }
+\DoxyCodeLine{00010\ \textcolor{preprocessor}{\#define\ TARGET\_FPS\ 100}}
+\DoxyCodeLine{00011\ \textcolor{preprocessor}{\#define\ MAX\_INPUT\_CHARS\ 15}}
+\DoxyCodeLine{00012\ }
+\DoxyCodeLine{00013\ \textcolor{keyword}{class\ }Client}
+\DoxyCodeLine{00014\ \{}
+\DoxyCodeLine{00015\ \textcolor{keyword}{private}:}
+\DoxyCodeLine{00016\ \ \ \ \ \textcolor{keyword}{typedef}\ \textcolor{keyword}{enum}}
+\DoxyCodeLine{00017\ \ \ \ \ \{}
+\DoxyCodeLine{00018\ \ \ \ \ \ \ \ \ TITLE\ =\ 0,}
+\DoxyCodeLine{00019\ \ \ \ \ \ \ \ \ IP\_ADDRESS,}
+\DoxyCodeLine{00020\ \ \ \ \ \ \ \ \ GAMEPLAY}
+\DoxyCodeLine{00021\ \ \ \ \ \}\ GameScreen;}
+\DoxyCodeLine{00022\ }
+\DoxyCodeLine{00023\ \ \ \ \ \textcolor{keywordtype}{bool}\ m\_clientInitialized;}
+\DoxyCodeLine{00024\ \ \ \ \ \textcolor{keywordtype}{bool}\ m\_connected;\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ Connected\ to\ the\ server}}
+\DoxyCodeLine{00025\ \ \ \ \ \textcolor{keywordtype}{bool}\ m\_disconnected;\ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ Got\ disconnected\ from\ the\ server}}
+\DoxyCodeLine{00026\ \ \ \ \ \textcolor{keywordtype}{bool}\ m\_spawned;\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ Has\ spawned}}
+\DoxyCodeLine{00027\ \ \ \ \ \textcolor{keywordtype}{int}\ m\_serverCloseCode;\ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ The\ server\ code\ used\ when\ closing\ the\ connection}}
+\DoxyCodeLine{00028\ \ \ \ \ \mbox{\hyperlink{struct_client_state}{ClientState}}\ m\_localClientState;\ \textcolor{comment}{//\ The\ state\ of\ the\ local\ client}}
+\DoxyCodeLine{00029\ \ \ \ \ GameScreen\ m\_currentScreen;}
+\DoxyCodeLine{00030\ \ \ \ \ std::array<\mbox{\hyperlink{struct_client_state}{ClientState}}*,\ MAX\_CLIENTS\ -\/\ 1>\ m\_clients;}
+\DoxyCodeLine{00031\ \ \ \ \ std::array<int,\ MAX\_CLIENTS>\ m\_updatedIds;}
+\DoxyCodeLine{00032\ \ \ \ \ std::array<Rectangle,\ 5>\ m\_missileAnimationRectangles;}
+\DoxyCodeLine{00033\ \ \ \ \ std::vector<Missile>\ m\_missiles;}
+\DoxyCodeLine{00034\ \ \ \ \ \textcolor{keywordtype}{unsigned}\ \textcolor{keywordtype}{int}\ m\_clientCount;}
+\DoxyCodeLine{00035\ \ \ \ \ \textcolor{keywordtype}{bool}\ m\_fireMissileKeyPressed;}
+\DoxyCodeLine{00036\ \ \ \ \ \textcolor{keywordtype}{double}\ m\_tickDt;\ \textcolor{comment}{//\ Tick\ delta\ time\ (in\ seconds)}}
+\DoxyCodeLine{00037\ \ \ \ \ \textcolor{keywordtype}{double}\ m\_acc;}
+\DoxyCodeLine{00038\ \ \ \ \ \textcolor{keywordtype}{char}\ m\_serverIp[MAX\_INPUT\_CHARS\ +\ 1];\ \textcolor{comment}{//\ NOTE:\ One\ extra\ space\ required\ for\ null\ terminator\ char\ '\(\backslash\)0'}}
+\DoxyCodeLine{00039\ \ \ \ \ \textcolor{keywordtype}{int}\ m\_letterCount;}
+\DoxyCodeLine{00040\ \ \ \ \ Rectangle\ m\_textBox;}
+\DoxyCodeLine{00041\ \ \ \ \ \textcolor{keywordtype}{int}\ m\_framesCounter;}
+\DoxyCodeLine{00042\ \ \ \ \ \textcolor{keywordtype}{bool}\ m\_displayHUD;}
+\DoxyCodeLine{00043\ \ \ \ \ Texture2D\ m\_player;}
+\DoxyCodeLine{00044\ \ \ \ \ Texture2D\ m\_background;}
+\DoxyCodeLine{00045\ \textcolor{keyword}{public}:}
+\DoxyCodeLine{00046\ \ \ \ \ Client();}
+\DoxyCodeLine{00047\ \ \ \ \ \string~Client();}
+\DoxyCodeLine{00048\ }
+\DoxyCodeLine{00049\ \ \ \ \ \textcolor{keywordtype}{void}\ Init(\textcolor{keywordtype}{void});}
+\DoxyCodeLine{00050\ \ \ \ \ \textcolor{keywordtype}{void}\ Run(\textcolor{keywordtype}{void});}
+\DoxyCodeLine{00051\ }
+\DoxyCodeLine{00052\ \ \ \ \ \textcolor{keywordtype}{void}\ Fire(\textcolor{keywordtype}{void});}
+\DoxyCodeLine{00053\ \ \ \ \ \textcolor{keywordtype}{void}\ DrawMissiles(\textcolor{keywordtype}{void});}
+\DoxyCodeLine{00054\ }
+\DoxyCodeLine{00055\ \ \ \ \ \textcolor{keywordtype}{void}\ SpawnLocalClient(\textcolor{keywordtype}{int}\ x,\ \textcolor{keywordtype}{int}\ y,\ uint32\_t\ client\_id);}
+\DoxyCodeLine{00056\ \ \ \ \ \textcolor{keywordtype}{bool}\ ClientExists(uint32\_t\ client\_id);}
+\DoxyCodeLine{00057\ \ \ \ \ \textcolor{keywordtype}{void}\ CreateClient(\mbox{\hyperlink{struct_client_state}{ClientState}}\ state);}
+\DoxyCodeLine{00058\ \ \ \ \ }
+\DoxyCodeLine{00059\ \ \ \ \ \textcolor{keywordtype}{void}\ DestroyClient(uint32\_t\ client\_id);}
+\DoxyCodeLine{00060\ \ \ \ \ \textcolor{keywordtype}{void}\ DestroyDisconnectedClients(\textcolor{keywordtype}{void});}
+\DoxyCodeLine{00061\ }
+\DoxyCodeLine{00062\ \ \ \ \ \textcolor{keywordtype}{void}\ HandleConnection(\textcolor{keywordtype}{void});}
+\DoxyCodeLine{00063\ \ \ \ \ \textcolor{keywordtype}{void}\ HandleDisconnection(\textcolor{keywordtype}{void});}
+\DoxyCodeLine{00064\ \ \ \ \ \textcolor{keywordtype}{void}\ HandleGameStateMessage(\mbox{\hyperlink{struct_game_state_message}{GameStateMessage}}*\ msg);}
+\DoxyCodeLine{00065\ \ \ \ \ \textcolor{keywordtype}{void}\ HandleReceivedMessage(\textcolor{keywordtype}{void});}
+\DoxyCodeLine{00066\ \ \ \ \ \textcolor{keywordtype}{void}\ HandleGameClientEvent(\textcolor{keywordtype}{int}\ ev);}
+\DoxyCodeLine{00067\ }
+\DoxyCodeLine{00068\ \ \ \ \ \textcolor{keywordtype}{int}\ SendPositionUpdate(\textcolor{keywordtype}{void});}
+\DoxyCodeLine{00069\ }
+\DoxyCodeLine{00070\ \ \ \ \ \textcolor{keywordtype}{int}\ UpdateGameplay(\textcolor{keywordtype}{void});}
+\DoxyCodeLine{00071\ \ \ \ \ \textcolor{keywordtype}{void}\ UpdateClient(\mbox{\hyperlink{struct_client_state}{ClientState}}\ state);}
+\DoxyCodeLine{00072\ \ \ \ \ }
+\DoxyCodeLine{00073\ \ \ \ \ \textcolor{keywordtype}{void}\ UpdateAndDraw(\textcolor{keywordtype}{void});}
+\DoxyCodeLine{00074\ \ \ \ \ \textcolor{keywordtype}{void}\ DrawClient(\mbox{\hyperlink{struct_client_state}{ClientState}}*\ state,\ \textcolor{keywordtype}{bool}\ is\_local);}
+\DoxyCodeLine{00075\ \ \ \ \ \textcolor{keywordtype}{void}\ DrawHUD(\textcolor{keywordtype}{void});}
+\DoxyCodeLine{00076\ \ \ \ \ \textcolor{keywordtype}{void}\ DrawGameplay(\textcolor{keywordtype}{void});}
+\DoxyCodeLine{00077\ \ \ \ \ \textcolor{keywordtype}{void}\ DrawBackground(\textcolor{keywordtype}{void});}
+\DoxyCodeLine{00078\ }
+\DoxyCodeLine{00079\ \ \ \ \ \textcolor{keywordtype}{void}\ InitClient(\textcolor{keywordtype}{char}*\ serverIp);}
+\DoxyCodeLine{00080\ \};}
+
+\end{DoxyCode}

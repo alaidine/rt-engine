@@ -1,0 +1,27 @@
+\doxysection{server/server.h File Reference}
+\hypertarget{server_8h}{}\label{server_8h}\index{server/server.h@{server/server.h}}
+
+
+R-\/\+Type dedicated game server implementation.  
+
+
+{\ttfamily \#include $<$vector$>$}\newline
+{\ttfamily \#include $<$array$>$}\newline
+{\ttfamily \#include $<$memory$>$}\newline
+{\ttfamily \#include $<$sol/sol.\+hpp$>$}\newline
+{\ttfamily \#include "{}shared.\+h"{}}\newline
+{\ttfamily \#include "{}network.\+h"{}}\newline
+{\ttfamily \#include $<$steam/steamnetworkingsockets.\+h$>$}\newline
+\doxysubsubsection*{Classes}
+\begin{DoxyCompactItemize}
+\item 
+struct \mbox{\hyperlink{class_client}{Client}}
+\begin{DoxyCompactList}\small\item\em Main game client class. \end{DoxyCompactList}\item 
+class \mbox{\hyperlink{class_server}{Server}}
+\begin{DoxyCompactList}\small\item\em Dedicated game server class. \end{DoxyCompactList}\end{DoxyCompactItemize}
+
+
+\doxysubsection{Detailed Description}
+R-\/\+Type dedicated game server implementation. 
+
+This file contains the \doxylink{class_server}{Server} class which handles all server-\/side game logic including client management, game state synchronization, and network communication. 

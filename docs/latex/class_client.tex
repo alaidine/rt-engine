@@ -1,0 +1,90 @@
+\doxysection{Client Struct Reference}
+\hypertarget{class_client}{}\label{class_client}\index{Client@{Client}}
+\doxysubsubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\Hypertarget{class_client_a4ec8877a4f9e7285544a646e32c75451}\label{class_client_a4ec8877a4f9e7285544a646e32c75451} 
+void {\bfseries Init} (void)
+\item 
+\Hypertarget{class_client_a07bd0655e2db9bc2b86fffffeb0767e5}\label{class_client_a07bd0655e2db9bc2b86fffffeb0767e5} 
+void {\bfseries Run} (void)
+\item 
+\Hypertarget{class_client_a03b10217a7ec7c7ccf6556a573a8e8a8}\label{class_client_a03b10217a7ec7c7ccf6556a573a8e8a8} 
+void {\bfseries Fire} (void)
+\item 
+\Hypertarget{class_client_aed4b6aad236f81ab95b4108450e0244b}\label{class_client_aed4b6aad236f81ab95b4108450e0244b} 
+void {\bfseries Draw\+Missiles} (void)
+\item 
+\Hypertarget{class_client_aafe04bd1306f4d611bea6efdbb9636a1}\label{class_client_aafe04bd1306f4d611bea6efdbb9636a1} 
+void {\bfseries Spawn\+Local\+Client} (int x, int y, uint32\+\_\+t client\+\_\+id)
+\item 
+\Hypertarget{class_client_adca607389d77b5959e41b3cc8ed579da}\label{class_client_adca607389d77b5959e41b3cc8ed579da} 
+bool {\bfseries Client\+Exists} (uint32\+\_\+t client\+\_\+id)
+\item 
+\Hypertarget{class_client_a47dd1e69b86c20aed07391f5cbd36bb0}\label{class_client_a47dd1e69b86c20aed07391f5cbd36bb0} 
+void {\bfseries Create\+Client} (\mbox{\hyperlink{struct_client_state}{Client\+State}} state)
+\item 
+\Hypertarget{class_client_af3f7b75b13592bc3ec5f6b942a25d244}\label{class_client_af3f7b75b13592bc3ec5f6b942a25d244} 
+void {\bfseries Destroy\+Client} (uint32\+\_\+t client\+\_\+id)
+\item 
+\Hypertarget{class_client_aa8d5b4eafbc29775344a3391bb90f283}\label{class_client_aa8d5b4eafbc29775344a3391bb90f283} 
+void {\bfseries Destroy\+Disconnected\+Clients} (void)
+\item 
+\Hypertarget{class_client_aa4f3f7c2639505d2c158649474b80c1b}\label{class_client_aa4f3f7c2639505d2c158649474b80c1b} 
+void {\bfseries Handle\+Connection} (void)
+\item 
+\Hypertarget{class_client_a5a1817d224789e64c24f2ad793fed7a6}\label{class_client_a5a1817d224789e64c24f2ad793fed7a6} 
+void {\bfseries Handle\+Disconnection} (void)
+\item 
+\Hypertarget{class_client_a4d1ec179297718ca2ad9d43b6d06763f}\label{class_client_a4d1ec179297718ca2ad9d43b6d06763f} 
+void {\bfseries Handle\+Game\+State\+Message} (\mbox{\hyperlink{struct_game_state_message}{Game\+State\+Message}} \texorpdfstring{$\ast$}{*}msg)
+\item 
+\Hypertarget{class_client_a5b91bf3866cc9d0cd96349340c87349e}\label{class_client_a5b91bf3866cc9d0cd96349340c87349e} 
+void {\bfseries Handle\+Received\+Message} (void)
+\item 
+\Hypertarget{class_client_a19d44206b85a5fd4d2d59e59cc85e8c1}\label{class_client_a19d44206b85a5fd4d2d59e59cc85e8c1} 
+void {\bfseries Handle\+Game\+Client\+Event} (int ev)
+\item 
+\Hypertarget{class_client_af83bcea21cca9ab825dc942e6b3e6251}\label{class_client_af83bcea21cca9ab825dc942e6b3e6251} 
+int {\bfseries Send\+Position\+Update} (void)
+\item 
+\Hypertarget{class_client_a63825dc9d181361d1fe07a94155f9f1e}\label{class_client_a63825dc9d181361d1fe07a94155f9f1e} 
+int {\bfseries Update\+Gameplay} (void)
+\item 
+\Hypertarget{class_client_a0829ea50411301b2dfb08c47bccb5094}\label{class_client_a0829ea50411301b2dfb08c47bccb5094} 
+void {\bfseries Update\+Client} (\mbox{\hyperlink{struct_client_state}{Client\+State}} state)
+\item 
+\Hypertarget{class_client_a8107403bf600d386dbadf3db205b41d5}\label{class_client_a8107403bf600d386dbadf3db205b41d5} 
+void {\bfseries Update\+And\+Draw} (void)
+\item 
+\Hypertarget{class_client_a06ab6d3df70bd074302d9c56323e1c3f}\label{class_client_a06ab6d3df70bd074302d9c56323e1c3f} 
+void {\bfseries Draw\+Client} (\mbox{\hyperlink{struct_client_state}{Client\+State}} \texorpdfstring{$\ast$}{*}state, bool is\+\_\+local)
+\item 
+\Hypertarget{class_client_a82ce35df7a68aff38470e5f986fff2a6}\label{class_client_a82ce35df7a68aff38470e5f986fff2a6} 
+void {\bfseries Draw\+HUD} (void)
+\item 
+\Hypertarget{class_client_a4f9cf50093d283e830867d5aac191ea1}\label{class_client_a4f9cf50093d283e830867d5aac191ea1} 
+void {\bfseries Draw\+Gameplay} (void)
+\item 
+\Hypertarget{class_client_aff7bb8f426558f29ff75ee5c7c94dd31}\label{class_client_aff7bb8f426558f29ff75ee5c7c94dd31} 
+void {\bfseries Draw\+Background} (void)
+\item 
+\Hypertarget{class_client_aafc63eb8c7c0f19e6035248841d80772}\label{class_client_aafc63eb8c7c0f19e6035248841d80772} 
+void {\bfseries Init\+Client} (char \texorpdfstring{$\ast$}{*}server\+Ip)
+\end{DoxyCompactItemize}
+\doxysubsubsection*{Public Attributes}
+\begin{DoxyCompactItemize}
+\item 
+\Hypertarget{class_client_ab27031b02f6a12b4efe4eae4c8a79cc4}\label{class_client_ab27031b02f6a12b4efe4eae4c8a79cc4} 
+NBN\+\_\+\+Connection\+Handle {\bfseries client\+\_\+handle}
+\item 
+\Hypertarget{class_client_af6281179b5d1cbc628e323a8db1f8e7c}\label{class_client_af6281179b5d1cbc628e323a8db1f8e7c} 
+\mbox{\hyperlink{struct_client_state}{Client\+State}} {\bfseries state}
+\end{DoxyCompactItemize}
+
+
+The documentation for this struct was generated from the following files\+:\begin{DoxyCompactItemize}
+\item 
+client/client.\+h\item 
+server/server.\+h\item 
+client/client.\+cpp\end{DoxyCompactItemize}

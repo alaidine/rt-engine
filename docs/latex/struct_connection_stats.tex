@@ -1,0 +1,77 @@
+\doxysection{Connection\+Stats Struct Reference}
+\hypertarget{struct_connection_stats}{}\label{struct_connection_stats}\index{ConnectionStats@{ConnectionStats}}
+
+
+Connection statistics structure.  
+
+
+
+
+{\ttfamily \#include $<$network.\+h$>$}
+
+\doxysubsubsection*{Public Attributes}
+\begin{DoxyCompactItemize}
+\item 
+float \mbox{\hyperlink{struct_connection_stats_a275ab834d452b278da4c31307016bc9c}{ping}}
+\begin{DoxyCompactList}\small\item\em Round-\/trip time in seconds. \end{DoxyCompactList}\item 
+float \mbox{\hyperlink{struct_connection_stats_a0220c2fd18bf407fcd3fbde6d962c9e0}{packet\+\_\+loss}}
+\begin{DoxyCompactList}\small\item\em Packet loss ratio (0.\+0 = no loss, 1.\+0 = 100\% loss). \end{DoxyCompactList}\item 
+float \mbox{\hyperlink{struct_connection_stats_a10a1826db5ecefcb4eb2f428d60ff534}{upload\+\_\+bandwidth}}
+\begin{DoxyCompactList}\small\item\em Upload bandwidth in bytes per second. \end{DoxyCompactList}\item 
+float \mbox{\hyperlink{struct_connection_stats_af794cc525020e49bbffb84ff946e8288}{download\+\_\+bandwidth}}
+\begin{DoxyCompactList}\small\item\em Download bandwidth in bytes per second. \end{DoxyCompactList}\end{DoxyCompactItemize}
+
+
+\doxysubsection{Detailed Description}
+Connection statistics structure. 
+
+Contains network performance metrics for monitoring connection quality. This structure replaces the old NBN\+\_\+\+Connection\+Stats from nbnet. 
+
+\label{doc-variable-members}
+\Hypertarget{struct_connection_stats_doc-variable-members}
+\doxysubsection{Member Data Documentation}
+\Hypertarget{struct_connection_stats_af794cc525020e49bbffb84ff946e8288}\index{ConnectionStats@{ConnectionStats}!download\_bandwidth@{download\_bandwidth}}
+\index{download\_bandwidth@{download\_bandwidth}!ConnectionStats@{ConnectionStats}}
+\doxysubsubsection{\texorpdfstring{download\_bandwidth}{download\_bandwidth}}
+{\footnotesize\ttfamily \label{struct_connection_stats_af794cc525020e49bbffb84ff946e8288} 
+float Connection\+Stats\+::download\+\_\+bandwidth}
+
+
+
+Download bandwidth in bytes per second. 
+
+\Hypertarget{struct_connection_stats_a0220c2fd18bf407fcd3fbde6d962c9e0}\index{ConnectionStats@{ConnectionStats}!packet\_loss@{packet\_loss}}
+\index{packet\_loss@{packet\_loss}!ConnectionStats@{ConnectionStats}}
+\doxysubsubsection{\texorpdfstring{packet\_loss}{packet\_loss}}
+{\footnotesize\ttfamily \label{struct_connection_stats_a0220c2fd18bf407fcd3fbde6d962c9e0} 
+float Connection\+Stats\+::packet\+\_\+loss}
+
+
+
+Packet loss ratio (0.\+0 = no loss, 1.\+0 = 100\% loss). 
+
+\Hypertarget{struct_connection_stats_a275ab834d452b278da4c31307016bc9c}\index{ConnectionStats@{ConnectionStats}!ping@{ping}}
+\index{ping@{ping}!ConnectionStats@{ConnectionStats}}
+\doxysubsubsection{\texorpdfstring{ping}{ping}}
+{\footnotesize\ttfamily \label{struct_connection_stats_a275ab834d452b278da4c31307016bc9c} 
+float Connection\+Stats\+::ping}
+
+
+
+Round-\/trip time in seconds. 
+
+\Hypertarget{struct_connection_stats_a10a1826db5ecefcb4eb2f428d60ff534}\index{ConnectionStats@{ConnectionStats}!upload\_bandwidth@{upload\_bandwidth}}
+\index{upload\_bandwidth@{upload\_bandwidth}!ConnectionStats@{ConnectionStats}}
+\doxysubsubsection{\texorpdfstring{upload\_bandwidth}{upload\_bandwidth}}
+{\footnotesize\ttfamily \label{struct_connection_stats_a10a1826db5ecefcb4eb2f428d60ff534} 
+float Connection\+Stats\+::upload\+\_\+bandwidth}
+
+
+
+Upload bandwidth in bytes per second. 
+
+
+
+The documentation for this struct was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+core/\mbox{\hyperlink{network_8h}{network.\+h}}\end{DoxyCompactItemize}

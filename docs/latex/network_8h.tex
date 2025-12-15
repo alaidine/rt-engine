@@ -1,0 +1,69 @@
+\doxysection{core/network.h File Reference}
+\hypertarget{network_8h}{}\label{network_8h}\index{core/network.h@{core/network.h}}
+
+
+Network abstraction layer using Valve\textquotesingle{}s Game\+Networking\+Sockets.  
+
+
+{\ttfamily \#include "{}raylib.\+h"{}}\newline
+{\ttfamily \#include "{}framework.\+h"{}}\newline
+{\ttfamily \#include $<$steam/steamnetworkingsockets.\+h$>$}\newline
+{\ttfamily \#include $<$steam/isteamnetworkingutils.\+h$>$}\newline
+{\ttfamily \#include $<$string$>$}\newline
+{\ttfamily \#include $<$map$>$}\newline
+{\ttfamily \#include $<$vector$>$}\newline
+{\ttfamily \#include $<$functional$>$}\newline
+{\ttfamily \#include $<$cstring$>$}\newline
+\doxysubsubsection*{Classes}
+\begin{DoxyCompactItemize}
+\item 
+struct \mbox{\hyperlink{struct_connection_stats}{Connection\+Stats}}
+\begin{DoxyCompactList}\small\item\em Connection statistics structure. \end{DoxyCompactList}\item 
+class \mbox{\hyperlink{class_network_base}{Network\+Base}}
+\begin{DoxyCompactList}\small\item\em Base network class with common functionality. \end{DoxyCompactList}\item 
+class \mbox{\hyperlink{class_network_client}{Network\+Client}}
+\begin{DoxyCompactList}\small\item\em Network client for connecting to a game server. \end{DoxyCompactList}\item 
+class \mbox{\hyperlink{class_network_server}{Network\+Server}}
+\begin{DoxyCompactList}\small\item\em Network server for hosting game sessions. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\doxysubsubsection*{Enumerations}
+\begin{DoxyCompactItemize}
+\item 
+enum \mbox{\hyperlink{network_8h_abebb682b786678126618e819ea846291}{Network\+Mode}} \{ \mbox{\hyperlink{network_8h_abebb682b786678126618e819ea846291a67c96b24b23bcb408bae7626730a04b7}{SERVER}}
+, \mbox{\hyperlink{network_8h_abebb682b786678126618e819ea846291a48e4cb37544c8e69715d45e5a83b2109}{CLIENT}}
+ \}
+\begin{DoxyCompactList}\small\item\em Network operation mode. \end{DoxyCompactList}\end{DoxyCompactItemize}
+
+
+\doxysubsection{Detailed Description}
+Network abstraction layer using Valve\textquotesingle{}s Game\+Networking\+Sockets. 
+
+This file provides a high-\/level C++ wrapper around Game\+Networking\+Sockets, offering both client and server functionality with callback-\/based event handling.
+
+\begin{DoxySeeAlso}{See also}
+\href{https://github.com/ValveSoftware/GameNetworkingSockets}{\texttt{https\+://github.\+com/\+Valve\+Software/\+Game\+Networking\+Sockets}} 
+\end{DoxySeeAlso}
+
+
+\label{doc-enum-members}
+\Hypertarget{network_8h_doc-enum-members}
+\doxysubsection{Enumeration Type Documentation}
+\Hypertarget{network_8h_abebb682b786678126618e819ea846291}\index{network.h@{network.h}!NetworkMode@{NetworkMode}}
+\index{NetworkMode@{NetworkMode}!network.h@{network.h}}
+\doxysubsubsection{\texorpdfstring{NetworkMode}{NetworkMode}}
+{\footnotesize\ttfamily \label{network_8h_abebb682b786678126618e819ea846291} 
+enum \mbox{\hyperlink{network_8h_abebb682b786678126618e819ea846291}{Network\+Mode}}}
+
+
+
+Network operation mode. 
+
+Specifies whether the network instance operates as a server or client. \begin{DoxyEnumFields}[2]{Enumerator}
+\raisebox{\heightof{T}}[0pt][0pt]{\index{SERVER@{SERVER}!network.h@{network.h}}\index{network.h@{network.h}!SERVER@{SERVER}}}\Hypertarget{network_8h_abebb682b786678126618e819ea846291a67c96b24b23bcb408bae7626730a04b7}\label{network_8h_abebb682b786678126618e819ea846291a67c96b24b23bcb408bae7626730a04b7} 
+SERVER&\doxylink{class_server}{Server} mode -\/ listens for and accepts connections. \\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{CLIENT@{CLIENT}!network.h@{network.h}}\index{network.h@{network.h}!CLIENT@{CLIENT}}}\Hypertarget{network_8h_abebb682b786678126618e819ea846291a48e4cb37544c8e69715d45e5a83b2109}\label{network_8h_abebb682b786678126618e819ea846291a48e4cb37544c8e69715d45e5a83b2109} 
+CLIENT&\doxylink{class_client}{Client} mode -\/ connects to a server. \\
+\hline
+
+\end{DoxyEnumFields}

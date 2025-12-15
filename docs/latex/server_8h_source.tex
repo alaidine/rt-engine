@@ -1,0 +1,54 @@
+\doxysection{server.\+h}
+\hypertarget{server_8h_source}{}\label{server_8h_source}\index{server/server.h@{server/server.h}}
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00001\ \textcolor{preprocessor}{\#pragma\ once}}
+\DoxyCodeLine{00002\ }
+\DoxyCodeLine{00003\ \textcolor{preprocessor}{\#include\ <vector>}}
+\DoxyCodeLine{00004\ \textcolor{preprocessor}{\#include\ <array>}}
+\DoxyCodeLine{00005\ \textcolor{preprocessor}{\#include\ <memory>}}
+\DoxyCodeLine{00006\ \textcolor{preprocessor}{\#include\ <sol/sol.hpp>}}
+\DoxyCodeLine{00007\ }
+\DoxyCodeLine{00008\ \textcolor{preprocessor}{\#include\ "{}shared.h"{}}}
+\DoxyCodeLine{00009\ }
+\DoxyCodeLine{00010\ \textcolor{comment}{//\ A\ simple\ structure\ to\ represent\ connected\ clients}}
+\DoxyCodeLine{00011\ \textcolor{keyword}{typedef}\ \textcolor{keyword}{struct}}
+\DoxyCodeLine{00012\ \{}
+\DoxyCodeLine{00013\ \ \ \ \ \textcolor{comment}{//\ Underlying\ nbnet\ connection\ handle,\ used\ to\ send\ messages\ to\ that\ particular\ client}}
+\DoxyCodeLine{00014\ \ \ \ \ NBN\_ConnectionHandle\ client\_handle;}
+\DoxyCodeLine{00015\ }
+\DoxyCodeLine{00016\ \ \ \ \ \textcolor{comment}{//\ Client\ state}}
+\DoxyCodeLine{00017\ \ \ \ \ \mbox{\hyperlink{struct_client_state}{ClientState}}\ state;}
+\DoxyCodeLine{00018\ \}\ \mbox{\hyperlink{class_client}{Client}};}
+\DoxyCodeLine{00019\ }
+\DoxyCodeLine{00020\ \textcolor{keyword}{class\ }Server}
+\DoxyCodeLine{00021\ \{}
+\DoxyCodeLine{00022\ \textcolor{keyword}{private}:}
+\DoxyCodeLine{00023\ \ \ \ \ \textcolor{keywordtype}{unsigned}\ \textcolor{keywordtype}{int}\ m\_clientCount\ =\ 0;}
+\DoxyCodeLine{00024\ \ \ \ \ std::array<Client*,\ MAX\_CLIENTS>\ m\_clients;}
+\DoxyCodeLine{00025\ }
+\DoxyCodeLine{00026\ \ \ \ \ \textcolor{keywordtype}{float}\ tick\_dt;}
+\DoxyCodeLine{00027\ }
+\DoxyCodeLine{00028\ \ \ \ \ \textcolor{comment}{//\ Spawn\ positions}}
+\DoxyCodeLine{00029\ \ \ \ \ std::vector<Vector2>\ m\_spawns;}
+\DoxyCodeLine{00030\ \textcolor{keyword}{public}:}
+\DoxyCodeLine{00031\ \ \ \ \ Server();}
+\DoxyCodeLine{00032\ \ \ \ \ \string~Server();}
+\DoxyCodeLine{00033\ }
+\DoxyCodeLine{00034\ \ \ \ \ \textcolor{keywordtype}{bool}\ running\ =\ \textcolor{keyword}{true};}
+\DoxyCodeLine{00035\ }
+\DoxyCodeLine{00036\ \ \ \ \ \textcolor{keywordtype}{void}\ Init(\textcolor{keywordtype}{int}\ argc,\ \textcolor{keywordtype}{char}\ **argv);}
+\DoxyCodeLine{00037\ \ \ \ \ \textcolor{keywordtype}{void}\ Run(\textcolor{keywordtype}{void});}
+\DoxyCodeLine{00038\ }
+\DoxyCodeLine{00039\ \ \ \ \ \textcolor{keywordtype}{void}\ AcceptConnection(\textcolor{keywordtype}{unsigned}\ \textcolor{keywordtype}{int}\ x,\ \textcolor{keywordtype}{unsigned}\ \textcolor{keywordtype}{int}\ y,\ NBN\_ConnectionHandle\ conn);}
+\DoxyCodeLine{00040\ \ \ \ \ \textcolor{keywordtype}{int}\ HandleNewConnection(\textcolor{keywordtype}{void});}
+\DoxyCodeLine{00041\ \ \ \ \ \mbox{\hyperlink{class_client}{Client}}*\ FindClientById(uint32\_t\ client\_id);}
+\DoxyCodeLine{00042\ \ \ \ \ \textcolor{keywordtype}{void}\ DestroyClient(\mbox{\hyperlink{class_client}{Client}}*\ client);}
+\DoxyCodeLine{00043\ \ \ \ \ \textcolor{keywordtype}{void}\ HandleClientDisconnection();}
+\DoxyCodeLine{00044\ \ \ \ \ \textcolor{keywordtype}{void}\ HandleUpdateStateMessage(\mbox{\hyperlink{struct_update_state_message}{UpdateStateMessage}}*\ msg,\ \mbox{\hyperlink{class_client}{Client}}*\ sender);}
+\DoxyCodeLine{00045\ \ \ \ \ \textcolor{keywordtype}{void}\ HandleReceivedMessage(\textcolor{keywordtype}{void});}
+\DoxyCodeLine{00046\ \ \ \ \ \textcolor{keywordtype}{int}\ HandleGameServerEvent(\textcolor{keywordtype}{int}\ ev);}
+\DoxyCodeLine{00047\ \ \ \ \ \textcolor{keywordtype}{int}\ BroadcastGameState(\textcolor{keywordtype}{void});}
+\DoxyCodeLine{00048\ \};}
+
+\end{DoxyCode}

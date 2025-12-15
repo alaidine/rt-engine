@@ -1,0 +1,62 @@
+\doxysection{Network Messages }
+\hypertarget{group__messages}{}\label{group__messages}\index{Network Messages@{Network Messages}}
+
+
+Message types and structures for network communication.  
+
+
+\doxysubsubsection*{Classes}
+\begin{DoxyCompactItemize}
+\item 
+struct \mbox{\hyperlink{struct_missile}{Missile}}
+\begin{DoxyCompactList}\small\item\em Represents a missile projectile in the game. \end{DoxyCompactList}\item 
+struct \mbox{\hyperlink{struct_update_state_message}{Update\+State\+Message}}
+\begin{DoxyCompactList}\small\item\em Client-\/to-\/server position and missile update message. \end{DoxyCompactList}\item 
+struct \mbox{\hyperlink{struct_client_state}{Client\+State}}
+\begin{DoxyCompactList}\small\item\em Represents a client\textquotesingle{}s complete state. \end{DoxyCompactList}\item 
+struct \mbox{\hyperlink{struct_game_state_message}{Game\+State\+Message}}
+\begin{DoxyCompactList}\small\item\em Server-\/to-\/client game state broadcast message. \end{DoxyCompactList}\item 
+struct \mbox{\hyperlink{struct_spawn_info_message}{Spawn\+Info\+Message}}
+\begin{DoxyCompactList}\small\item\em Server-\/to-\/client spawn information message. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\doxysubsubsection*{Enumerations}
+\begin{DoxyCompactItemize}
+\item 
+enum \mbox{\hyperlink{group__messages_ga1bc3ccf4d567ca83c993c3aaa8124904}{Message\+Type}} \+: uint8\+\_\+t \{ \mbox{\hyperlink{group__messages_gga1bc3ccf4d567ca83c993c3aaa8124904af0852c94a31df4599d0a8f86a51d8f05}{MSG\+\_\+\+SPAWN\+\_\+\+INFO}} = 1
+, \mbox{\hyperlink{group__messages_gga1bc3ccf4d567ca83c993c3aaa8124904a76d028255d41850de2248c1a10292b40}{MSG\+\_\+\+UPDATE\+\_\+\+STATE}} = 2
+, \mbox{\hyperlink{group__messages_gga1bc3ccf4d567ca83c993c3aaa8124904a753eedb66b5690973aa5d78f1279ca53}{MSG\+\_\+\+GAME\+\_\+\+STATE}} = 3
+ \}
+\begin{DoxyCompactList}\small\item\em Message type identifiers for the network protocol. \end{DoxyCompactList}\end{DoxyCompactItemize}
+
+
+\doxysubsection{Detailed Description}
+Message types and structures for network communication. 
+
+
+
+\label{doc-enum-members}
+\Hypertarget{group__messages_doc-enum-members}
+\doxysubsection{Enumeration Type Documentation}
+\Hypertarget{group__messages_ga1bc3ccf4d567ca83c993c3aaa8124904}\index{Network Messages@{Network Messages}!MessageType@{MessageType}}
+\index{MessageType@{MessageType}!Network Messages@{Network Messages}}
+\doxysubsubsection{\texorpdfstring{MessageType}{MessageType}}
+{\footnotesize\ttfamily \label{group__messages_ga1bc3ccf4d567ca83c993c3aaa8124904} 
+enum \mbox{\hyperlink{group__messages_ga1bc3ccf4d567ca83c993c3aaa8124904}{Message\+Type}} \+: uint8\+\_\+t}
+
+
+
+Message type identifiers for the network protocol. 
+
+Each message sent over the network begins with a \doxylink{group__messages_ga1bc3ccf4d567ca83c993c3aaa8124904}{Message\+Type} byte to identify the payload format. \begin{DoxyEnumFields}[2]{Enumerator}
+\raisebox{\heightof{T}}[0pt][0pt]{\index{MSG\_SPAWN\_INFO@{MSG\_SPAWN\_INFO}!Network Messages@{Network Messages}}\index{Network Messages@{Network Messages}!MSG\_SPAWN\_INFO@{MSG\_SPAWN\_INFO}}}\Hypertarget{group__messages_gga1bc3ccf4d567ca83c993c3aaa8124904af0852c94a31df4599d0a8f86a51d8f05}\label{group__messages_gga1bc3ccf4d567ca83c993c3aaa8124904af0852c94a31df4599d0a8f86a51d8f05} 
+MSG\+\_\+\+SPAWN\+\_\+\+INFO&\doxylink{class_server}{Server} → \doxylink{class_client}{Client}\+: Initial spawn position and client ID. \\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{MSG\_UPDATE\_STATE@{MSG\_UPDATE\_STATE}!Network Messages@{Network Messages}}\index{Network Messages@{Network Messages}!MSG\_UPDATE\_STATE@{MSG\_UPDATE\_STATE}}}\Hypertarget{group__messages_gga1bc3ccf4d567ca83c993c3aaa8124904a76d028255d41850de2248c1a10292b40}\label{group__messages_gga1bc3ccf4d567ca83c993c3aaa8124904a76d028255d41850de2248c1a10292b40} 
+MSG\+\_\+\+UPDATE\+\_\+\+STATE&\doxylink{class_client}{Client} → \doxylink{class_server}{Server}\+: Player position and missiles update. \\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{MSG\_GAME\_STATE@{MSG\_GAME\_STATE}!Network Messages@{Network Messages}}\index{Network Messages@{Network Messages}!MSG\_GAME\_STATE@{MSG\_GAME\_STATE}}}\Hypertarget{group__messages_gga1bc3ccf4d567ca83c993c3aaa8124904a753eedb66b5690973aa5d78f1279ca53}\label{group__messages_gga1bc3ccf4d567ca83c993c3aaa8124904a753eedb66b5690973aa5d78f1279ca53} 
+MSG\+\_\+\+GAME\+\_\+\+STATE&\doxylink{class_server}{Server} → \doxylink{class_client}{Client}\+: Complete game state with all players. \\
+\hline
+
+\end{DoxyEnumFields}

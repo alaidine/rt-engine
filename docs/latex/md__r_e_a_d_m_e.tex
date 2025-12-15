@@ -1,0 +1,82 @@
+\chapter{Getting Started }
+\hypertarget{md__r_e_a_d_m_e}{}\label{md__r_e_a_d_m_e}\index{Getting Started@{Getting Started}}
+\label{md__r_e_a_d_m_e_autotoc_md3}%
+\Hypertarget{md__r_e_a_d_m_e_autotoc_md3}%
+\hypertarget{md__r_e_a_d_m_e_autotoc_md4}{}\doxysubsubsection{\texorpdfstring{Linux}{Linux}}\label{md__r_e_a_d_m_e_autotoc_md4}
+Install the dependencies from this page\+: (\href{https://github.com/raysan5/raylib/wiki/Working-on-GNU-Linux}{\texttt{Working on GNU Linux}})\hypertarget{md__r_e_a_d_m_e_autotoc_md5}{}\doxysubsection{\texorpdfstring{Project Structure}{Project Structure}}\label{md__r_e_a_d_m_e_autotoc_md5}
+The project is organized into separate modules\+:
+\begin{DoxyItemize}
+\item {\bfseries{core/}}\+: Static library containing shared functionality (networking, physics, scripting)
+\item {\bfseries{client/}}\+: \doxylink{class_client}{Client} executable with graphics and input handling ~\newline
+
+\item {\bfseries{server/}}\+: \doxylink{class_server}{Server} executable with game logic and networking
+\item {\bfseries{resources/}}\+: Game assets (sprites, scripts, etc.)
+\end{DoxyItemize}\hypertarget{md__r_e_a_d_m_e_autotoc_md6}{}\doxysubsection{\texorpdfstring{CMake (Recommended)}{CMake (Recommended)}}\label{md__r_e_a_d_m_e_autotoc_md6}
+\hypertarget{md__r_e_a_d_m_e_autotoc_md7}{}\doxysubsubsection{\texorpdfstring{Basic Build\+:}{Basic Build\+:}}\label{md__r_e_a_d_m_e_autotoc_md7}
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{cmake\ -\/S\ .\ -\/B\ build}
+\DoxyCodeLine{cmake\ -\/-\/build\ build}
+
+\end{DoxyCode}
+\hypertarget{md__r_e_a_d_m_e_autotoc_md8}{}\doxysubsubsection{\texorpdfstring{Development Build with Debug Symbols\+:}{Development Build with Debug Symbols\+:}}\label{md__r_e_a_d_m_e_autotoc_md8}
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{cmake\ -\/S\ .\ -\/B\ build\ -\/DCMAKE\_BUILD\_TYPE=Debug}
+\DoxyCodeLine{cmake\ -\/-\/build\ build}
+
+\end{DoxyCode}
+\hypertarget{md__r_e_a_d_m_e_autotoc_md9}{}\doxysubsubsection{\texorpdfstring{Using Local Dependencies (for faster builds)\+:}{Using Local Dependencies (for faster builds)\+:}}\label{md__r_e_a_d_m_e_autotoc_md9}
+If you have {\ttfamily raylib}, {\ttfamily sol2}, and {\ttfamily box2d} in the parent directory\+: 
+\begin{DoxyCode}{0}
+\DoxyCodeLine{cmake\ -\/S\ .\ -\/B\ build\ \(\backslash\)}
+\DoxyCodeLine{\ \ -\/DFETCHCONTENT\_SOURCE\_DIR\_RAYLIB=../raylib\ \(\backslash\)}
+\DoxyCodeLine{\ \ -\/DFETCHCONTENT\_SOURCE\_DIR\_SOL2=../sol2\ \(\backslash\)}
+\DoxyCodeLine{\ \ -\/DFETCHCONTENT\_SOURCE\_DIR\_BOX2D=../box2d}
+
+\end{DoxyCode}
+\hypertarget{md__r_e_a_d_m_e_autotoc_md10}{}\doxysubsubsection{\texorpdfstring{Running\+:}{Running\+:}}\label{md__r_e_a_d_m_e_autotoc_md10}
+
+\begin{DoxyItemize}
+\item Executables are in {\ttfamily build/r-\/type/}
+\item Resources are automatically copied to the output directory
+\end{DoxyItemize}\hypertarget{md__r_e_a_d_m_e_autotoc_md11}{}\doxysubsection{\texorpdfstring{Visual Studio (Legacy)}{Visual Studio (Legacy)}}\label{md__r_e_a_d_m_e_autotoc_md11}
+{\bfseries{Note}}\+: Visual Studio projects are legacy and may require manual dependency setup. We recommend using CMake.
+
+For VS2022 projects, you need local dependencies in the parent directory\+:
+\begin{DoxyItemize}
+\item Some parent directory
+\begin{DoxyItemize}
+\item {\ttfamily raylib/} -\/ \href{https://github.com/raysan5/raylib}{\texttt{https\+://github.\+com/raysan5/raylib}} ~\newline
+
+\item {\ttfamily sol2/} -\/ \href{https://github.com/ThePhD/sol2}{\texttt{https\+://github.\+com/\+The\+Ph\+D/sol2}}
+\item {\ttfamily box2d/} -\/ \href{https://github.com/erincatto/box2d}{\texttt{https\+://github.\+com/erincatto/box2d}}
+\item {\ttfamily r-\/type/} -\/ This project
+\end{DoxyItemize}
+\end{DoxyItemize}
+
+Then open {\ttfamily projects/\+VS2022/r-\/type.\+sln}\hypertarget{md__r_e_a_d_m_e_autotoc_md12}{}\doxysubsection{\texorpdfstring{Dependencies}{Dependencies}}\label{md__r_e_a_d_m_e_autotoc_md12}
+This project uses\+:
+\begin{DoxyItemize}
+\item {\bfseries{Raylib 5.\+0}}\+: Graphics and game framework
+\item {\bfseries{Sol2 3.\+3.\+0}}\+: Modern C++ Lua binding library ~\newline
+
+\item {\bfseries{Lua 5.\+4.\+7}}\+: Embedded scripting language (precompiled libraries in {\ttfamily lua/})
+\item {\bfseries{Box2D 3.\+1.\+1}}\+: 2D physics engine
+\end{DoxyItemize}
+
+{\bfseries{Core Library}}\+: All shared dependencies are linked into {\ttfamily r-\/type\+\_\+core} static library, which is then used by both client and server executables.
+
+{\bfseries{Automatic Fetching}}\+: CMake automatically downloads raylib, sol2, and box2d. Use {\ttfamily FETCHCONTENT\+\_\+\+SOURCE\+\_\+\+DIR\+\_\+\texorpdfstring{$\ast$}{*}} variables to use local copies for faster builds.\hypertarget{md__r_e_a_d_m_e_autotoc_md13}{}\doxysection{\texorpdfstring{R-\/\+Type}{R-\/\+Type}}\label{md__r_e_a_d_m_e_autotoc_md13}
+\hypertarget{md__r_e_a_d_m_e_autotoc_md14}{}\doxysubsection{\texorpdfstring{Description}{Description}}\label{md__r_e_a_d_m_e_autotoc_md14}
+Clone of the classic side-\/scrolling shoot \textquotesingle{}em up arcade game R-\/\+Type, developed by Irem and released in 1987. Players control a futuristic spacecraft, the R-\/9, as they navigate through various levels filled with enemies and obstacles. The game is known for its challenging gameplay, unique power-\/up system, and iconic boss battles.\hypertarget{md__r_e_a_d_m_e_autotoc_md15}{}\doxysubsection{\texorpdfstring{Developers}{Developers}}\label{md__r_e_a_d_m_e_autotoc_md15}
+
+\begin{DoxyItemize}
+\item Aalaaïddine ALI MLINDE
+\item Mathéo MOINACHE
+\item Lucas MARTIN
+\item Maël MANGATA
+\end{DoxyItemize}\hypertarget{md__r_e_a_d_m_e_autotoc_md16}{}\doxysubsection{\texorpdfstring{License}{License}}\label{md__r_e_a_d_m_e_autotoc_md16}
+This game sources are licensed under an unmodified zlib/libpng license, which is an OSI-\/certified, BSD-\/like license that allows static linking with closed source software. Check \mbox{[}LICENSE\mbox{]}(LICENSE) for further details.
+
+{\itshape Copyright (c) 2025 Aalaaïddine ALI MLINDE, Mathéo MOINACHE, Lucas MARTIN, Maël MANGATA All rights reserved.} 

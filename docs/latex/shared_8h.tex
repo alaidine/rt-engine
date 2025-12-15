@@ -1,0 +1,152 @@
+\doxysection{core/shared.h File Reference}
+\hypertarget{shared_8h}{}\label{shared_8h}\index{core/shared.h@{core/shared.h}}
+
+
+Shared definitions, constants, and data structures for R-\/\+Type.  
+
+
+{\ttfamily \#include "{}raylib.\+h"{}}\newline
+{\ttfamily \#include "{}framework.\+h"{}}\newline
+{\ttfamily \#include $<$cstdint$>$}\newline
+{\ttfamily \#include $<$cstring$>$}\newline
+{\ttfamily \#include $<$vector$>$}\newline
+\doxysubsubsection*{Classes}
+\begin{DoxyCompactItemize}
+\item 
+struct \mbox{\hyperlink{struct_missile}{Missile}}
+\begin{DoxyCompactList}\small\item\em Represents a missile projectile in the game. \end{DoxyCompactList}\item 
+struct \mbox{\hyperlink{struct_update_state_message}{Update\+State\+Message}}
+\begin{DoxyCompactList}\small\item\em Client-\/to-\/server position and missile update message. \end{DoxyCompactList}\item 
+struct \mbox{\hyperlink{struct_client_state}{Client\+State}}
+\begin{DoxyCompactList}\small\item\em Represents a client\textquotesingle{}s complete state. \end{DoxyCompactList}\item 
+struct \mbox{\hyperlink{struct_game_state_message}{Game\+State\+Message}}
+\begin{DoxyCompactList}\small\item\em Server-\/to-\/client game state broadcast message. \end{DoxyCompactList}\item 
+struct \mbox{\hyperlink{struct_spawn_info_message}{Spawn\+Info\+Message}}
+\begin{DoxyCompactList}\small\item\em Server-\/to-\/client spawn information message. \end{DoxyCompactList}\item 
+struct \mbox{\hyperlink{struct_options}{Options}}
+\begin{DoxyCompactList}\small\item\em Command-\/line options for network simulation. \end{DoxyCompactList}\item 
+class \mbox{\hyperlink{class_message_buffer}{Message\+Buffer}}
+\begin{DoxyCompactList}\small\item\em Binary buffer for message serialization and deserialization. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\doxysubsubsection*{Macros}
+\begin{DoxyCompactItemize}
+\item 
+\#define \mbox{\hyperlink{group__config_ga10bdace25026cfb13e87fcd09f8ec43e}{PROTOCOL\+\_\+\+NAME}}~"{}rt-\/protocol"{}
+\begin{DoxyCompactList}\small\item\em Protocol identifier string. \end{DoxyCompactList}\item 
+\#define \mbox{\hyperlink{group__config_ga614217d263be1fb1a5f76e2ff7be19a2}{PORT}}~42042
+\begin{DoxyCompactList}\small\item\em Default network port. \end{DoxyCompactList}\item 
+\#define \mbox{\hyperlink{group__config_gaf4021b95b18dc511ba274a310fe66d08}{TICK\+\_\+\+RATE}}~60
+\begin{DoxyCompactList}\small\item\em \doxylink{class_server}{Server} simulation tick rate (Hz). \end{DoxyCompactList}\item 
+\#define \mbox{\hyperlink{group__config_ga8e61f0ffaf5e556325043fc461ca3220}{SERVER\+\_\+\+FULL\+\_\+\+CODE}}~42
+\begin{DoxyCompactList}\small\item\em \doxylink{class_server}{Server} close code indicating the server is full. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\begin{Indent}\textbf{ Window Configuration}\par
+\begin{DoxyCompactItemize}
+\item 
+\#define \mbox{\hyperlink{group__config_ga693f306b88f7336281e4d1f07754579c}{GAME\+\_\+\+WIDTH}}~800
+\begin{DoxyCompactList}\small\item\em Game window width in pixels. \end{DoxyCompactList}\item 
+\#define \mbox{\hyperlink{group__config_gaddffa3e327bacbc3da87278442b2b507}{GAME\+\_\+\+HEIGHT}}~600
+\begin{DoxyCompactList}\small\item\em Game window height in pixels. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\end{Indent}
+\begin{Indent}\textbf{ Value Limits}\par
+\begin{DoxyCompactItemize}
+\item 
+\#define \mbox{\hyperlink{group__config_ga4eb208b808371275dbc5c2ee420e415e}{MIN\+\_\+\+FLOAT\+\_\+\+VAL}}~-\/1000
+\begin{DoxyCompactList}\small\item\em Minimum value for networked float values. \end{DoxyCompactList}\item 
+\#define \mbox{\hyperlink{group__config_gae2ec19210183eb36cece221be0baeb1e}{MAX\+\_\+\+FLOAT\+\_\+\+VAL}}~1000
+\begin{DoxyCompactList}\small\item\em Maximum value for networked float values. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\end{Indent}
+\begin{Indent}\textbf{ Client Limits}\par
+\begin{DoxyCompactItemize}
+\item 
+\#define \mbox{\hyperlink{group__config_ga0a8f91f93d75a07f0ae45077db45b3eb}{MAX\+\_\+\+CLIENTS}}~4
+\begin{DoxyCompactList}\small\item\em Maximum number of concurrent clients. \end{DoxyCompactList}\item 
+\#define \mbox{\hyperlink{group__config_gafa10696a87fae6ed066323b7b6750947}{MAX\+\_\+\+COLORS}}~7
+\begin{DoxyCompactList}\small\item\em Maximum number of player colors. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\end{Indent}
+\begin{Indent}\textbf{ Missile Limits}\par
+\begin{DoxyCompactItemize}
+\item 
+\#define \mbox{\hyperlink{group__config_gaed68af5c2c961342d874f4e559deac70}{MAX\+\_\+\+MISSILES}}~400
+\begin{DoxyCompactList}\small\item\em Maximum missiles the server can track. \end{DoxyCompactList}\item 
+\#define \mbox{\hyperlink{group__config_ga5eb01d97ed5aa71397e4b4262d561b07}{MAX\+\_\+\+MISSILES\+\_\+\+CLIENT}}~100
+\begin{DoxyCompactList}\small\item\em Maximum missiles per client. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\end{Indent}
+\doxysubsubsection*{Enumerations}
+\begin{DoxyCompactItemize}
+\item 
+enum \mbox{\hyperlink{group__messages_ga1bc3ccf4d567ca83c993c3aaa8124904}{Message\+Type}} \+: uint8\+\_\+t \{ \mbox{\hyperlink{group__messages_gga1bc3ccf4d567ca83c993c3aaa8124904af0852c94a31df4599d0a8f86a51d8f05}{MSG\+\_\+\+SPAWN\+\_\+\+INFO}} = 1
+, \mbox{\hyperlink{group__messages_gga1bc3ccf4d567ca83c993c3aaa8124904a76d028255d41850de2248c1a10292b40}{MSG\+\_\+\+UPDATE\+\_\+\+STATE}} = 2
+, \mbox{\hyperlink{group__messages_gga1bc3ccf4d567ca83c993c3aaa8124904a753eedb66b5690973aa5d78f1279ca53}{MSG\+\_\+\+GAME\+\_\+\+STATE}} = 3
+ \}
+\begin{DoxyCompactList}\small\item\em Message type identifiers for the network protocol. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\doxysubsubsection*{Functions}
+\begin{DoxyCompactItemize}
+\item 
+void \mbox{\hyperlink{group__serialize__funcs_gaf98807b900055b87da3b016f839bfa8a}{Serialize\+Spawn\+Info}} (\mbox{\hyperlink{class_message_buffer}{Message\+Buffer}} \&buf, const \mbox{\hyperlink{struct_spawn_info_message}{Spawn\+Info\+Message}} \&msg)
+\begin{DoxyCompactList}\small\item\em Serialize spawn info message to buffer. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{struct_spawn_info_message}{Spawn\+Info\+Message}} \mbox{\hyperlink{group__serialize__funcs_gaf0398f90e34329698e3a8cd0e3601b03}{Deserialize\+Spawn\+Info}} (\mbox{\hyperlink{class_message_buffer}{Message\+Buffer}} \&buf)
+\begin{DoxyCompactList}\small\item\em Deserialize spawn info message from buffer. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{group__serialize__funcs_ga7ccab81b63db0f2633559efda5ade36b}{Serialize\+Update\+State}} (\mbox{\hyperlink{class_message_buffer}{Message\+Buffer}} \&buf, const \mbox{\hyperlink{struct_update_state_message}{Update\+State\+Message}} \&msg)
+\begin{DoxyCompactList}\small\item\em Serialize update state message to buffer. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{struct_update_state_message}{Update\+State\+Message}} \mbox{\hyperlink{group__serialize__funcs_gabe75994d8daa78d8eb4523e920a17088}{Deserialize\+Update\+State}} (\mbox{\hyperlink{class_message_buffer}{Message\+Buffer}} \&buf)
+\begin{DoxyCompactList}\small\item\em Deserialize update state message from buffer. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{group__serialize__funcs_ga430fcd7c65ff0da45848f069aec24579}{Serialize\+Game\+State}} (\mbox{\hyperlink{class_message_buffer}{Message\+Buffer}} \&buf, const \mbox{\hyperlink{struct_game_state_message}{Game\+State\+Message}} \&msg)
+\begin{DoxyCompactList}\small\item\em Serialize game state message to buffer. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{struct_game_state_message}{Game\+State\+Message}} \mbox{\hyperlink{group__serialize__funcs_ga77db308aeee812d83e1808cc2723588f}{Deserialize\+Game\+State}} (\mbox{\hyperlink{class_message_buffer}{Message\+Buffer}} \&buf)
+\begin{DoxyCompactList}\small\item\em Deserialize game state message from buffer. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{group__serialize__funcs_gae85294886a43da506037a9956813e12a}{Serialize\+Missile}} (\mbox{\hyperlink{class_message_buffer}{Message\+Buffer}} \&buf, const \mbox{\hyperlink{struct_missile}{Missile}} \&missile)
+\begin{DoxyCompactList}\small\item\em Serialize a single missile to buffer. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{struct_missile}{Missile}} \mbox{\hyperlink{group__serialize__funcs_ga469dbc8fa58cb02441ba37754243f6dc}{Deserialize\+Missile}} (\mbox{\hyperlink{class_message_buffer}{Message\+Buffer}} \&buf)
+\begin{DoxyCompactList}\small\item\em Deserialize a single missile from buffer. \end{DoxyCompactList}\item 
+int \mbox{\hyperlink{shared_8h_a42233d9f8122a84c8d6ad38182e9f840}{Read\+Command\+Line}} (int, char \texorpdfstring{$\ast$}{*}\mbox{[}$\,$\mbox{]})
+\begin{DoxyCompactList}\small\item\em Parse command line arguments. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{struct_options}{Options}} \mbox{\hyperlink{shared_8h_a814d4fd4b6581662ed506ffcef52b28b}{Get\+Options}} (void)
+\begin{DoxyCompactList}\small\item\em Get parsed command line options. \end{DoxyCompactList}\end{DoxyCompactItemize}
+
+
+\doxysubsection{Detailed Description}
+Shared definitions, constants, and data structures for R-\/\+Type. 
+
+This file contains all shared code between client and server including\+:
+\begin{DoxyItemize}
+\item Network protocol constants
+\item Game configuration values
+\item Message structures and serialization
+\item Common data types 
+\end{DoxyItemize}
+
+\label{doc-func-members}
+\Hypertarget{shared_8h_doc-func-members}
+\doxysubsection{Function Documentation}
+\Hypertarget{shared_8h_a814d4fd4b6581662ed506ffcef52b28b}\index{shared.h@{shared.h}!GetOptions@{GetOptions}}
+\index{GetOptions@{GetOptions}!shared.h@{shared.h}}
+\doxysubsubsection{\texorpdfstring{GetOptions()}{GetOptions()}}
+{\footnotesize\ttfamily \label{shared_8h_a814d4fd4b6581662ed506ffcef52b28b} 
+\mbox{\hyperlink{struct_options}{Options}} Get\+Options (\begin{DoxyParamCaption}\item[{void}]{}{}\end{DoxyParamCaption})}
+
+
+
+Get parsed command line options. 
+
+\begin{DoxyReturn}{Returns}
+\doxylink{struct_options}{Options} structure with parsed values 
+\end{DoxyReturn}
+\Hypertarget{shared_8h_a42233d9f8122a84c8d6ad38182e9f840}\index{shared.h@{shared.h}!ReadCommandLine@{ReadCommandLine}}
+\index{ReadCommandLine@{ReadCommandLine}!shared.h@{shared.h}}
+\doxysubsubsection{\texorpdfstring{ReadCommandLine()}{ReadCommandLine()}}
+{\footnotesize\ttfamily \label{shared_8h_a42233d9f8122a84c8d6ad38182e9f840} 
+int Read\+Command\+Line (\begin{DoxyParamCaption}\item[{int}]{argc}{, }\item[{char \texorpdfstring{$\ast$}{*}}]{argv}{\mbox{[}$\,$\mbox{]}}\end{DoxyParamCaption})}
+
+
+
+Parse command line arguments. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em argc} & Argument count \\
+\hline
+{\em argv} & Argument vector \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+0 on success, non-\/zero on error 
+\end{DoxyReturn}

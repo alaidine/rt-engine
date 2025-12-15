@@ -1,0 +1,325 @@
+\doxysection{Message\+Buffer Class Reference}
+\hypertarget{class_message_buffer}{}\label{class_message_buffer}\index{MessageBuffer@{MessageBuffer}}
+
+
+Binary buffer for message serialization and deserialization.  
+
+
+
+
+{\ttfamily \#include $<$shared.\+h$>$}
+
+\doxysubsubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\hyperlink{class_message_buffer_a32e7d129f6b1f4a7f4734c18c6c5580e}{Message\+Buffer}} ()=default
+\begin{DoxyCompactList}\small\item\em Default constructor creates an empty buffer. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{class_message_buffer_ac247567c6ce6eacf576d89fa574610de}{Message\+Buffer}} (const uint8\+\_\+t \texorpdfstring{$\ast$}{*}data, size\+\_\+t size)
+\begin{DoxyCompactList}\small\item\em Construct from existing data. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{class_message_buffer_a13714a2d11d4b1a8ba315ff27f822bee}{Clear}} ()
+\begin{DoxyCompactList}\small\item\em Clear the buffer and reset read position. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\begin{Indent}\textbf{ Write Operations}\par
+\begin{DoxyCompactItemize}
+\item 
+void \mbox{\hyperlink{class_message_buffer_a0fd814c434e0dbd4572c1249dce46b7e}{Write\+U8}} (uint8\+\_\+t val)
+\begin{DoxyCompactList}\small\item\em Write an unsigned 8-\/bit integer. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{class_message_buffer_a4188c9d82bb1d03eb58097658292f939}{Write\+U32}} (uint32\+\_\+t val)
+\begin{DoxyCompactList}\small\item\em Write an unsigned 32-\/bit integer (little-\/endian). \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{class_message_buffer_a897967bb14ea60756145f4f2a645838d}{Write\+I32}} (int32\+\_\+t val)
+\begin{DoxyCompactList}\small\item\em Write a signed 32-\/bit integer. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{class_message_buffer_a5fcf3d17150d0d00cff7d04d6438c0ac}{Write\+Float}} (float val)
+\begin{DoxyCompactList}\small\item\em Write a 32-\/bit floating point value. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{class_message_buffer_a086f7732a327d7add28ba09b0312599b}{Write\+Bytes}} (const void \texorpdfstring{$\ast$}{*}data, size\+\_\+t size)
+\begin{DoxyCompactList}\small\item\em Write raw bytes to the buffer. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\end{Indent}
+\begin{Indent}\textbf{ Read Operations}\par
+\begin{DoxyCompactItemize}
+\item 
+uint8\+\_\+t \mbox{\hyperlink{class_message_buffer_ac733ba0084eb4cf4f77b1679abbbae4d}{Read\+U8}} ()
+\begin{DoxyCompactList}\small\item\em Read an unsigned 8-\/bit integer. \end{DoxyCompactList}\item 
+uint32\+\_\+t \mbox{\hyperlink{class_message_buffer_adcfd96e0eef4b90f0425f18aee2b17d4}{Read\+U32}} ()
+\begin{DoxyCompactList}\small\item\em Read an unsigned 32-\/bit integer (little-\/endian). \end{DoxyCompactList}\item 
+int32\+\_\+t \mbox{\hyperlink{class_message_buffer_a80ced787dd415c0fa247ffe86f7040b1}{Read\+I32}} ()
+\begin{DoxyCompactList}\small\item\em Read a signed 32-\/bit integer. \end{DoxyCompactList}\item 
+float \mbox{\hyperlink{class_message_buffer_ab8128e11555a0f0955c978233679b87d}{Read\+Float}} ()
+\begin{DoxyCompactList}\small\item\em Read a 32-\/bit floating point value. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{class_message_buffer_a8931031cf93688c7afd5302fa2d43984}{Read\+Bytes}} (void \texorpdfstring{$\ast$}{*}data, size\+\_\+t size)
+\begin{DoxyCompactList}\small\item\em Read raw bytes from the buffer. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\end{Indent}
+\begin{Indent}\textbf{ Buffer Access}\par
+\begin{DoxyCompactItemize}
+\item 
+const uint8\+\_\+t \texorpdfstring{$\ast$}{*} \mbox{\hyperlink{class_message_buffer_a976fc6053d46c92ced54c2cbb4193bfb}{Data}} () const
+\begin{DoxyCompactList}\small\item\em Get pointer to buffer data. \end{DoxyCompactList}\item 
+size\+\_\+t \mbox{\hyperlink{class_message_buffer_a069e1a3ce992ccb549878dba51e6199d}{Size}} () const
+\begin{DoxyCompactList}\small\item\em Get current buffer size. \end{DoxyCompactList}\item 
+bool \mbox{\hyperlink{class_message_buffer_a741e585a77cea9eea211803d5c591c11}{Has\+Data}} () const
+\begin{DoxyCompactList}\small\item\em Check if there is more data to read. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\end{Indent}
+
+
+\doxysubsection{Detailed Description}
+Binary buffer for message serialization and deserialization. 
+
+Provides a simple interface for reading and writing binary data in network messages. Uses little-\/endian byte order.
+
+\begin{DoxyParagraph}{Writing Example\+:}
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{\mbox{\hyperlink{class_message_buffer_a32e7d129f6b1f4a7f4734c18c6c5580e}{MessageBuffer}}\ buf;}
+\DoxyCodeLine{buf.\mbox{\hyperlink{class_message_buffer_a0fd814c434e0dbd4572c1249dce46b7e}{WriteU8}}(\mbox{\hyperlink{group__messages_gga1bc3ccf4d567ca83c993c3aaa8124904af0852c94a31df4599d0a8f86a51d8f05}{MSG\_SPAWN\_INFO}});}
+\DoxyCodeLine{buf.\mbox{\hyperlink{class_message_buffer_a4188c9d82bb1d03eb58097658292f939}{WriteU32}}(clientId);}
+\DoxyCodeLine{buf.\mbox{\hyperlink{class_message_buffer_a897967bb14ea60756145f4f2a645838d}{WriteI32}}(x);}
+\DoxyCodeLine{buf.\mbox{\hyperlink{class_message_buffer_a897967bb14ea60756145f4f2a645838d}{WriteI32}}(y);}
+\DoxyCodeLine{network-\/>SendMessage(buf.\mbox{\hyperlink{class_message_buffer_a976fc6053d46c92ced54c2cbb4193bfb}{Data}}(),\ buf.\mbox{\hyperlink{class_message_buffer_a069e1a3ce992ccb549878dba51e6199d}{Size}}(),\ \textcolor{keyword}{true});}
+
+\end{DoxyCode}
+
+\end{DoxyParagraph}
+\begin{DoxyParagraph}{Reading Example\+:}
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{\mbox{\hyperlink{class_message_buffer_a32e7d129f6b1f4a7f4734c18c6c5580e}{MessageBuffer}}\ buf(data,\ size);}
+\DoxyCodeLine{uint8\_t\ msgType\ =\ buf.\mbox{\hyperlink{class_message_buffer_ac733ba0084eb4cf4f77b1679abbbae4d}{ReadU8}}();}
+\DoxyCodeLine{uint32\_t\ clientId\ =\ buf.\mbox{\hyperlink{class_message_buffer_adcfd96e0eef4b90f0425f18aee2b17d4}{ReadU32}}();}
+
+\end{DoxyCode}
+ 
+\end{DoxyParagraph}
+
+
+\label{doc-constructors}
+\Hypertarget{class_message_buffer_doc-constructors}
+\doxysubsection{Constructor \& Destructor Documentation}
+\Hypertarget{class_message_buffer_a32e7d129f6b1f4a7f4734c18c6c5580e}\index{MessageBuffer@{MessageBuffer}!MessageBuffer@{MessageBuffer}}
+\index{MessageBuffer@{MessageBuffer}!MessageBuffer@{MessageBuffer}}
+\doxysubsubsection{\texorpdfstring{MessageBuffer()}{MessageBuffer()}\hspace{0.1cm}{\footnotesize\ttfamily [1/2]}}
+{\footnotesize\ttfamily \label{class_message_buffer_a32e7d129f6b1f4a7f4734c18c6c5580e} 
+Message\+Buffer\+::\+Message\+Buffer (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [default]}}
+
+
+
+Default constructor creates an empty buffer. 
+
+\Hypertarget{class_message_buffer_ac247567c6ce6eacf576d89fa574610de}\index{MessageBuffer@{MessageBuffer}!MessageBuffer@{MessageBuffer}}
+\index{MessageBuffer@{MessageBuffer}!MessageBuffer@{MessageBuffer}}
+\doxysubsubsection{\texorpdfstring{MessageBuffer()}{MessageBuffer()}\hspace{0.1cm}{\footnotesize\ttfamily [2/2]}}
+{\footnotesize\ttfamily \label{class_message_buffer_ac247567c6ce6eacf576d89fa574610de} 
+Message\+Buffer\+::\+Message\+Buffer (\begin{DoxyParamCaption}\item[{const uint8\+\_\+t \texorpdfstring{$\ast$}{*}}]{data}{, }\item[{size\+\_\+t}]{size}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Construct from existing data. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em data} & Pointer to source data \\
+\hline
+{\em size} & Size of source data in bytes \\
+\hline
+\end{DoxyParams}
+
+
+\label{doc-func-members}
+\Hypertarget{class_message_buffer_doc-func-members}
+\doxysubsection{Member Function Documentation}
+\Hypertarget{class_message_buffer_a13714a2d11d4b1a8ba315ff27f822bee}\index{MessageBuffer@{MessageBuffer}!Clear@{Clear}}
+\index{Clear@{Clear}!MessageBuffer@{MessageBuffer}}
+\doxysubsubsection{\texorpdfstring{Clear()}{Clear()}}
+{\footnotesize\ttfamily \label{class_message_buffer_a13714a2d11d4b1a8ba315ff27f822bee} 
+void Message\+Buffer\+::\+Clear (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Clear the buffer and reset read position. 
+
+\Hypertarget{class_message_buffer_a976fc6053d46c92ced54c2cbb4193bfb}\index{MessageBuffer@{MessageBuffer}!Data@{Data}}
+\index{Data@{Data}!MessageBuffer@{MessageBuffer}}
+\doxysubsubsection{\texorpdfstring{Data()}{Data()}}
+{\footnotesize\ttfamily \label{class_message_buffer_a976fc6053d46c92ced54c2cbb4193bfb} 
+const uint8\+\_\+t \texorpdfstring{$\ast$}{*} Message\+Buffer\+::\+Data (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Get pointer to buffer data. 
+
+\begin{DoxyReturn}{Returns}
+Const pointer to internal buffer 
+\end{DoxyReturn}
+\Hypertarget{class_message_buffer_a741e585a77cea9eea211803d5c591c11}\index{MessageBuffer@{MessageBuffer}!HasData@{HasData}}
+\index{HasData@{HasData}!MessageBuffer@{MessageBuffer}}
+\doxysubsubsection{\texorpdfstring{HasData()}{HasData()}}
+{\footnotesize\ttfamily \label{class_message_buffer_a741e585a77cea9eea211803d5c591c11} 
+bool Message\+Buffer\+::\+Has\+Data (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Check if there is more data to read. 
+
+\begin{DoxyReturn}{Returns}
+true if read position is before end of buffer 
+\end{DoxyReturn}
+\Hypertarget{class_message_buffer_a8931031cf93688c7afd5302fa2d43984}\index{MessageBuffer@{MessageBuffer}!ReadBytes@{ReadBytes}}
+\index{ReadBytes@{ReadBytes}!MessageBuffer@{MessageBuffer}}
+\doxysubsubsection{\texorpdfstring{ReadBytes()}{ReadBytes()}}
+{\footnotesize\ttfamily \label{class_message_buffer_a8931031cf93688c7afd5302fa2d43984} 
+void Message\+Buffer\+::\+Read\+Bytes (\begin{DoxyParamCaption}\item[{void \texorpdfstring{$\ast$}{*}}]{data}{, }\item[{size\+\_\+t}]{size}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Read raw bytes from the buffer. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em data} & Destination buffer \\
+\hline
+{\em size} & Number of bytes to read \\
+\hline
+\end{DoxyParams}
+\Hypertarget{class_message_buffer_ab8128e11555a0f0955c978233679b87d}\index{MessageBuffer@{MessageBuffer}!ReadFloat@{ReadFloat}}
+\index{ReadFloat@{ReadFloat}!MessageBuffer@{MessageBuffer}}
+\doxysubsubsection{\texorpdfstring{ReadFloat()}{ReadFloat()}}
+{\footnotesize\ttfamily \label{class_message_buffer_ab8128e11555a0f0955c978233679b87d} 
+float Message\+Buffer\+::\+Read\+Float (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Read a 32-\/bit floating point value. 
+
+\begin{DoxyReturn}{Returns}
+Value read 
+\end{DoxyReturn}
+\Hypertarget{class_message_buffer_a80ced787dd415c0fa247ffe86f7040b1}\index{MessageBuffer@{MessageBuffer}!ReadI32@{ReadI32}}
+\index{ReadI32@{ReadI32}!MessageBuffer@{MessageBuffer}}
+\doxysubsubsection{\texorpdfstring{ReadI32()}{ReadI32()}}
+{\footnotesize\ttfamily \label{class_message_buffer_a80ced787dd415c0fa247ffe86f7040b1} 
+int32\+\_\+t Message\+Buffer\+::\+Read\+I32 (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Read a signed 32-\/bit integer. 
+
+\begin{DoxyReturn}{Returns}
+Value read 
+\end{DoxyReturn}
+\Hypertarget{class_message_buffer_adcfd96e0eef4b90f0425f18aee2b17d4}\index{MessageBuffer@{MessageBuffer}!ReadU32@{ReadU32}}
+\index{ReadU32@{ReadU32}!MessageBuffer@{MessageBuffer}}
+\doxysubsubsection{\texorpdfstring{ReadU32()}{ReadU32()}}
+{\footnotesize\ttfamily \label{class_message_buffer_adcfd96e0eef4b90f0425f18aee2b17d4} 
+uint32\+\_\+t Message\+Buffer\+::\+Read\+U32 (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Read an unsigned 32-\/bit integer (little-\/endian). 
+
+\begin{DoxyReturn}{Returns}
+Value read 
+\end{DoxyReturn}
+\Hypertarget{class_message_buffer_ac733ba0084eb4cf4f77b1679abbbae4d}\index{MessageBuffer@{MessageBuffer}!ReadU8@{ReadU8}}
+\index{ReadU8@{ReadU8}!MessageBuffer@{MessageBuffer}}
+\doxysubsubsection{\texorpdfstring{ReadU8()}{ReadU8()}}
+{\footnotesize\ttfamily \label{class_message_buffer_ac733ba0084eb4cf4f77b1679abbbae4d} 
+uint8\+\_\+t Message\+Buffer\+::\+Read\+U8 (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Read an unsigned 8-\/bit integer. 
+
+\begin{DoxyReturn}{Returns}
+Value read, or 0 if buffer exhausted 
+\end{DoxyReturn}
+\Hypertarget{class_message_buffer_a069e1a3ce992ccb549878dba51e6199d}\index{MessageBuffer@{MessageBuffer}!Size@{Size}}
+\index{Size@{Size}!MessageBuffer@{MessageBuffer}}
+\doxysubsubsection{\texorpdfstring{Size()}{Size()}}
+{\footnotesize\ttfamily \label{class_message_buffer_a069e1a3ce992ccb549878dba51e6199d} 
+size\+\_\+t Message\+Buffer\+::\+Size (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Get current buffer size. 
+
+\begin{DoxyReturn}{Returns}
+Size in bytes 
+\end{DoxyReturn}
+\Hypertarget{class_message_buffer_a086f7732a327d7add28ba09b0312599b}\index{MessageBuffer@{MessageBuffer}!WriteBytes@{WriteBytes}}
+\index{WriteBytes@{WriteBytes}!MessageBuffer@{MessageBuffer}}
+\doxysubsubsection{\texorpdfstring{WriteBytes()}{WriteBytes()}}
+{\footnotesize\ttfamily \label{class_message_buffer_a086f7732a327d7add28ba09b0312599b} 
+void Message\+Buffer\+::\+Write\+Bytes (\begin{DoxyParamCaption}\item[{const void \texorpdfstring{$\ast$}{*}}]{data}{, }\item[{size\+\_\+t}]{size}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Write raw bytes to the buffer. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em data} & Pointer to source data \\
+\hline
+{\em size} & Number of bytes to write \\
+\hline
+\end{DoxyParams}
+\Hypertarget{class_message_buffer_a5fcf3d17150d0d00cff7d04d6438c0ac}\index{MessageBuffer@{MessageBuffer}!WriteFloat@{WriteFloat}}
+\index{WriteFloat@{WriteFloat}!MessageBuffer@{MessageBuffer}}
+\doxysubsubsection{\texorpdfstring{WriteFloat()}{WriteFloat()}}
+{\footnotesize\ttfamily \label{class_message_buffer_a5fcf3d17150d0d00cff7d04d6438c0ac} 
+void Message\+Buffer\+::\+Write\+Float (\begin{DoxyParamCaption}\item[{float}]{val}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Write a 32-\/bit floating point value. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em val} & Value to write \\
+\hline
+\end{DoxyParams}
+\Hypertarget{class_message_buffer_a897967bb14ea60756145f4f2a645838d}\index{MessageBuffer@{MessageBuffer}!WriteI32@{WriteI32}}
+\index{WriteI32@{WriteI32}!MessageBuffer@{MessageBuffer}}
+\doxysubsubsection{\texorpdfstring{WriteI32()}{WriteI32()}}
+{\footnotesize\ttfamily \label{class_message_buffer_a897967bb14ea60756145f4f2a645838d} 
+void Message\+Buffer\+::\+Write\+I32 (\begin{DoxyParamCaption}\item[{int32\+\_\+t}]{val}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Write a signed 32-\/bit integer. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em val} & Value to write \\
+\hline
+\end{DoxyParams}
+\Hypertarget{class_message_buffer_a4188c9d82bb1d03eb58097658292f939}\index{MessageBuffer@{MessageBuffer}!WriteU32@{WriteU32}}
+\index{WriteU32@{WriteU32}!MessageBuffer@{MessageBuffer}}
+\doxysubsubsection{\texorpdfstring{WriteU32()}{WriteU32()}}
+{\footnotesize\ttfamily \label{class_message_buffer_a4188c9d82bb1d03eb58097658292f939} 
+void Message\+Buffer\+::\+Write\+U32 (\begin{DoxyParamCaption}\item[{uint32\+\_\+t}]{val}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Write an unsigned 32-\/bit integer (little-\/endian). 
+
+
+\begin{DoxyParams}{Parameters}
+{\em val} & Value to write \\
+\hline
+\end{DoxyParams}
+\Hypertarget{class_message_buffer_a0fd814c434e0dbd4572c1249dce46b7e}\index{MessageBuffer@{MessageBuffer}!WriteU8@{WriteU8}}
+\index{WriteU8@{WriteU8}!MessageBuffer@{MessageBuffer}}
+\doxysubsubsection{\texorpdfstring{WriteU8()}{WriteU8()}}
+{\footnotesize\ttfamily \label{class_message_buffer_a0fd814c434e0dbd4572c1249dce46b7e} 
+void Message\+Buffer\+::\+Write\+U8 (\begin{DoxyParamCaption}\item[{uint8\+\_\+t}]{val}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Write an unsigned 8-\/bit integer. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em val} & Value to write \\
+\hline
+\end{DoxyParams}
+
+
+The documentation for this class was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+core/\mbox{\hyperlink{shared_8h}{shared.\+h}}\end{DoxyCompactItemize}

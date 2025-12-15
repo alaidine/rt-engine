@@ -1,0 +1,176 @@
+\doxysection{Configuration Constants }
+\hypertarget{group__config}{}\label{group__config}\index{Configuration Constants@{Configuration Constants}}
+
+
+Game configuration and protocol constants.  
+
+
+\doxysubsubsection*{Macros}
+\begin{DoxyCompactItemize}
+\item 
+\#define \mbox{\hyperlink{group__config_ga10bdace25026cfb13e87fcd09f8ec43e}{PROTOCOL\+\_\+\+NAME}}~"{}rt-\/protocol"{}
+\begin{DoxyCompactList}\small\item\em Protocol identifier string. \end{DoxyCompactList}\item 
+\#define \mbox{\hyperlink{group__config_ga614217d263be1fb1a5f76e2ff7be19a2}{PORT}}~42042
+\begin{DoxyCompactList}\small\item\em Default network port. \end{DoxyCompactList}\item 
+\#define \mbox{\hyperlink{group__config_gaf4021b95b18dc511ba274a310fe66d08}{TICK\+\_\+\+RATE}}~60
+\begin{DoxyCompactList}\small\item\em \doxylink{class_server}{Server} simulation tick rate (Hz). \end{DoxyCompactList}\item 
+\#define \mbox{\hyperlink{group__config_ga8e61f0ffaf5e556325043fc461ca3220}{SERVER\+\_\+\+FULL\+\_\+\+CODE}}~42
+\begin{DoxyCompactList}\small\item\em \doxylink{class_server}{Server} close code indicating the server is full. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\doxysubsubsection*{Window Configuration}
+\begin{DoxyCompactItemize}
+\item 
+\#define \mbox{\hyperlink{group__config_ga693f306b88f7336281e4d1f07754579c}{GAME\+\_\+\+WIDTH}}~800
+\begin{DoxyCompactList}\small\item\em Game window width in pixels. \end{DoxyCompactList}\item 
+\#define \mbox{\hyperlink{group__config_gaddffa3e327bacbc3da87278442b2b507}{GAME\+\_\+\+HEIGHT}}~600
+\begin{DoxyCompactList}\small\item\em Game window height in pixels. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\doxysubsubsection*{Value Limits}
+\begin{DoxyCompactItemize}
+\item 
+\#define \mbox{\hyperlink{group__config_ga4eb208b808371275dbc5c2ee420e415e}{MIN\+\_\+\+FLOAT\+\_\+\+VAL}}~-\/1000
+\begin{DoxyCompactList}\small\item\em Minimum value for networked float values. \end{DoxyCompactList}\item 
+\#define \mbox{\hyperlink{group__config_gae2ec19210183eb36cece221be0baeb1e}{MAX\+\_\+\+FLOAT\+\_\+\+VAL}}~1000
+\begin{DoxyCompactList}\small\item\em Maximum value for networked float values. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\doxysubsubsection*{Client Limits}
+\begin{DoxyCompactItemize}
+\item 
+\#define \mbox{\hyperlink{group__config_ga0a8f91f93d75a07f0ae45077db45b3eb}{MAX\+\_\+\+CLIENTS}}~4
+\begin{DoxyCompactList}\small\item\em Maximum number of concurrent clients. \end{DoxyCompactList}\item 
+\#define \mbox{\hyperlink{group__config_gafa10696a87fae6ed066323b7b6750947}{MAX\+\_\+\+COLORS}}~7
+\begin{DoxyCompactList}\small\item\em Maximum number of player colors. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\doxysubsubsection*{Missile Limits}
+\begin{DoxyCompactItemize}
+\item 
+\#define \mbox{\hyperlink{group__config_gaed68af5c2c961342d874f4e559deac70}{MAX\+\_\+\+MISSILES}}~400
+\begin{DoxyCompactList}\small\item\em Maximum missiles the server can track. \end{DoxyCompactList}\item 
+\#define \mbox{\hyperlink{group__config_ga5eb01d97ed5aa71397e4b4262d561b07}{MAX\+\_\+\+MISSILES\+\_\+\+CLIENT}}~100
+\begin{DoxyCompactList}\small\item\em Maximum missiles per client. \end{DoxyCompactList}\end{DoxyCompactItemize}
+
+
+\doxysubsection{Detailed Description}
+Game configuration and protocol constants. 
+
+
+
+\label{doc-define-members}
+\Hypertarget{group__config_doc-define-members}
+\doxysubsection{Macro Definition Documentation}
+\Hypertarget{group__config_gaddffa3e327bacbc3da87278442b2b507}\index{Configuration Constants@{Configuration Constants}!GAME\_HEIGHT@{GAME\_HEIGHT}}
+\index{GAME\_HEIGHT@{GAME\_HEIGHT}!Configuration Constants@{Configuration Constants}}
+\doxysubsubsection{\texorpdfstring{GAME\_HEIGHT}{GAME\_HEIGHT}}
+{\footnotesize\ttfamily \label{group__config_gaddffa3e327bacbc3da87278442b2b507} 
+\#define GAME\+\_\+\+HEIGHT~600}
+
+
+
+Game window height in pixels. 
+
+\Hypertarget{group__config_ga693f306b88f7336281e4d1f07754579c}\index{Configuration Constants@{Configuration Constants}!GAME\_WIDTH@{GAME\_WIDTH}}
+\index{GAME\_WIDTH@{GAME\_WIDTH}!Configuration Constants@{Configuration Constants}}
+\doxysubsubsection{\texorpdfstring{GAME\_WIDTH}{GAME\_WIDTH}}
+{\footnotesize\ttfamily \label{group__config_ga693f306b88f7336281e4d1f07754579c} 
+\#define GAME\+\_\+\+WIDTH~800}
+
+
+
+Game window width in pixels. 
+
+\Hypertarget{group__config_ga0a8f91f93d75a07f0ae45077db45b3eb}\index{Configuration Constants@{Configuration Constants}!MAX\_CLIENTS@{MAX\_CLIENTS}}
+\index{MAX\_CLIENTS@{MAX\_CLIENTS}!Configuration Constants@{Configuration Constants}}
+\doxysubsubsection{\texorpdfstring{MAX\_CLIENTS}{MAX\_CLIENTS}}
+{\footnotesize\ttfamily \label{group__config_ga0a8f91f93d75a07f0ae45077db45b3eb} 
+\#define MAX\+\_\+\+CLIENTS~4}
+
+
+
+Maximum number of concurrent clients. 
+
+\Hypertarget{group__config_gafa10696a87fae6ed066323b7b6750947}\index{Configuration Constants@{Configuration Constants}!MAX\_COLORS@{MAX\_COLORS}}
+\index{MAX\_COLORS@{MAX\_COLORS}!Configuration Constants@{Configuration Constants}}
+\doxysubsubsection{\texorpdfstring{MAX\_COLORS}{MAX\_COLORS}}
+{\footnotesize\ttfamily \label{group__config_gafa10696a87fae6ed066323b7b6750947} 
+\#define MAX\+\_\+\+COLORS~7}
+
+
+
+Maximum number of player colors. 
+
+\Hypertarget{group__config_gae2ec19210183eb36cece221be0baeb1e}\index{Configuration Constants@{Configuration Constants}!MAX\_FLOAT\_VAL@{MAX\_FLOAT\_VAL}}
+\index{MAX\_FLOAT\_VAL@{MAX\_FLOAT\_VAL}!Configuration Constants@{Configuration Constants}}
+\doxysubsubsection{\texorpdfstring{MAX\_FLOAT\_VAL}{MAX\_FLOAT\_VAL}}
+{\footnotesize\ttfamily \label{group__config_gae2ec19210183eb36cece221be0baeb1e} 
+\#define MAX\+\_\+\+FLOAT\+\_\+\+VAL~1000}
+
+
+
+Maximum value for networked float values. 
+
+\Hypertarget{group__config_gaed68af5c2c961342d874f4e559deac70}\index{Configuration Constants@{Configuration Constants}!MAX\_MISSILES@{MAX\_MISSILES}}
+\index{MAX\_MISSILES@{MAX\_MISSILES}!Configuration Constants@{Configuration Constants}}
+\doxysubsubsection{\texorpdfstring{MAX\_MISSILES}{MAX\_MISSILES}}
+{\footnotesize\ttfamily \label{group__config_gaed68af5c2c961342d874f4e559deac70} 
+\#define MAX\+\_\+\+MISSILES~400}
+
+
+
+Maximum missiles the server can track. 
+
+\Hypertarget{group__config_ga5eb01d97ed5aa71397e4b4262d561b07}\index{Configuration Constants@{Configuration Constants}!MAX\_MISSILES\_CLIENT@{MAX\_MISSILES\_CLIENT}}
+\index{MAX\_MISSILES\_CLIENT@{MAX\_MISSILES\_CLIENT}!Configuration Constants@{Configuration Constants}}
+\doxysubsubsection{\texorpdfstring{MAX\_MISSILES\_CLIENT}{MAX\_MISSILES\_CLIENT}}
+{\footnotesize\ttfamily \label{group__config_ga5eb01d97ed5aa71397e4b4262d561b07} 
+\#define MAX\+\_\+\+MISSILES\+\_\+\+CLIENT~100}
+
+
+
+Maximum missiles per client. 
+
+\Hypertarget{group__config_ga4eb208b808371275dbc5c2ee420e415e}\index{Configuration Constants@{Configuration Constants}!MIN\_FLOAT\_VAL@{MIN\_FLOAT\_VAL}}
+\index{MIN\_FLOAT\_VAL@{MIN\_FLOAT\_VAL}!Configuration Constants@{Configuration Constants}}
+\doxysubsubsection{\texorpdfstring{MIN\_FLOAT\_VAL}{MIN\_FLOAT\_VAL}}
+{\footnotesize\ttfamily \label{group__config_ga4eb208b808371275dbc5c2ee420e415e} 
+\#define MIN\+\_\+\+FLOAT\+\_\+\+VAL~-\/1000}
+
+
+
+Minimum value for networked float values. 
+
+\Hypertarget{group__config_ga614217d263be1fb1a5f76e2ff7be19a2}\index{Configuration Constants@{Configuration Constants}!PORT@{PORT}}
+\index{PORT@{PORT}!Configuration Constants@{Configuration Constants}}
+\doxysubsubsection{\texorpdfstring{PORT}{PORT}}
+{\footnotesize\ttfamily \label{group__config_ga614217d263be1fb1a5f76e2ff7be19a2} 
+\#define PORT~42042}
+
+
+
+Default network port. 
+
+\Hypertarget{group__config_ga10bdace25026cfb13e87fcd09f8ec43e}\index{Configuration Constants@{Configuration Constants}!PROTOCOL\_NAME@{PROTOCOL\_NAME}}
+\index{PROTOCOL\_NAME@{PROTOCOL\_NAME}!Configuration Constants@{Configuration Constants}}
+\doxysubsubsection{\texorpdfstring{PROTOCOL\_NAME}{PROTOCOL\_NAME}}
+{\footnotesize\ttfamily \label{group__config_ga10bdace25026cfb13e87fcd09f8ec43e} 
+\#define PROTOCOL\+\_\+\+NAME~"{}rt-\/protocol"{}}
+
+
+
+Protocol identifier string. 
+
+\Hypertarget{group__config_ga8e61f0ffaf5e556325043fc461ca3220}\index{Configuration Constants@{Configuration Constants}!SERVER\_FULL\_CODE@{SERVER\_FULL\_CODE}}
+\index{SERVER\_FULL\_CODE@{SERVER\_FULL\_CODE}!Configuration Constants@{Configuration Constants}}
+\doxysubsubsection{\texorpdfstring{SERVER\_FULL\_CODE}{SERVER\_FULL\_CODE}}
+{\footnotesize\ttfamily \label{group__config_ga8e61f0ffaf5e556325043fc461ca3220} 
+\#define SERVER\+\_\+\+FULL\+\_\+\+CODE~42}
+
+
+
+\doxylink{class_server}{Server} close code indicating the server is full. 
+
+This code is sent to clients when their connection is rejected due to the server having reached MAX\+\_\+\+CLIENTS. \Hypertarget{group__config_gaf4021b95b18dc511ba274a310fe66d08}\index{Configuration Constants@{Configuration Constants}!TICK\_RATE@{TICK\_RATE}}
+\index{TICK\_RATE@{TICK\_RATE}!Configuration Constants@{Configuration Constants}}
+\doxysubsubsection{\texorpdfstring{TICK\_RATE}{TICK\_RATE}}
+{\footnotesize\ttfamily \label{group__config_gaf4021b95b18dc511ba274a310fe66d08} 
+\#define TICK\+\_\+\+RATE~60}
+
+
+
+\doxylink{class_server}{Server} simulation tick rate (Hz). 
+
