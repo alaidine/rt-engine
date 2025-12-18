@@ -22,8 +22,8 @@ add_library(renderer
     VulkanTools.cpp
     VulkanUIOverlay.cpp
     VulkanUIOverlay.h
-    rt-engine.h
-    rt-engine.cpp
+    renderer.h
+    renderer.cpp
     imconfig.h
     imgui.cpp
     imgui.h

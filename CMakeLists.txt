@@ -10,5 +10,8 @@ add_subdirectory(glfw)
 add_subdirectory(glm)
 add_subdirectory(KTX-Software/lib ktx)
 
+add_subdirectory(ecs)
 add_subdirectory(renderer)
 add_subdirectory(samples)
+
+set_target_properties(samples PROPERTIES VS_DEBUGGER_WORKING_DIRECTORY "${CMAKE_SOURCE_DIR}")
