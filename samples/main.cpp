@@ -1,46 +1,45 @@
 #include "renderer.h"
 
-rt::Renderer *renderer;
+rt::VulkanRenderer *renderer;
 
 LRESULT CALLBACK WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam) {
-  if (renderer != NULL) {
-    renderer->handleMessages(hWnd, uMsg, wParam, lParam);
-  }
-  return (DefWindowProc(hWnd, uMsg, wParam, lParam));
+    if (renderer != NULL) {
+        renderer->handleMessages(hWnd, uMsg, wParam, lParam);
+    }
+    return (DefWindowProc(hWnd, uMsg, wParam, lParam));
 }
 
-int APIENTRY WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance,
-                     _In_ LPSTR, _In_ int) {
-  renderer = new rt::Renderer();
+int APIENTRY WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, _In_ LPSTR, _In_ int) {
+    for (int32_t i = 0; i < __argc; i++) {
+        rt::VulkanBase::args.push_back(__argv[i]);
+    };
 
-  rt::Texture texture;
-  rt::Rectangle rect = {0, 364, 256, 256}; // Example dimensions
-  glm::vec2 position = {0, 0};             // Example position
-  rt::Color tint = {255, 255, 255, 255};   // White tint
+    renderer = new rt::VulkanRenderer();
+    renderer->initVulkan();
+    renderer->setupWindow(hInstance, WndProc);
+    renderer->prepare();
+    renderer->Init();
 
-  renderer->initVulkan();
-  renderer->setupWindow(hInstance, WndProc);
-  renderer->prepare();
-  renderer->init();
+    rt::Rectangle rect = {0, 0, 50, 50}; // Top-left quadrant (should show top-left of image)
 
-  MSG msg;
-  bool quitMessageReceived = false;
-  while (!quitMessageReceived) {
-    while (PeekMessage(&msg, NULL, 0, 0, PM_REMOVE)) {
-      TranslateMessage(&msg);
-      DispatchMessage(&msg);
-      if (msg.message == WM_QUIT) {
-        quitMessageReceived = true;
-        break;
-      }
+    MSG msg;
+    bool quitMessageReceived = false;
+    while (!quitMessageReceived) {
+        while (PeekMessage(&msg, NULL, 0, 0, PM_REMOVE)) {
+            TranslateMessage(&msg);
+            DispatchMessage(&msg);
+            if (msg.message == WM_QUIT) {
+                quitMessageReceived = true;
+                break;
+            }
+        }
+
+        renderer->StartDrawing();
+
+        renderer->DrawTextureRec(rect, {0, 0});
+
+        renderer->EndDrawing();
     }
 
-    renderer->BeginDrawing();
-
-    renderer->DrawTextureRec(texture, rect, position, tint);
-
-    renderer->EndDrawing();
-  }
-
-  delete renderer;
+    delete renderer;
 }

@@ -6,7 +6,7 @@ add_library(renderer
     CommandLineParser.hpp
     Entrypoint.h
     keycodes.hpp
-    texture_example.cpp
+    TextureExample.cpp
     VulkanBuffer.cpp
     VulkanBuffer.h
     VulkanDebug.cpp
@@ -22,8 +22,8 @@ add_library(renderer
     VulkanTools.cpp
     VulkanUIOverlay.cpp
     VulkanUIOverlay.h
-    renderer.h
-    renderer.cpp
+    Renderer.h
+    Renderer.cpp
     imconfig.h
     imgui.cpp
     imgui.h
