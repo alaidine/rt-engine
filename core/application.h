@@ -2,7 +2,9 @@
 
 #include "event.h"
 #include "layer.h"
-// #include "Window.h"
+#include "window.h"
+
+#include "renderer.h"
 
 #include <glm/glm.hpp>
 
@@ -16,12 +18,15 @@ namespace rt {
 
 struct ApplicationSpecification {
     std::string Name = "Application";
-    //  WindowSpecification WindowSpec;
+    std::string Title = "app";
+    WindowSpecification WindowSpec;
 };
 
 class Application {
   public:
     Application(const ApplicationSpecification &specification = ApplicationSpecification());
+    Application(const ApplicationSpecification &specification, HINSTANCE hInstance);
+
     ~Application();
 
     void Run();
@@ -47,18 +52,18 @@ class Application {
 
     glm::vec2 GetFramebufferSize() const;
 
-    // std::shared_ptr<Window> GetWindow() const { return m_Window; }
+    std::shared_ptr<Window> GetWindow() const { return mWindow; }
 
     static Application &Get();
     static float GetTime();
 
+    VulkanRenderer mRenderer;
+
   private:
-    ApplicationSpecification m_Specification;
-    // std::shared_ptr<Window> m_Window;
+    ApplicationSpecification mSpecification;
+    std::shared_ptr<Window> mWindow;
     bool m_Running = false;
-
     std::vector<std::unique_ptr<Layer>> m_LayerStack;
-
     friend class Layer;
 };
 

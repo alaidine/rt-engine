@@ -57,6 +57,13 @@ typedef struct Rectangle {
     float height; // height
 } Rectangle;
 
+typedef struct Color {
+    float r;
+    float g;
+    float b;
+    float a;
+} Color;
+
 typedef struct Position {
     float x;
     float y;
@@ -152,8 +159,7 @@ class VulkanBase {
     VkRenderPass renderPass{VK_NULL_HANDLE};
     // List of available frame buffers (same as number of swap chain images)
     std::vector<VkFramebuffer> frameBuffers;
-    // Descriptor set pool
-    VkDescriptorPool descriptorPool{VK_NULL_HANDLE};
+
     // List of shader modules created (stored for cleanup)
     std::vector<VkShaderModule> shaderModules;
     // Pipeline cache object
@@ -319,11 +325,17 @@ class VulkanBase {
     virtual void OnHandleMessage(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
 };
 
-// Vertex layout
-struct Vertex {
+// Texture Vertex layout
+struct TextureVertex {
     float pos[3];
     float uv[2];
     float normal[3];
+};
+
+// Rectangle Vertex layout
+struct RectangleVertex {
+    float position[3];
+    float color[3];
 };
 
 class VulkanRenderer : public VulkanBase {
@@ -340,9 +352,9 @@ class VulkanRenderer : public VulkanBase {
         uint32_t mipLevels{0};
     } texture;
 
-    vks::Buffer vertexBuffer;
-    vks::Buffer indexBuffer;
-    uint32_t indexCount{0};
+    vks::Buffer textureVertexBuffer;
+    vks::Buffer textureIndexBuffer;
+    uint32_t textureIndexCount{0};
 
     struct UniformData {
         glm::mat4 projection;
@@ -354,13 +366,22 @@ class VulkanRenderer : public VulkanBase {
     } uniformData;
     std::array<vks::Buffer, maxConcurrentFrames> uniformBuffers;
 
-    VkPipeline pipeline{VK_NULL_HANDLE};
-    VkPipelineLayout pipelineLayout{VK_NULL_HANDLE};
+    VkPipeline texturePipeline{VK_NULL_HANDLE};
+    VkPipelineLayout texturePipelineLayout{VK_NULL_HANDLE};
+    VkDescriptorPool descriptorPool{VK_NULL_HANDLE};
     VkDescriptorSetLayout descriptorSetLayout{VK_NULL_HANDLE};
     std::array<VkDescriptorSet, maxConcurrentFrames> descriptorSets{};
 
-    std::vector<Vertex> textureVertices;
+    VkPipeline rectanglePipeline{VK_NULL_HANDLE};
+    VkPipelineLayout rectanglePipelineLayout{VK_NULL_HANDLE};
+    VkDescriptorPool rectangledescriptorPool{VK_NULL_HANDLE};
+    std::array<VkDescriptorSet, maxConcurrentFrames> rectangledescriptorSets{};
+
+    std::vector<TextureVertex> textureVertices;
     std::vector<uint32_t> textureIndices;
+
+    std::vector<RectangleVertex> rectangleVertex;
+    std::vector<uint32_t> rectangleIndices;
 
     VulkanRenderer();
     ~VulkanRenderer();
@@ -395,9 +416,13 @@ class VulkanRenderer : public VulkanBase {
     void destroyTextureImage(Texture texture);
     // Creates a vertex and index buffer for a quad made of two triangles
     // This is used to display the texture on
-    void generateQuad();
+    
     void setupDescriptors();
     void preparePipelines();
+
+    void rectanglePreparePipelines();
+    void rectanganleSetupDescriptors();
+
     // Prepare and initialize uniform buffer containing shader uniforms
     void prepareUniformBuffers();
     void updateUniformBuffers();
@@ -407,9 +432,11 @@ class VulkanRenderer : public VulkanBase {
     virtual void OnUpdateUIOverlay(vks::UIOverlay *overlay);
 
     void Init();
+    void InitWindowInfo(HWND win, HINSTANCE instance, uint32_t windowWidth, uint32_t windowHeight);
     void StartDrawing();
     void EndDrawing();
     void DrawTextureRec(Rectangle rectangle, glm::vec2 position);
+    void DrawRect(Rectangle rectangle, Color color);
 };
 
 } // namespace rt

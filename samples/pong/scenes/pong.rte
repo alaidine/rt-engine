@@ -1,0 +1,9 @@
+type scene
+
+entity paddle1 start
+    component shape start
+        type = rectangle
+        width = 50
+        height = 200
+    end
+end

@@ -443,9 +443,6 @@ VulkanBase::VulkanBase() {
 VulkanBase::~VulkanBase() {
     // Clean up Vulkan resources
     swapChain.cleanup();
-    if (descriptorPool != VK_NULL_HANDLE) {
-        vkDestroyDescriptorPool(device, descriptorPool, nullptr);
-    }
     destroyCommandBuffers();
     if (renderPass != VK_NULL_HANDLE) {
         vkDestroyRenderPass(device, renderPass, nullptr);
@@ -1105,14 +1102,18 @@ VulkanRenderer::~VulkanRenderer() {
 
     if (device) {
         destroyTextureImage(texture);
-        vkDestroyPipeline(device, pipeline, nullptr);
-        vkDestroyPipelineLayout(device, pipelineLayout, nullptr);
+        vkDestroyPipeline(device, texturePipeline, nullptr);
+        vkDestroyPipelineLayout(device, texturePipelineLayout, nullptr);
         vkDestroyDescriptorSetLayout(device, descriptorSetLayout, nullptr);
-        vertexBuffer.destroy();
-        indexBuffer.destroy();
+        textureVertexBuffer.destroy();
+        textureIndexBuffer.destroy();
         for (auto &buffer : uniformBuffers) {
             buffer.destroy();
         }
+    }
+
+    if (descriptorPool != VK_NULL_HANDLE) {
+        vkDestroyDescriptorPool(device, descriptorPool, nullptr);
     }
 }
 
@@ -1295,9 +1296,9 @@ void VulkanRenderer::loadTexture() {
         imageMemoryBarrier.oldLayout = VK_IMAGE_LAYOUT_UNDEFINED;
         imageMemoryBarrier.newLayout = VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL;
 
-        // Insert a memory dependency at the proper pipeline stages that will
-        // execute the image layout transition Source pipeline stage is host
-        // write/read execution (VK_PIPELINE_STAGE_HOST_BIT) Destination pipeline
+        // Insert a memory dependency at the proper texturePipeline stages that will
+        // execute the image layout transition Source texturePipeline stage is host
+        // write/read execution (VK_PIPELINE_STAGE_HOST_BIT) Destination texturePipeline
         // stage is copy command execution (VK_PIPELINE_STAGE_TRANSFER_BIT)
         vkCmdPipelineBarrier(copyCmd, VK_PIPELINE_STAGE_HOST_BIT, VK_PIPELINE_STAGE_TRANSFER_BIT, 0, 0, nullptr, 0, nullptr, 1,
                              &imageMemoryBarrier);
@@ -1313,9 +1314,9 @@ void VulkanRenderer::loadTexture() {
         imageMemoryBarrier.oldLayout = VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL;
         imageMemoryBarrier.newLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
 
-        // Insert a memory dependency at the proper pipeline stages that will
-        // execute the image layout transition Source pipeline stage is copy
-        // command execution (VK_PIPELINE_STAGE_TRANSFER_BIT) Destination pipeline
+        // Insert a memory dependency at the proper texturePipeline stages that will
+        // execute the image layout transition Source texturePipeline stage is copy
+        // command execution (VK_PIPELINE_STAGE_TRANSFER_BIT) Destination texturePipeline
         // stage fragment shader access (VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT)
         vkCmdPipelineBarrier(copyCmd, VK_PIPELINE_STAGE_TRANSFER_BIT, VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT, 0, 0, nullptr, 0,
                              nullptr, 1, &imageMemoryBarrier);
@@ -1393,9 +1394,9 @@ void VulkanRenderer::loadTexture() {
         imageMemoryBarrier.oldLayout = VK_IMAGE_LAYOUT_PREINITIALIZED;
         imageMemoryBarrier.newLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
 
-        // Insert a memory dependency at the proper pipeline stages that will
-        // execute the image layout transition Source pipeline stage is host
-        // write/read execution (VK_PIPELINE_STAGE_HOST_BIT) Destination pipeline
+        // Insert a memory dependency at the proper texturePipeline stages that will
+        // execute the image layout transition Source texturePipeline stage is host
+        // write/read execution (VK_PIPELINE_STAGE_HOST_BIT) Destination texturePipeline
         // stage fragment shader access (VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT)
         vkCmdPipelineBarrier(copyCmd, VK_PIPELINE_STAGE_HOST_BIT, VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT, 0, 0, nullptr, 0,
                              nullptr, 1, &imageMemoryBarrier);
@@ -1469,50 +1470,6 @@ void VulkanRenderer::destroyTextureImage(Texture texture) {
     vkFreeMemory(device, texture.deviceMemory, nullptr);
 }
 
-// Creates a vertex and index buffer for a quad made of two triangles
-// This is used to display the texture on
-void VulkanRenderer::generateQuad() {
-    // Setup vertices for a single uv-mapped quad made from two triangles
-    std::vector<Vertex> vertices = {{{1.0f, 1.0f, 0.0f}, {1.0f, 1.0f}, {0.0f, 0.0f, 1.0f}},
-                                    {{-1.0f, 1.0f, 0.0f}, {0.0f, 1.0f}, {0.0f, 0.0f, 1.0f}},
-                                    {{-1.0f, -1.0f, 0.0f}, {0.0f, 0.0f}, {0.0f, 0.0f, 1.0f}},
-                                    {{1.0f, -1.0f, 0.0f}, {1.0f, 0.0f}, {0.0f, 0.0f, 1.0f}}};
-
-    // Setup indices
-    std::vector<uint32_t> indices = {0, 1, 2, 2, 3, 0};
-    indexCount = static_cast<uint32_t>(indices.size());
-
-    // Create buffers and upload data to the GPU
-    struct StagingBuffers {
-        vks::Buffer vertices;
-        vks::Buffer indices;
-    } stagingBuffers;
-
-    // Host visible source buffers (staging)
-    VK_CHECK_RESULT(vulkanDevice->createBuffer(VK_BUFFER_USAGE_TRANSFER_SRC_BIT,
-                                               VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT,
-                                               &stagingBuffers.vertices, vertices.size() * sizeof(Vertex), vertices.data()));
-    VK_CHECK_RESULT(vulkanDevice->createBuffer(VK_BUFFER_USAGE_TRANSFER_SRC_BIT,
-                                               VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT,
-                                               &stagingBuffers.indices, indices.size() * sizeof(uint32_t), indices.data()));
-
-    // Device local destination buffers
-    VK_CHECK_RESULT(vulkanDevice->createBuffer(VK_BUFFER_USAGE_VERTEX_BUFFER_BIT | VK_BUFFER_USAGE_TRANSFER_DST_BIT,
-                                               VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, &vertexBuffer,
-                                               vertices.size() * sizeof(Vertex)));
-    VK_CHECK_RESULT(vulkanDevice->createBuffer(VK_BUFFER_USAGE_INDEX_BUFFER_BIT | VK_BUFFER_USAGE_TRANSFER_DST_BIT,
-                                               VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, &indexBuffer,
-                                               indices.size() * sizeof(uint32_t)));
-
-    // Copy from host do device
-    vulkanDevice->copyBuffer(&stagingBuffers.vertices, &vertexBuffer, queue);
-    vulkanDevice->copyBuffer(&stagingBuffers.indices, &indexBuffer, queue);
-
-    // Clean up
-    stagingBuffers.vertices.destroy();
-    stagingBuffers.indices.destroy();
-}
-
 void VulkanRenderer::setupDescriptors() {
     // Pool
     std::vector<VkDescriptorPoolSize> poolSizes = {
@@ -1526,7 +1483,7 @@ void VulkanRenderer::setupDescriptors() {
 
     // Layout
     std::vector<VkDescriptorSetLayoutBinding> setLayoutBindings = {
-        // Binding 0 : Vertex shader uniform buffer
+        // Binding 0 : TextureVertex shader uniform buffer
         vks::initializers::descriptorSetLayoutBinding(VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, VK_SHADER_STAGE_VERTEX_BIT, 0),
         // Binding 1 : Fragment shader image sampler
         vks::initializers::descriptorSetLayoutBinding(VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, VK_SHADER_STAGE_FRAGMENT_BIT,
@@ -1540,7 +1497,7 @@ void VulkanRenderer::setupDescriptors() {
     // The image's view (images are never directly accessed by the shader, but
     // rather through views defining subresources)
     textureDescriptor.imageView = texture.view;
-    // The sampler (Telling the pipeline how to sample the texture, including
+    // The sampler (Telling the texturePipeline how to sample the texture, including
     // repeat, border, etc.)
     textureDescriptor.sampler = texture.sampler;
     // The current layout of the image(Note: Should always fit the actual use,
@@ -1553,7 +1510,7 @@ void VulkanRenderer::setupDescriptors() {
         VK_CHECK_RESULT(vkAllocateDescriptorSets(device, &allocInfo, &descriptorSets[i]));
 
         std::vector<VkWriteDescriptorSet> writeDescriptorSets = {
-            // Binding 0 : Vertex shader uniform buffer
+            // Binding 0 : TextureVertex shader uniform buffer
             vks::initializers::writeDescriptorSet(descriptorSets[i], VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, 0,
                                                   &uniformBuffers[i].descriptor),
             // Binding 1 : Fragment shader texture sampler
@@ -1577,10 +1534,18 @@ void VulkanRenderer::setupDescriptors() {
     }
 }
 
+void VulkanRenderer::rectanganleSetupDescriptors() {
+
+}
+
+void VulkanRenderer::rectanglePreparePipelines() {
+
+}
+
 void VulkanRenderer::preparePipelines() {
     // Layout
     VkPipelineLayoutCreateInfo pipelineLayoutCreateInfo = vks::initializers::pipelineLayoutCreateInfo(&descriptorSetLayout, 1);
-    VK_CHECK_RESULT(vkCreatePipelineLayout(device, &pipelineLayoutCreateInfo, nullptr, &pipelineLayout));
+    VK_CHECK_RESULT(vkCreatePipelineLayout(device, &pipelineLayoutCreateInfo, nullptr, &texturePipelineLayout));
 
     // Pipeline
     VkPipelineInputAssemblyStateCreateInfo inputAssemblyState =
@@ -1604,13 +1569,13 @@ void VulkanRenderer::preparePipelines() {
     shaderStages[0] = loadShader(getShadersPath() + "texture/texture.vert.spv", VK_SHADER_STAGE_VERTEX_BIT);
     shaderStages[1] = loadShader(getShadersPath() + "texture/texture.frag.spv", VK_SHADER_STAGE_FRAGMENT_BIT);
 
-    // Vertex input state
+    // TextureVertex input state
     std::vector<VkVertexInputBindingDescription> vertexInputBindings = {
-        vks::initializers::vertexInputBindingDescription(0, sizeof(Vertex), VK_VERTEX_INPUT_RATE_VERTEX)};
+        vks::initializers::vertexInputBindingDescription(0, sizeof(TextureVertex), VK_VERTEX_INPUT_RATE_VERTEX)};
     std::vector<VkVertexInputAttributeDescription> vertexInputAttributes = {
-        vks::initializers::vertexInputAttributeDescription(0, 0, VK_FORMAT_R32G32B32_SFLOAT, offsetof(Vertex, pos)),
-        vks::initializers::vertexInputAttributeDescription(0, 1, VK_FORMAT_R32G32_SFLOAT, offsetof(Vertex, uv)),
-        vks::initializers::vertexInputAttributeDescription(0, 2, VK_FORMAT_R32G32B32_SFLOAT, offsetof(Vertex, normal)),
+        vks::initializers::vertexInputAttributeDescription(0, 0, VK_FORMAT_R32G32B32_SFLOAT, offsetof(TextureVertex, pos)),
+        vks::initializers::vertexInputAttributeDescription(0, 1, VK_FORMAT_R32G32_SFLOAT, offsetof(TextureVertex, uv)),
+        vks::initializers::vertexInputAttributeDescription(0, 2, VK_FORMAT_R32G32B32_SFLOAT, offsetof(TextureVertex, normal)),
     };
     VkPipelineVertexInputStateCreateInfo vertexInputState = vks::initializers::pipelineVertexInputStateCreateInfo();
     vertexInputState.vertexBindingDescriptionCount = static_cast<uint32_t>(vertexInputBindings.size());
@@ -1618,7 +1583,7 @@ void VulkanRenderer::preparePipelines() {
     vertexInputState.vertexAttributeDescriptionCount = static_cast<uint32_t>(vertexInputAttributes.size());
     vertexInputState.pVertexAttributeDescriptions = vertexInputAttributes.data();
 
-    VkGraphicsPipelineCreateInfo pipelineCreateInfo = vks::initializers::pipelineCreateInfo(pipelineLayout, renderPass, 0);
+    VkGraphicsPipelineCreateInfo pipelineCreateInfo = vks::initializers::pipelineCreateInfo(texturePipelineLayout, renderPass, 0);
     pipelineCreateInfo.pVertexInputState = &vertexInputState;
     pipelineCreateInfo.pInputAssemblyState = &inputAssemblyState;
     pipelineCreateInfo.pRasterizationState = &rasterizationState;
@@ -1629,7 +1594,7 @@ void VulkanRenderer::preparePipelines() {
     pipelineCreateInfo.pDynamicState = &dynamicState;
     pipelineCreateInfo.stageCount = static_cast<uint32_t>(shaderStages.size());
     pipelineCreateInfo.pStages = shaderStages.data();
-    VK_CHECK_RESULT(vkCreateGraphicsPipelines(device, pipelineCache, 1, &pipelineCreateInfo, nullptr, &pipeline));
+    VK_CHECK_RESULT(vkCreateGraphicsPipelines(device, pipelineCache, 1, &pipelineCreateInfo, nullptr, &texturePipeline));
 }
 
 // Prepare and initialize uniform buffer containing shader uniforms
@@ -1652,10 +1617,14 @@ void VulkanRenderer::updateUniformBuffers() {
 void VulkanRenderer::prepare() {
     VulkanBase::prepare();
     loadTexture();
-    // generateQuad();
     prepareUniformBuffers();
+    
     setupDescriptors();
     preparePipelines();
+
+    rectanganleSetupDescriptors();
+    rectanglePreparePipelines();
+
     prepared = true;
 }
 
@@ -1690,15 +1659,15 @@ void VulkanRenderer::buildCommandBuffer() {
 
     // This will bind the descriptor set that contains our image (texture), so
     // it can be accessed in the fragment shader
-    vkCmdBindDescriptorSets(cmdBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pipelineLayout, 0, 1, &descriptorSets[currentBuffer], 0,
-                            nullptr);
-    vkCmdBindPipeline(cmdBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pipeline);
+    vkCmdBindDescriptorSets(cmdBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, texturePipelineLayout, 0, 1,
+                            &descriptorSets[currentBuffer], 0, nullptr);
+    vkCmdBindPipeline(cmdBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, texturePipeline);
 
     VkDeviceSize offsets[1] = {0};
-    vkCmdBindVertexBuffers(cmdBuffer, 0, 1, &vertexBuffer.buffer, offsets);
-    vkCmdBindIndexBuffer(cmdBuffer, indexBuffer.buffer, 0, VK_INDEX_TYPE_UINT32);
+    vkCmdBindVertexBuffers(cmdBuffer, 0, 1, &textureVertexBuffer.buffer, offsets);
+    vkCmdBindIndexBuffer(cmdBuffer, textureIndexBuffer.buffer, 0, VK_INDEX_TYPE_UINT32);
 
-    vkCmdDrawIndexed(cmdBuffer, indexCount, 1, 0, 0, 0);
+    vkCmdDrawIndexed(cmdBuffer, textureIndexCount, 1, 0, 0, 0);
 
     drawUI(cmdBuffer);
 
@@ -1738,6 +1707,13 @@ void VulkanRenderer::Init() {
     tPrevEnd = lastTimestamp;
 }
 
+void VulkanRenderer::InitWindowInfo(HWND win, HINSTANCE instance, uint32_t windowWidth, uint32_t windowHeight) {
+    window = win;
+    windowInstance = instance;
+    width = windowWidth;
+    height = windowHeight;
+}
+
 void VulkanRenderer::StartDrawing() {
     textureIndices.clear();
     textureVertices.clear();
@@ -1748,8 +1724,8 @@ void VulkanRenderer::StartDrawing() {
         vkDeviceWaitIdle(device);
     }
 
-    vertexBuffer.destroy();
-    indexBuffer.destroy();
+    textureVertexBuffer.destroy();
+    textureIndexBuffer.destroy();
 }
 
 void VulkanRenderer::EndDrawing() {
@@ -1759,31 +1735,36 @@ void VulkanRenderer::EndDrawing() {
         vks::Buffer indices;
     } stagingBuffers;
 
+    if (textureVertices.size() == 0) {
+        textureIndexCount = 0;
+        return;
+    }
+
     // Host visible source buffers (staging)
     VK_CHECK_RESULT(vulkanDevice->createBuffer(
         VK_BUFFER_USAGE_TRANSFER_SRC_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT,
-        &stagingBuffers.vertices, textureVertices.size() * sizeof(Vertex), textureVertices.data()));
+        &stagingBuffers.vertices, textureVertices.size() * sizeof(TextureVertex), textureVertices.data()));
     VK_CHECK_RESULT(vulkanDevice->createBuffer(
         VK_BUFFER_USAGE_TRANSFER_SRC_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT,
         &stagingBuffers.indices, textureIndices.size() * sizeof(uint32_t), textureIndices.data()));
 
     // Device local destination buffers
     VK_CHECK_RESULT(vulkanDevice->createBuffer(VK_BUFFER_USAGE_VERTEX_BUFFER_BIT | VK_BUFFER_USAGE_TRANSFER_DST_BIT,
-                                               VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, &vertexBuffer,
-                                               textureVertices.size() * sizeof(Vertex)));
+                                               VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, &textureVertexBuffer,
+                                               textureVertices.size() * sizeof(TextureVertex)));
     VK_CHECK_RESULT(vulkanDevice->createBuffer(VK_BUFFER_USAGE_INDEX_BUFFER_BIT | VK_BUFFER_USAGE_TRANSFER_DST_BIT,
-                                               VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, &indexBuffer,
+                                               VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, &textureIndexBuffer,
                                                textureIndices.size() * sizeof(uint32_t)));
 
     // Copy from host do device
-    vulkanDevice->copyBuffer(&stagingBuffers.vertices, &vertexBuffer, queue);
-    vulkanDevice->copyBuffer(&stagingBuffers.indices, &indexBuffer, queue);
+    vulkanDevice->copyBuffer(&stagingBuffers.vertices, &textureVertexBuffer, queue);
+    vulkanDevice->copyBuffer(&stagingBuffers.indices, &textureIndexBuffer, queue);
 
     // Clean up
     stagingBuffers.vertices.destroy();
     stagingBuffers.indices.destroy();
 
-    indexCount = static_cast<uint32_t>(textureIndices.size());
+    textureIndexCount = static_cast<uint32_t>(textureIndices.size());
 
     if (prepared && !IsIconic(window)) {
         nextFrame();
@@ -1808,7 +1789,7 @@ void VulkanRenderer::DrawTextureRec(Rectangle rectangle, glm::vec2 position) {
 
     uint32_t vertexOffset = static_cast<uint32_t>(textureVertices.size());
 
-    std::vector<Vertex> vertices = {
+    std::vector<TextureVertex> vertices = {
         {{ndc_x, ndc_y, 0.0f}, {u0, v0}, {0.0f, 0.0f, 1.0f}},                          // Top-left
         {{ndc_x + ndc_width, ndc_y, 0.0f}, {u1, v0}, {0.0f, 0.0f, 1.0f}},              // Top-right
         {{ndc_x + ndc_width, ndc_y + ndc_height, 0.0f}, {u1, v1}, {0.0f, 0.0f, 1.0f}}, // Bottom-right
@@ -1820,6 +1801,200 @@ void VulkanRenderer::DrawTextureRec(Rectangle rectangle, glm::vec2 position) {
 
     textureIndices.insert(textureIndices.end(), indices.begin(), indices.end());
     textureVertices.insert(textureVertices.end(), vertices.begin(), vertices.end());
+}
+
+void VulkanRenderer::DrawRect(Rectangle rect, Color color) {
+    // A note on memory management in Vulkan in general:
+    // This is a very complex topic and while it's fine for an example application to small individual memory allocations that is
+    // not what should be done a real-world application, where you should allocate large chunks of memory at once instead.
+
+    // Setup vertices
+    std::vector<RectangleVertex> vertexBuffer{
+        {{-1.0f, -1.0f, 0.0f}, {color.r, color.g, color.b}}, // Top-Left
+        {{1.0f, -1.0f, 0.0f}, {color.r, color.g, color.b}},  // Top-Right
+        {{1.0f, 1.0f, 0.0f}, {color.r, color.g, color.b}},   // Bottom-Left
+        {{-1.0f, 1.0f, 0.0f}, {color.r, color.g, color.b}}   // Bottom-Right
+    };
+    uint32_t vertexBufferSize = static_cast<uint32_t>(vertexBuffer.size()) * sizeof(RectangleVertex);
+
+    // Setup indices
+    uint32_t vertexOffset = static_cast<uint32_t>(rectangleVertices.size());
+    std::vector<uint32_t> indexBuffer{vertexOffset + 0, vertexOffset + 1, vertexOffset + 2,
+                                      vertexOffset + 2, vertexOffset + 3, vertexOffset + 0};
+}
+
+void VulkanRenderer::rectangelPreparePipelines() {
+    // Create the pipeline layout that is used to generate the rendering pipelines that are based on this descriptor set layout
+    // In a more complex scenario you would have different pipeline layouts for different descriptor set layouts that could be
+    // reused
+    VkPipelineLayoutCreateInfo pipelineLayoutCI{};
+    pipelineLayoutCI.sType = VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO;
+    pipelineLayoutCI.pNext = nullptr;
+    pipelineLayoutCI.setLayoutCount = 1;
+    pipelineLayoutCI.pSetLayouts = &descriptorSetLayout;
+    VK_CHECK_RESULT(vkCreatePipelineLayout(device, &pipelineLayoutCI, nullptr, &rectanglePipeline));
+
+    // Create the graphics pipeline used in this example
+    // Vulkan uses the concept of rendering pipelines to encapsulate fixed states, replacing OpenGL's complex state machine
+    // A pipeline is then stored and hashed on the GPU making pipeline changes very fast
+    // Note: There are still a few dynamic states that are not directly part of the pipeline (but the info that they are used is)
+
+    VkGraphicsPipelineCreateInfo pipelineCI{};
+    pipelineCI.sType = VK_STRUCTURE_TYPE_GRAPHICS_PIPELINE_CREATE_INFO;
+    // The layout used for this pipeline (can be shared among multiple pipelines using the same layout)
+    pipelineCI.layout = pipelineLayout;
+    // Renderpass this pipeline is attached to
+    pipelineCI.renderPass = renderPass;
+
+    // Construct the different states making up the pipeline
+
+    // Input assembly state describes how primitives are assembled
+    // This pipeline will assemble vertex data as a triangle lists (though we only use one triangle)
+    VkPipelineInputAssemblyStateCreateInfo inputAssemblyStateCI{};
+    inputAssemblyStateCI.sType = VK_STRUCTURE_TYPE_PIPELINE_INPUT_ASSEMBLY_STATE_CREATE_INFO;
+    inputAssemblyStateCI.topology = VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST;
+
+    // Rasterization state
+    VkPipelineRasterizationStateCreateInfo rasterizationStateCI{};
+    rasterizationStateCI.sType = VK_STRUCTURE_TYPE_PIPELINE_RASTERIZATION_STATE_CREATE_INFO;
+    rasterizationStateCI.polygonMode = VK_POLYGON_MODE_FILL;
+    rasterizationStateCI.cullMode = VK_CULL_MODE_NONE;
+    rasterizationStateCI.frontFace = VK_FRONT_FACE_COUNTER_CLOCKWISE;
+    rasterizationStateCI.depthClampEnable = VK_FALSE;
+    rasterizationStateCI.rasterizerDiscardEnable = VK_FALSE;
+    rasterizationStateCI.depthBiasEnable = VK_FALSE;
+    rasterizationStateCI.lineWidth = 1.0f;
+
+    // Color blend state describes how blend factors are calculated (if used)
+    // We need one blend attachment state per color attachment (even if blending is not used)
+    VkPipelineColorBlendAttachmentState blendAttachmentState{};
+    blendAttachmentState.colorWriteMask = 0xf;
+    blendAttachmentState.blendEnable = VK_FALSE;
+    VkPipelineColorBlendStateCreateInfo colorBlendStateCI{};
+    colorBlendStateCI.sType = VK_STRUCTURE_TYPE_PIPELINE_COLOR_BLEND_STATE_CREATE_INFO;
+    colorBlendStateCI.attachmentCount = 1;
+    colorBlendStateCI.pAttachments = &blendAttachmentState;
+
+    // Viewport state sets the number of viewports and scissor used in this pipeline
+    // Note: This is actually overridden by the dynamic states (see below)
+    VkPipelineViewportStateCreateInfo viewportStateCI{};
+    viewportStateCI.sType = VK_STRUCTURE_TYPE_PIPELINE_VIEWPORT_STATE_CREATE_INFO;
+    viewportStateCI.viewportCount = 1;
+    viewportStateCI.scissorCount = 1;
+
+    // Enable dynamic states
+    // Most states are baked into the pipeline, but there are still a few dynamic states that can be changed within a command
+    // buffer To be able to change these we need do specify which dynamic states will be changed using this pipeline. Their actual
+    // states are set later on in the command buffer. For this example we will set the viewport and scissor using dynamic states
+    std::vector<VkDynamicState> dynamicStateEnables;
+    dynamicStateEnables.push_back(VK_DYNAMIC_STATE_VIEWPORT);
+    dynamicStateEnables.push_back(VK_DYNAMIC_STATE_SCISSOR);
+    VkPipelineDynamicStateCreateInfo dynamicStateCI{};
+    dynamicStateCI.sType = VK_STRUCTURE_TYPE_PIPELINE_DYNAMIC_STATE_CREATE_INFO;
+    dynamicStateCI.pDynamicStates = dynamicStateEnables.data();
+    dynamicStateCI.dynamicStateCount = static_cast<uint32_t>(dynamicStateEnables.size());
+
+    // Depth and stencil state containing depth and stencil compare and test operations
+    // We only use depth tests and want depth tests and writes to be enabled and compare with less or equal
+    VkPipelineDepthStencilStateCreateInfo depthStencilStateCI{};
+    depthStencilStateCI.sType = VK_STRUCTURE_TYPE_PIPELINE_DEPTH_STENCIL_STATE_CREATE_INFO;
+    depthStencilStateCI.depthTestEnable = VK_TRUE;
+    depthStencilStateCI.depthWriteEnable = VK_TRUE;
+    depthStencilStateCI.depthCompareOp = VK_COMPARE_OP_LESS_OR_EQUAL;
+    depthStencilStateCI.depthBoundsTestEnable = VK_FALSE;
+    depthStencilStateCI.back.failOp = VK_STENCIL_OP_KEEP;
+    depthStencilStateCI.back.passOp = VK_STENCIL_OP_KEEP;
+    depthStencilStateCI.back.compareOp = VK_COMPARE_OP_ALWAYS;
+    depthStencilStateCI.stencilTestEnable = VK_FALSE;
+    depthStencilStateCI.front = depthStencilStateCI.back;
+
+    // Multi sampling state
+    // This example does not make use of multi sampling (for anti-aliasing), the state must still be set and passed to the
+    // pipeline
+    VkPipelineMultisampleStateCreateInfo multisampleStateCI{};
+    multisampleStateCI.sType = VK_STRUCTURE_TYPE_PIPELINE_MULTISAMPLE_STATE_CREATE_INFO;
+    multisampleStateCI.rasterizationSamples = VK_SAMPLE_COUNT_1_BIT;
+    multisampleStateCI.pSampleMask = nullptr;
+
+    // Vertex input descriptions
+    // Specifies the vertex input parameters for a pipeline
+
+    // Vertex input binding
+    // This example uses a single vertex input binding at binding point 0 (see vkCmdBindVertexBuffers)
+    VkVertexInputBindingDescription vertexInputBinding{};
+    vertexInputBinding.binding = 0;
+    vertexInputBinding.stride = sizeof(Vertex);
+    vertexInputBinding.inputRate = VK_VERTEX_INPUT_RATE_VERTEX;
+
+    // Input attribute bindings describe shader attribute locations and memory layouts
+    std::array<VkVertexInputAttributeDescription, 2> vertexInputAttributs{};
+    // These match the following shader layout (see triangle.vert):
+    //	layout (location = 0) in vec3 inPos;
+    //	layout (location = 1) in vec3 inColor;
+    // Attribute location 0: Position
+    vertexInputAttributs[0].binding = 0;
+    vertexInputAttributs[0].location = 0;
+    // Position attribute is three 32 bit signed (SFLOAT) floats (R32 G32 B32)
+    vertexInputAttributs[0].format = VK_FORMAT_R32G32B32_SFLOAT;
+    vertexInputAttributs[0].offset = offsetof(Vertex, position);
+    // Attribute location 1: Color
+    vertexInputAttributs[1].binding = 0;
+    vertexInputAttributs[1].location = 1;
+    // Color attribute is three 32 bit signed (SFLOAT) floats (R32 G32 B32)
+    vertexInputAttributs[1].format = VK_FORMAT_R32G32B32_SFLOAT;
+    vertexInputAttributs[1].offset = offsetof(Vertex, color);
+
+    // Vertex input state used for pipeline creation
+    VkPipelineVertexInputStateCreateInfo vertexInputStateCI{};
+    vertexInputStateCI.sType = VK_STRUCTURE_TYPE_PIPELINE_VERTEX_INPUT_STATE_CREATE_INFO;
+    vertexInputStateCI.vertexBindingDescriptionCount = 1;
+    vertexInputStateCI.pVertexBindingDescriptions = &vertexInputBinding;
+    vertexInputStateCI.vertexAttributeDescriptionCount = 2;
+    vertexInputStateCI.pVertexAttributeDescriptions = vertexInputAttributs.data();
+
+    // Shaders
+    std::array<VkPipelineShaderStageCreateInfo, 2> shaderStages{};
+
+    // Vertex shader
+    shaderStages[0].sType = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO;
+    // Set pipeline stage for this shader
+    shaderStages[0].stage = VK_SHADER_STAGE_VERTEX_BIT;
+    // Load binary SPIR-V shader
+    shaderStages[0].module = loadSPIRVShader(getShadersPath() + "rectangle/rectangle.vert.spv");
+    // Main entry point for the shader
+    shaderStages[0].pName = "main";
+    assert(shaderStages[0].module != VK_NULL_HANDLE);
+
+    // Fragment shader
+    shaderStages[1].sType = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO;
+    // Set pipeline stage for this shader
+    shaderStages[1].stage = VK_SHADER_STAGE_FRAGMENT_BIT;
+    // Load binary SPIR-V shader
+    shaderStages[1].module = loadSPIRVShader(getShadersPath() + "rectangle/rectangle.frag.spv");
+    // Main entry point for the shader
+    shaderStages[1].pName = "main";
+    assert(shaderStages[1].module != VK_NULL_HANDLE);
+
+    // Set pipeline shader stage info
+    pipelineCI.stageCount = static_cast<uint32_t>(shaderStages.size());
+    pipelineCI.pStages = shaderStages.data();
+
+    // Assign the pipeline states to the pipeline creation info structure
+    pipelineCI.pVertexInputState = &vertexInputStateCI;
+    pipelineCI.pInputAssemblyState = &inputAssemblyStateCI;
+    pipelineCI.pRasterizationState = &rasterizationStateCI;
+    pipelineCI.pColorBlendState = &colorBlendStateCI;
+    pipelineCI.pMultisampleState = &multisampleStateCI;
+    pipelineCI.pViewportState = &viewportStateCI;
+    pipelineCI.pDepthStencilState = &depthStencilStateCI;
+    pipelineCI.pDynamicState = &dynamicStateCI;
+
+    // Create rendering pipeline using the specified states
+    VK_CHECK_RESULT(vkCreateGraphicsPipelines(device, pipelineCache, 1, &pipelineCI, nullptr, &rectanglePipeline));
+
+    // Shader modules are no longer needed once the graphics pipeline has been created
+    vkDestroyShaderModule(device, shaderStages[0].module, nullptr);
+    vkDestroyShaderModule(device, shaderStages[1].module, nullptr);
 }
 
 } // namespace rt

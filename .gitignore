@@ -1,2 +1,4 @@
 build/
 validation_output.txt
+
+*.exe

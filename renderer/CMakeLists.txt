@@ -1,12 +1,9 @@
 add_library(renderer
-    base.cpp
-    base.h
     benchmark.hpp
     camera.hpp
     CommandLineParser.hpp
     Entrypoint.h
     keycodes.hpp
-    TextureExample.cpp
     VulkanBuffer.cpp
     VulkanBuffer.h
     VulkanDebug.cpp
@@ -16,8 +13,6 @@ add_library(renderer
     VulkanInitializers.hpp
     VulkanSwapChain.cpp
     VulkanSwapChain.h
-    VulkanTexture.cpp
-    VulkanTexture.h
     VulkanTools.h
     VulkanTools.cpp
     VulkanUIOverlay.cpp

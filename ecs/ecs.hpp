@@ -274,7 +274,7 @@ class SystemManager {
     std::unordered_map<const char *, std::shared_ptr<System>> mSystems{};
 };
 
-class Coordinator {
+class Scene {
   public:
     void Init() {
         // Create pointers to each manager

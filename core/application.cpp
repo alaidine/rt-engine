@@ -8,18 +8,40 @@
 
 namespace rt {
 
-static Application *s_Application = nullptr;
+static Application *sApplication = nullptr;
 
 static void GLFWErrorCallback(int error, const char *description) { std::cerr << "[GLFW Error]: " << description << std::endl; }
 
-Application::Application(const ApplicationSpecification &specification) : m_Specification(specification) {
+Application::Application(const ApplicationSpecification &specification) : mSpecification(specification) {
+    sApplication = this;
+    if (mSpecification.WindowSpec.Title.empty())
+        mSpecification.WindowSpec.Title = mSpecification.Title;
+    if (mSpecification.WindowSpec.Name.empty())
+        mSpecification.WindowSpec.Name = mSpecification.Name;
+    mSpecification.WindowSpec.EventCallback = [this](Event &event) { RaiseEvent(event); };
+    mWindow = std::make_shared<Window>(mSpecification.WindowSpec);
+    mWindow->Create();
+}
 
+Application::Application(const ApplicationSpecification &specification, HINSTANCE hInstance) : mSpecification(specification) {
+    sApplication = this;
+    if (mSpecification.WindowSpec.Title.empty())
+        mSpecification.WindowSpec.Title = mSpecification.Title;
+    if (mSpecification.WindowSpec.Name.empty())
+        mSpecification.WindowSpec.Name = mSpecification.Name;
+    mSpecification.WindowSpec.EventCallback = [this](Event &event) { RaiseEvent(event); };
+    mWindow = std::make_shared<Window>(mSpecification.WindowSpec);
+    mWindow->Create(hInstance);
+
+    mRenderer.InitWindowInfo(GetWindow()->window, hInstance, mSpecification.WindowSpec.Width, mSpecification.WindowSpec.Height);
+    mRenderer.initVulkan();
+    mRenderer.prepare();
+    mRenderer.Init();
 }
 
 Application::~Application() {
-    // m_Window->Destroy();
-
-    s_Application = nullptr;
+    mWindow->Destroy();
+    sApplication = nullptr;
 }
 
 void Application::Run() {
@@ -29,12 +51,12 @@ void Application::Run() {
 
     // Main Application loop
     while (m_Running) {
-        /*
-        if (m_Window->ShouldClose()) {
+        mWindow->PollEvent();
+
+        if (mWindow->ShouldClose()) {
             Stop();
             break;
         }
-        */
 
         float currentTime = GetTime();
         float timestep = glm::clamp(currentTime - lastTime, 0.001f, 0.1f);
@@ -45,8 +67,10 @@ void Application::Run() {
             layer->OnUpdate(timestep);
 
         // NOTE: rendering can be done elsewhere (eg. render thread)
+        mRenderer.StartDrawing();
         for (const std::unique_ptr<Layer> &layer : m_LayerStack)
             layer->OnRender();
+        mRenderer.EndDrawing();
 
         // m_Window->Update();
     }
@@ -66,10 +90,10 @@ void Application::RaiseEvent(Event &event) {
 glm::vec2 Application::GetFramebufferSize() const { return glm::vec2(0); }
 
 Application &Application::Get() {
-    assert(s_Application);
-    return *s_Application;
+    assert(sApplication);
+    return *sApplication;
 }
 
 float Application::GetTime() { return (float)0; }
 
-} // namespace Core
+} // namespace rt
