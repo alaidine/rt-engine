@@ -209,7 +209,7 @@ class VulkanBase {
         /** @brief Set to true if v-sync will be forced for the swapchain */
         bool vsync = false;
         /** @brief Enable UI overlay */
-        bool overlay = true;
+        bool overlay = false;
     } settings;
 
     /** @brief State of gamepad input (only used on Android) */
@@ -456,9 +456,11 @@ class VulkanRenderer : public VulkanBase {
     void preparePipelines();
 
     void rectanglePreparePipelines();
-    void rectanganleSetupDescriptors();
+    void rectangleSetupDescriptors();
+
 
     // Prepare and initialize uniform buffer containing shader uniforms
+	uint32_t getMemoryTypeIndex(uint32_t typeBits, VkMemoryPropertyFlags properties);
     void prepareUniformBuffers();
     void updateUniformBuffers();
     void prepare();
