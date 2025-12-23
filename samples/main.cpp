@@ -20,7 +20,7 @@ class SamplesApp : public rt::Layer {
     void OnUpdate(float st) override {}
     void OnRender() override {
         rt::Rectangle rect = {0, 0, 100, 100};
-        rt::Application::Get().mRenderer.DrawRect(rect, (rt::Rectangle){1.0f, 1.0f, 1.0f, 1.0f});
+        rt::Application::Get().mRenderer.DrawRect(rect, {1.0f, 1.0f, 1.0f, 1.0f});
     }
 };
 

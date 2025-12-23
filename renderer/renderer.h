@@ -356,6 +356,40 @@ class VulkanRenderer : public VulkanBase {
     vks::Buffer textureIndexBuffer;
     uint32_t textureIndexCount{0};
 
+    vks::Buffer rectangleVertexBuffer;
+    vks::Buffer rectangleIndexBuffer;
+    uint32_t rectangleIndexCount{0};
+
+    // For simplicity we use the same uniform block layout as in the shader:
+    //
+    //	layout(set = 0, binding = 0) uniform UBO
+    //	{
+    //		mat4 projectionMatrix;
+    //		mat4 modelMatrix;
+    //		mat4 viewMatrix;
+    //	} ubo;
+    //
+    // This way we can just memcopy the ubo data to the ubo
+    // Note: You should use data types that align with the GPU in order to avoid manual padding (vec4, mat4)
+    struct ShaderData {
+        glm::mat4 projectionMatrix;
+        glm::mat4 modelMatrix;
+        glm::mat4 viewMatrix;
+    };
+
+    // Uniform buffer block object
+    struct RectangleUniformBuffer {
+        VkDeviceMemory memory{VK_NULL_HANDLE};
+        VkBuffer buffer{VK_NULL_HANDLE};
+        // The descriptor set stores the resources bound to the binding points in a shader
+        // It connects the binding points of the different shaders with the buffers and images used for those bindings
+        VkDescriptorSet descriptorSet{VK_NULL_HANDLE};
+        // We keep a pointer to the mapped buffer, so we can easily update it's contents via a memcpy
+        uint8_t *mapped{nullptr};
+    };
+    // We use one UBO per frame, so we can have a frame overlap and make sure that uniforms aren't updated while still in use
+    std::array<RectangleUniformBuffer, maxConcurrentFrames> rectangleUniformBuffers;
+
     struct UniformData {
         glm::mat4 projection;
         glm::mat4 modelView;
@@ -375,12 +409,13 @@ class VulkanRenderer : public VulkanBase {
     VkPipeline rectanglePipeline{VK_NULL_HANDLE};
     VkPipelineLayout rectanglePipelineLayout{VK_NULL_HANDLE};
     VkDescriptorPool rectangledescriptorPool{VK_NULL_HANDLE};
+    VkDescriptorSetLayout rectangleDescriptorSetLayout{VK_NULL_HANDLE};
     std::array<VkDescriptorSet, maxConcurrentFrames> rectangledescriptorSets{};
 
     std::vector<TextureVertex> textureVertices;
     std::vector<uint32_t> textureIndices;
 
-    std::vector<RectangleVertex> rectangleVertex;
+    std::vector<RectangleVertex> rectangleVertices;
     std::vector<uint32_t> rectangleIndices;
 
     VulkanRenderer();
@@ -416,7 +451,7 @@ class VulkanRenderer : public VulkanBase {
     void destroyTextureImage(Texture texture);
     // Creates a vertex and index buffer for a quad made of two triangles
     // This is used to display the texture on
-    
+
     void setupDescriptors();
     void preparePipelines();
 
@@ -430,6 +465,9 @@ class VulkanRenderer : public VulkanBase {
     void buildCommandBuffer();
     virtual void render();
     virtual void OnUpdateUIOverlay(vks::UIOverlay *overlay);
+
+    VkShaderModule loadSPIRVShader(const std::string &filename);
+    void drawShapes(const VkCommandBuffer commandBuffer);
 
     void Init();
     void InitWindowInfo(HWND win, HINSTANCE instance, uint32_t windowWidth, uint32_t windowHeight);

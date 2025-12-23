@@ -1087,7 +1087,7 @@ void VulkanBase::OnUpdateUIOverlay(vks::UIOverlay *overlay) {}
 void VulkanBase::OnHandleMessage(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam) {};
 
 VulkanRenderer::VulkanRenderer() : VulkanBase() {
-    title = "Texture loading";
+    title = "RTEngine Samples";
     camera.type = Camera::CameraType::lookat;
     camera.setPosition(glm::vec3(0.0f, 0.0f, -2.5f));
     camera.setRotation(glm::vec3(0.0f, 15.0f, 0.0f));
@@ -1535,295 +1535,74 @@ void VulkanRenderer::setupDescriptors() {
 }
 
 void VulkanRenderer::rectanganleSetupDescriptors() {
+    // We need to tell the API the number of max. requested descriptors per type
+    VkDescriptorPoolSize descriptorTypeCounts[1]{};
+    // This example only one descriptor type (uniform buffer)
+    descriptorTypeCounts[0].type = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
+    // We have one buffer (and as such descriptor) per frame
+    descriptorTypeCounts[0].descriptorCount = maxConcurrentFrames;
+    // For additional types you need to add new entries in the type count list
+    // E.g. for two combined image samplers :
+    // typeCounts[1].type = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
+    // typeCounts[1].descriptorCount = 2;
 
+    // Create the global descriptor pool
+    // All descriptors used in this example are allocated from this pool
+    VkDescriptorPoolCreateInfo descriptorPoolCI{};
+    descriptorPoolCI.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_POOL_CREATE_INFO;
+    descriptorPoolCI.pNext = nullptr;
+    descriptorPoolCI.poolSizeCount = 1;
+    descriptorPoolCI.pPoolSizes = descriptorTypeCounts;
+    // Set the max. number of descriptor sets that can be requested from this pool (requesting beyond this limit will result in an
+    // error) Our sample will create one set per uniform buffer per frame
+    descriptorPoolCI.maxSets = maxConcurrentFrames;
+    VK_CHECK_RESULT(vkCreateDescriptorPool(device, &descriptorPoolCI, nullptr, &rectangledescriptorPool));
+
+    // Binding 0: Uniform buffer (Vertex shader)
+    VkDescriptorSetLayoutBinding layoutBinding{};
+    layoutBinding.descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
+    layoutBinding.descriptorCount = 1;
+    layoutBinding.stageFlags = VK_SHADER_STAGE_VERTEX_BIT;
+    layoutBinding.pImmutableSamplers = nullptr;
+
+    VkDescriptorSetLayoutCreateInfo descriptorLayoutCI{};
+    descriptorLayoutCI.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_LAYOUT_CREATE_INFO;
+    descriptorLayoutCI.pNext = nullptr;
+    descriptorLayoutCI.bindingCount = 1;
+    descriptorLayoutCI.pBindings = &layoutBinding;
+    VK_CHECK_RESULT(vkCreateDescriptorSetLayout(device, &descriptorLayoutCI, nullptr, &rectangleDescriptorSetLayout));
+
+    // Allocate one descriptor set per frame from the global descriptor pool
+    for (uint32_t i = 0; i < maxConcurrentFrames; i++) {
+        VkDescriptorSetAllocateInfo allocInfo{};
+        allocInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_ALLOCATE_INFO;
+        allocInfo.descriptorPool = rectangledescriptorPool;
+        allocInfo.descriptorSetCount = 1;
+        allocInfo.pSetLayouts = &rectangleDescriptorSetLayout;
+        VK_CHECK_RESULT(vkAllocateDescriptorSets(device, &allocInfo, &rectangleUniformBuffers[i].descriptorSet));
+
+        // Update the descriptor set determining the shader binding points
+        // For every binding point used in a shader there needs to be one
+        // descriptor set matching that binding point
+        VkWriteDescriptorSet writeDescriptorSet{};
+
+        // The buffer's information is passed using a descriptor info structure
+        VkDescriptorBufferInfo bufferInfo{};
+        bufferInfo.buffer = uniformBuffers[i].buffer;
+        bufferInfo.range = sizeof(ShaderData);
+
+        // Binding 0 : Uniform buffer
+        writeDescriptorSet.sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
+        writeDescriptorSet.dstSet = rectangleUniformBuffers[i].descriptorSet;
+        writeDescriptorSet.descriptorCount = 1;
+        writeDescriptorSet.descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
+        writeDescriptorSet.pBufferInfo = &bufferInfo;
+        writeDescriptorSet.dstBinding = 0;
+        vkUpdateDescriptorSets(device, 1, &writeDescriptorSet, 0, nullptr);
+    }
 }
 
 void VulkanRenderer::rectanglePreparePipelines() {
-
-}
-
-void VulkanRenderer::preparePipelines() {
-    // Layout
-    VkPipelineLayoutCreateInfo pipelineLayoutCreateInfo = vks::initializers::pipelineLayoutCreateInfo(&descriptorSetLayout, 1);
-    VK_CHECK_RESULT(vkCreatePipelineLayout(device, &pipelineLayoutCreateInfo, nullptr, &texturePipelineLayout));
-
-    // Pipeline
-    VkPipelineInputAssemblyStateCreateInfo inputAssemblyState =
-        vks::initializers::pipelineInputAssemblyStateCreateInfo(VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST, 0, VK_FALSE);
-    VkPipelineRasterizationStateCreateInfo rasterizationState = vks::initializers::pipelineRasterizationStateCreateInfo(
-        VK_POLYGON_MODE_FILL, VK_CULL_MODE_NONE, VK_FRONT_FACE_COUNTER_CLOCKWISE, 0);
-    VkPipelineColorBlendAttachmentState blendAttachmentState =
-        vks::initializers::pipelineColorBlendAttachmentState(0xf, VK_FALSE);
-    VkPipelineColorBlendStateCreateInfo colorBlendState =
-        vks::initializers::pipelineColorBlendStateCreateInfo(1, &blendAttachmentState);
-    VkPipelineDepthStencilStateCreateInfo depthStencilState =
-        vks::initializers::pipelineDepthStencilStateCreateInfo(VK_TRUE, VK_TRUE, VK_COMPARE_OP_LESS_OR_EQUAL);
-    VkPipelineViewportStateCreateInfo viewportState = vks::initializers::pipelineViewportStateCreateInfo(1, 1, 0);
-    VkPipelineMultisampleStateCreateInfo multisampleState =
-        vks::initializers::pipelineMultisampleStateCreateInfo(VK_SAMPLE_COUNT_1_BIT, 0);
-    std::vector<VkDynamicState> dynamicStateEnables = {VK_DYNAMIC_STATE_VIEWPORT, VK_DYNAMIC_STATE_SCISSOR};
-    VkPipelineDynamicStateCreateInfo dynamicState = vks::initializers::pipelineDynamicStateCreateInfo(dynamicStateEnables);
-    std::array<VkPipelineShaderStageCreateInfo, 2> shaderStages;
-
-    // Shaders
-    shaderStages[0] = loadShader(getShadersPath() + "texture/texture.vert.spv", VK_SHADER_STAGE_VERTEX_BIT);
-    shaderStages[1] = loadShader(getShadersPath() + "texture/texture.frag.spv", VK_SHADER_STAGE_FRAGMENT_BIT);
-
-    // TextureVertex input state
-    std::vector<VkVertexInputBindingDescription> vertexInputBindings = {
-        vks::initializers::vertexInputBindingDescription(0, sizeof(TextureVertex), VK_VERTEX_INPUT_RATE_VERTEX)};
-    std::vector<VkVertexInputAttributeDescription> vertexInputAttributes = {
-        vks::initializers::vertexInputAttributeDescription(0, 0, VK_FORMAT_R32G32B32_SFLOAT, offsetof(TextureVertex, pos)),
-        vks::initializers::vertexInputAttributeDescription(0, 1, VK_FORMAT_R32G32_SFLOAT, offsetof(TextureVertex, uv)),
-        vks::initializers::vertexInputAttributeDescription(0, 2, VK_FORMAT_R32G32B32_SFLOAT, offsetof(TextureVertex, normal)),
-    };
-    VkPipelineVertexInputStateCreateInfo vertexInputState = vks::initializers::pipelineVertexInputStateCreateInfo();
-    vertexInputState.vertexBindingDescriptionCount = static_cast<uint32_t>(vertexInputBindings.size());
-    vertexInputState.pVertexBindingDescriptions = vertexInputBindings.data();
-    vertexInputState.vertexAttributeDescriptionCount = static_cast<uint32_t>(vertexInputAttributes.size());
-    vertexInputState.pVertexAttributeDescriptions = vertexInputAttributes.data();
-
-    VkGraphicsPipelineCreateInfo pipelineCreateInfo = vks::initializers::pipelineCreateInfo(texturePipelineLayout, renderPass, 0);
-    pipelineCreateInfo.pVertexInputState = &vertexInputState;
-    pipelineCreateInfo.pInputAssemblyState = &inputAssemblyState;
-    pipelineCreateInfo.pRasterizationState = &rasterizationState;
-    pipelineCreateInfo.pColorBlendState = &colorBlendState;
-    pipelineCreateInfo.pMultisampleState = &multisampleState;
-    pipelineCreateInfo.pViewportState = &viewportState;
-    pipelineCreateInfo.pDepthStencilState = &depthStencilState;
-    pipelineCreateInfo.pDynamicState = &dynamicState;
-    pipelineCreateInfo.stageCount = static_cast<uint32_t>(shaderStages.size());
-    pipelineCreateInfo.pStages = shaderStages.data();
-    VK_CHECK_RESULT(vkCreateGraphicsPipelines(device, pipelineCache, 1, &pipelineCreateInfo, nullptr, &texturePipeline));
-}
-
-// Prepare and initialize uniform buffer containing shader uniforms
-void VulkanRenderer::prepareUniformBuffers() {
-    for (auto &buffer : uniformBuffers) {
-        VK_CHECK_RESULT(vulkanDevice->createBuffer(VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT,
-                                                   VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT,
-                                                   &buffer, sizeof(UniformData), &uniformData));
-        VK_CHECK_RESULT(buffer.map());
-    }
-}
-
-void VulkanRenderer::updateUniformBuffers() {
-    uniformData.projection = camera.matrices.perspective;
-    uniformData.modelView = camera.matrices.view;
-    uniformData.viewPos = camera.viewPos;
-    memcpy(uniformBuffers[currentBuffer].mapped, &uniformData, sizeof(uniformData));
-}
-
-void VulkanRenderer::prepare() {
-    VulkanBase::prepare();
-    loadTexture();
-    prepareUniformBuffers();
-    
-    setupDescriptors();
-    preparePipelines();
-
-    rectanganleSetupDescriptors();
-    rectanglePreparePipelines();
-
-    prepared = true;
-}
-
-void VulkanRenderer::buildCommandBuffer() {
-    VkCommandBuffer cmdBuffer = drawCmdBuffers[currentBuffer];
-
-    VkCommandBufferBeginInfo cmdBufInfo = vks::initializers::commandBufferBeginInfo();
-
-    VkClearValue clearValues[2]{};
-    clearValues[0].color = defaultClearColor;
-    clearValues[1].depthStencil = {1.0f, 0};
-
-    VkRenderPassBeginInfo renderPassBeginInfo = vks::initializers::renderPassBeginInfo();
-    renderPassBeginInfo.renderPass = renderPass;
-    renderPassBeginInfo.renderArea.offset.x = 0;
-    renderPassBeginInfo.renderArea.offset.y = 0;
-    renderPassBeginInfo.renderArea.extent.width = width;
-    renderPassBeginInfo.renderArea.extent.height = height;
-    renderPassBeginInfo.clearValueCount = 2;
-    renderPassBeginInfo.pClearValues = clearValues;
-    renderPassBeginInfo.framebuffer = frameBuffers[currentImageIndex];
-
-    VK_CHECK_RESULT(vkBeginCommandBuffer(cmdBuffer, &cmdBufInfo));
-
-    vkCmdBeginRenderPass(cmdBuffer, &renderPassBeginInfo, VK_SUBPASS_CONTENTS_INLINE);
-
-    VkViewport viewport = vks::initializers::viewport((float)width, (float)height, 0.0f, 1.0f);
-    vkCmdSetViewport(cmdBuffer, 0, 1, &viewport);
-
-    VkRect2D scissor = vks::initializers::rect2D(width, height, 0, 0);
-    vkCmdSetScissor(cmdBuffer, 0, 1, &scissor);
-
-    // This will bind the descriptor set that contains our image (texture), so
-    // it can be accessed in the fragment shader
-    vkCmdBindDescriptorSets(cmdBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, texturePipelineLayout, 0, 1,
-                            &descriptorSets[currentBuffer], 0, nullptr);
-    vkCmdBindPipeline(cmdBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, texturePipeline);
-
-    VkDeviceSize offsets[1] = {0};
-    vkCmdBindVertexBuffers(cmdBuffer, 0, 1, &textureVertexBuffer.buffer, offsets);
-    vkCmdBindIndexBuffer(cmdBuffer, textureIndexBuffer.buffer, 0, VK_INDEX_TYPE_UINT32);
-
-    vkCmdDrawIndexed(cmdBuffer, textureIndexCount, 1, 0, 0, 0);
-
-    drawUI(cmdBuffer);
-
-    vkCmdEndRenderPass(cmdBuffer);
-
-    VK_CHECK_RESULT(vkEndCommandBuffer(cmdBuffer));
-}
-
-void VulkanRenderer::render() {
-    if (!prepared)
-        return;
-    VulkanBase::prepareFrame();
-    updateUniformBuffers();
-    buildCommandBuffer();
-    VulkanBase::submitFrame();
-}
-
-void VulkanRenderer::OnUpdateUIOverlay(vks::UIOverlay *overlay) {
-    if (overlay->header("Settings")) {
-        overlay->sliderFloat("LOD bias", &uniformData.lodBias, 0.0f, (float)texture.mipLevels);
-    }
-}
-
-void VulkanRenderer::Init() {
-    if (benchmark.active) {
-        benchmark.run([=, this] { render(); }, vulkanDevice->properties);
-        vkDeviceWaitIdle(device);
-        if (!benchmark.filename.empty()) {
-            benchmark.saveResults();
-        }
-        return;
-    }
-
-    destWidth = width;
-    destHeight = height;
-    lastTimestamp = std::chrono::high_resolution_clock::now();
-    tPrevEnd = lastTimestamp;
-}
-
-void VulkanRenderer::InitWindowInfo(HWND win, HINSTANCE instance, uint32_t windowWidth, uint32_t windowHeight) {
-    window = win;
-    windowInstance = instance;
-    width = windowWidth;
-    height = windowHeight;
-}
-
-void VulkanRenderer::StartDrawing() {
-    textureIndices.clear();
-    textureVertices.clear();
-
-    // Ensure previous GPU work finished using the buffers before destroying them.
-    // This prevents vkDestroyBuffer() on a buffer still referenced by a submitted command buffer.
-    if (device != VK_NULL_HANDLE) {
-        vkDeviceWaitIdle(device);
-    }
-
-    textureVertexBuffer.destroy();
-    textureIndexBuffer.destroy();
-}
-
-void VulkanRenderer::EndDrawing() {
-    // Create buffers and upload data to the GPU
-    struct StagingBuffers {
-        vks::Buffer vertices;
-        vks::Buffer indices;
-    } stagingBuffers;
-
-    if (textureVertices.size() == 0) {
-        textureIndexCount = 0;
-        return;
-    }
-
-    // Host visible source buffers (staging)
-    VK_CHECK_RESULT(vulkanDevice->createBuffer(
-        VK_BUFFER_USAGE_TRANSFER_SRC_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT,
-        &stagingBuffers.vertices, textureVertices.size() * sizeof(TextureVertex), textureVertices.data()));
-    VK_CHECK_RESULT(vulkanDevice->createBuffer(
-        VK_BUFFER_USAGE_TRANSFER_SRC_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT,
-        &stagingBuffers.indices, textureIndices.size() * sizeof(uint32_t), textureIndices.data()));
-
-    // Device local destination buffers
-    VK_CHECK_RESULT(vulkanDevice->createBuffer(VK_BUFFER_USAGE_VERTEX_BUFFER_BIT | VK_BUFFER_USAGE_TRANSFER_DST_BIT,
-                                               VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, &textureVertexBuffer,
-                                               textureVertices.size() * sizeof(TextureVertex)));
-    VK_CHECK_RESULT(vulkanDevice->createBuffer(VK_BUFFER_USAGE_INDEX_BUFFER_BIT | VK_BUFFER_USAGE_TRANSFER_DST_BIT,
-                                               VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, &textureIndexBuffer,
-                                               textureIndices.size() * sizeof(uint32_t)));
-
-    // Copy from host do device
-    vulkanDevice->copyBuffer(&stagingBuffers.vertices, &textureVertexBuffer, queue);
-    vulkanDevice->copyBuffer(&stagingBuffers.indices, &textureIndexBuffer, queue);
-
-    // Clean up
-    stagingBuffers.vertices.destroy();
-    stagingBuffers.indices.destroy();
-
-    textureIndexCount = static_cast<uint32_t>(textureIndices.size());
-
-    if (prepared && !IsIconic(window)) {
-        nextFrame();
-    }
-}
-
-void VulkanRenderer::DrawTextureRec(Rectangle rectangle, glm::vec2 position) {
-    float tex_w = static_cast<float>(texture.width);
-    float tex_h = static_cast<float>(texture.height);
-
-    float ndc_x = (position.x / width) * 2.0f - 1.0f;
-    float ndc_y = (position.y / height) * 2.0f - 1.0f;
-    float ndc_width = (rectangle.width / width) * 2.0f;
-    float ndc_height = (rectangle.height / height) * 2.0f;
-
-    // Calculate UVs (guard divisions)
-    float u0 = rectangle.x / tex_w;
-    float u1 = (rectangle.x + rectangle.width) / tex_w;
-
-    float v0 = rectangle.y / tex_h;
-    float v1 = (rectangle.y + rectangle.height) / tex_h;
-
-    uint32_t vertexOffset = static_cast<uint32_t>(textureVertices.size());
-
-    std::vector<TextureVertex> vertices = {
-        {{ndc_x, ndc_y, 0.0f}, {u0, v0}, {0.0f, 0.0f, 1.0f}},                          // Top-left
-        {{ndc_x + ndc_width, ndc_y, 0.0f}, {u1, v0}, {0.0f, 0.0f, 1.0f}},              // Top-right
-        {{ndc_x + ndc_width, ndc_y + ndc_height, 0.0f}, {u1, v1}, {0.0f, 0.0f, 1.0f}}, // Bottom-right
-        {{ndc_x, ndc_y + ndc_height, 0.0f}, {u0, v1}, {0.0f, 0.0f, 1.0f}}              // Bottom-left
-    };
-
-    std::vector<uint32_t> indices = {vertexOffset + 0, vertexOffset + 1, vertexOffset + 2,
-                                     vertexOffset + 2, vertexOffset + 3, vertexOffset + 0};
-
-    textureIndices.insert(textureIndices.end(), indices.begin(), indices.end());
-    textureVertices.insert(textureVertices.end(), vertices.begin(), vertices.end());
-}
-
-void VulkanRenderer::DrawRect(Rectangle rect, Color color) {
-    // A note on memory management in Vulkan in general:
-    // This is a very complex topic and while it's fine for an example application to small individual memory allocations that is
-    // not what should be done a real-world application, where you should allocate large chunks of memory at once instead.
-
-    // Setup vertices
-    std::vector<RectangleVertex> vertexBuffer{
-        {{-1.0f, -1.0f, 0.0f}, {color.r, color.g, color.b}}, // Top-Left
-        {{1.0f, -1.0f, 0.0f}, {color.r, color.g, color.b}},  // Top-Right
-        {{1.0f, 1.0f, 0.0f}, {color.r, color.g, color.b}},   // Bottom-Left
-        {{-1.0f, 1.0f, 0.0f}, {color.r, color.g, color.b}}   // Bottom-Right
-    };
-    uint32_t vertexBufferSize = static_cast<uint32_t>(vertexBuffer.size()) * sizeof(RectangleVertex);
-
-    // Setup indices
-    uint32_t vertexOffset = static_cast<uint32_t>(rectangleVertices.size());
-    std::vector<uint32_t> indexBuffer{vertexOffset + 0, vertexOffset + 1, vertexOffset + 2,
-                                      vertexOffset + 2, vertexOffset + 3, vertexOffset + 0};
-}
-
-void VulkanRenderer::rectangelPreparePipelines() {
     // Create the pipeline layout that is used to generate the rendering pipelines that are based on this descriptor set layout
     // In a more complex scenario you would have different pipeline layouts for different descriptor set layouts that could be
     // reused
@@ -1831,8 +1610,8 @@ void VulkanRenderer::rectangelPreparePipelines() {
     pipelineLayoutCI.sType = VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO;
     pipelineLayoutCI.pNext = nullptr;
     pipelineLayoutCI.setLayoutCount = 1;
-    pipelineLayoutCI.pSetLayouts = &descriptorSetLayout;
-    VK_CHECK_RESULT(vkCreatePipelineLayout(device, &pipelineLayoutCI, nullptr, &rectanglePipeline));
+    pipelineLayoutCI.pSetLayouts = &rectangleDescriptorSetLayout;
+    VK_CHECK_RESULT(vkCreatePipelineLayout(device, &pipelineLayoutCI, nullptr, &rectanglePipelineLayout));
 
     // Create the graphics pipeline used in this example
     // Vulkan uses the concept of rendering pipelines to encapsulate fixed states, replacing OpenGL's complex state machine
@@ -1842,7 +1621,7 @@ void VulkanRenderer::rectangelPreparePipelines() {
     VkGraphicsPipelineCreateInfo pipelineCI{};
     pipelineCI.sType = VK_STRUCTURE_TYPE_GRAPHICS_PIPELINE_CREATE_INFO;
     // The layout used for this pipeline (can be shared among multiple pipelines using the same layout)
-    pipelineCI.layout = pipelineLayout;
+    pipelineCI.layout = rectanglePipelineLayout;
     // Renderpass this pipeline is attached to
     pipelineCI.renderPass = renderPass;
 
@@ -1923,7 +1702,7 @@ void VulkanRenderer::rectangelPreparePipelines() {
     // This example uses a single vertex input binding at binding point 0 (see vkCmdBindVertexBuffers)
     VkVertexInputBindingDescription vertexInputBinding{};
     vertexInputBinding.binding = 0;
-    vertexInputBinding.stride = sizeof(Vertex);
+    vertexInputBinding.stride = sizeof(RectangleVertex);
     vertexInputBinding.inputRate = VK_VERTEX_INPUT_RATE_VERTEX;
 
     // Input attribute bindings describe shader attribute locations and memory layouts
@@ -1936,13 +1715,13 @@ void VulkanRenderer::rectangelPreparePipelines() {
     vertexInputAttributs[0].location = 0;
     // Position attribute is three 32 bit signed (SFLOAT) floats (R32 G32 B32)
     vertexInputAttributs[0].format = VK_FORMAT_R32G32B32_SFLOAT;
-    vertexInputAttributs[0].offset = offsetof(Vertex, position);
+    vertexInputAttributs[0].offset = offsetof(RectangleVertex, position);
     // Attribute location 1: Color
     vertexInputAttributs[1].binding = 0;
     vertexInputAttributs[1].location = 1;
     // Color attribute is three 32 bit signed (SFLOAT) floats (R32 G32 B32)
     vertexInputAttributs[1].format = VK_FORMAT_R32G32B32_SFLOAT;
-    vertexInputAttributs[1].offset = offsetof(Vertex, color);
+    vertexInputAttributs[1].offset = offsetof(RectangleVertex, color);
 
     // Vertex input state used for pipeline creation
     VkPipelineVertexInputStateCreateInfo vertexInputStateCI{};
@@ -1995,6 +1774,414 @@ void VulkanRenderer::rectangelPreparePipelines() {
     // Shader modules are no longer needed once the graphics pipeline has been created
     vkDestroyShaderModule(device, shaderStages[0].module, nullptr);
     vkDestroyShaderModule(device, shaderStages[1].module, nullptr);
+}
+
+void VulkanRenderer::drawShapes(const VkCommandBuffer commandBuffer) {
+    // Update the uniform buffer for the next frame
+    ShaderData shaderData{};
+    shaderData.projectionMatrix = camera.matrices.perspective;
+    shaderData.viewMatrix = camera.matrices.view;
+    shaderData.modelMatrix = glm::mat4(1.0f);
+
+    // Copy the current matrices to the current frame's uniform buffer
+    // Note: Since we requested a host coherent memory type for the uniform buffer, the write is instantly visible to the GPU
+    memcpy(uniformBuffers[currentBuffer].mapped, &shaderData, sizeof(ShaderData));
+
+    // Update dynamic viewport state
+    VkViewport viewport{};
+    viewport.height = (float)height;
+    viewport.width = (float)width;
+    viewport.minDepth = (float)0.0f;
+    viewport.maxDepth = (float)1.0f;
+    vkCmdSetViewport(commandBuffer, 0, 1, &viewport);
+    // Update dynamic scissor state
+    VkRect2D scissor{};
+    scissor.extent.width = width;
+    scissor.extent.height = height;
+    scissor.offset.x = 0;
+    scissor.offset.y = 0;
+    vkCmdSetScissor(commandBuffer, 0, 1, &scissor);
+    // Bind descriptor set for the current frame's uniform buffer, so the shader uses the data from that buffer for this draw
+    vkCmdBindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, rectanglePipelineLayout, 0, 1,
+                            &rectangleUniformBuffers[currentBuffer].descriptorSet, 0, nullptr);
+    // Bind the rendering pipeline
+    // The pipeline (state object) contains all states of the rendering pipeline, binding it will set all the states specified at
+    // pipeline creation time
+    vkCmdBindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, rectanglePipeline);
+    // Bind triangle vertex buffer (contains position and colors)
+    VkDeviceSize offsets[1]{0};
+    vkCmdBindVertexBuffers(commandBuffer, 0, 1, &rectangleVertexBuffer.buffer, offsets);
+    // Bind triangle index buffer
+    vkCmdBindIndexBuffer(commandBuffer, rectangleIndexBuffer.buffer, 0, VK_INDEX_TYPE_UINT32);
+    // Draw indexed triangle
+    vkCmdDrawIndexed(commandBuffer, rectangleIndexCount, 1, 0, 0, 0);
+}
+
+void VulkanRenderer::preparePipelines() {
+    // Layout
+    VkPipelineLayoutCreateInfo pipelineLayoutCreateInfo = vks::initializers::pipelineLayoutCreateInfo(&descriptorSetLayout, 1);
+    VK_CHECK_RESULT(vkCreatePipelineLayout(device, &pipelineLayoutCreateInfo, nullptr, &texturePipelineLayout));
+
+    // Pipeline
+    VkPipelineInputAssemblyStateCreateInfo inputAssemblyState =
+        vks::initializers::pipelineInputAssemblyStateCreateInfo(VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST, 0, VK_FALSE);
+    VkPipelineRasterizationStateCreateInfo rasterizationState = vks::initializers::pipelineRasterizationStateCreateInfo(
+        VK_POLYGON_MODE_FILL, VK_CULL_MODE_NONE, VK_FRONT_FACE_COUNTER_CLOCKWISE, 0);
+    VkPipelineColorBlendAttachmentState blendAttachmentState =
+        vks::initializers::pipelineColorBlendAttachmentState(0xf, VK_FALSE);
+    VkPipelineColorBlendStateCreateInfo colorBlendState =
+        vks::initializers::pipelineColorBlendStateCreateInfo(1, &blendAttachmentState);
+    VkPipelineDepthStencilStateCreateInfo depthStencilState =
+        vks::initializers::pipelineDepthStencilStateCreateInfo(VK_TRUE, VK_TRUE, VK_COMPARE_OP_LESS_OR_EQUAL);
+    VkPipelineViewportStateCreateInfo viewportState = vks::initializers::pipelineViewportStateCreateInfo(1, 1, 0);
+    VkPipelineMultisampleStateCreateInfo multisampleState =
+        vks::initializers::pipelineMultisampleStateCreateInfo(VK_SAMPLE_COUNT_1_BIT, 0);
+    std::vector<VkDynamicState> dynamicStateEnables = {VK_DYNAMIC_STATE_VIEWPORT, VK_DYNAMIC_STATE_SCISSOR};
+    VkPipelineDynamicStateCreateInfo dynamicState = vks::initializers::pipelineDynamicStateCreateInfo(dynamicStateEnables);
+    std::array<VkPipelineShaderStageCreateInfo, 2> shaderStages;
+
+    // Shaders
+    shaderStages[0] = loadShader(getShadersPath() + "texture/texture.vert.spv", VK_SHADER_STAGE_VERTEX_BIT);
+    shaderStages[1] = loadShader(getShadersPath() + "texture/texture.frag.spv", VK_SHADER_STAGE_FRAGMENT_BIT);
+
+    // TextureVertex input state
+    std::vector<VkVertexInputBindingDescription> vertexInputBindings = {
+        vks::initializers::vertexInputBindingDescription(0, sizeof(TextureVertex), VK_VERTEX_INPUT_RATE_VERTEX)};
+    std::vector<VkVertexInputAttributeDescription> vertexInputAttributes = {
+        vks::initializers::vertexInputAttributeDescription(0, 0, VK_FORMAT_R32G32B32_SFLOAT, offsetof(TextureVertex, pos)),
+        vks::initializers::vertexInputAttributeDescription(0, 1, VK_FORMAT_R32G32_SFLOAT, offsetof(TextureVertex, uv)),
+        vks::initializers::vertexInputAttributeDescription(0, 2, VK_FORMAT_R32G32B32_SFLOAT, offsetof(TextureVertex, normal)),
+    };
+    VkPipelineVertexInputStateCreateInfo vertexInputState = vks::initializers::pipelineVertexInputStateCreateInfo();
+    vertexInputState.vertexBindingDescriptionCount = static_cast<uint32_t>(vertexInputBindings.size());
+    vertexInputState.pVertexBindingDescriptions = vertexInputBindings.data();
+    vertexInputState.vertexAttributeDescriptionCount = static_cast<uint32_t>(vertexInputAttributes.size());
+    vertexInputState.pVertexAttributeDescriptions = vertexInputAttributes.data();
+
+    VkGraphicsPipelineCreateInfo pipelineCreateInfo = vks::initializers::pipelineCreateInfo(texturePipelineLayout, renderPass, 0);
+    pipelineCreateInfo.pVertexInputState = &vertexInputState;
+    pipelineCreateInfo.pInputAssemblyState = &inputAssemblyState;
+    pipelineCreateInfo.pRasterizationState = &rasterizationState;
+    pipelineCreateInfo.pColorBlendState = &colorBlendState;
+    pipelineCreateInfo.pMultisampleState = &multisampleState;
+    pipelineCreateInfo.pViewportState = &viewportState;
+    pipelineCreateInfo.pDepthStencilState = &depthStencilState;
+    pipelineCreateInfo.pDynamicState = &dynamicState;
+    pipelineCreateInfo.stageCount = static_cast<uint32_t>(shaderStages.size());
+    pipelineCreateInfo.pStages = shaderStages.data();
+    VK_CHECK_RESULT(vkCreateGraphicsPipelines(device, pipelineCache, 1, &pipelineCreateInfo, nullptr, &texturePipeline));
+}
+
+// Prepare and initialize uniform buffer containing shader uniforms
+void VulkanRenderer::prepareUniformBuffers() {
+    for (auto &buffer : uniformBuffers) {
+        VK_CHECK_RESULT(vulkanDevice->createBuffer(VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT,
+                                                   VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT,
+                                                   &buffer, sizeof(UniformData), &uniformData));
+        VK_CHECK_RESULT(buffer.map());
+    }
+}
+
+void VulkanRenderer::updateUniformBuffers() {
+    uniformData.projection = camera.matrices.perspective;
+    uniformData.modelView = camera.matrices.view;
+    uniformData.viewPos = camera.viewPos;
+    memcpy(uniformBuffers[currentBuffer].mapped, &uniformData, sizeof(uniformData));
+}
+
+void VulkanRenderer::prepare() {
+    VulkanBase::prepare();
+    loadTexture();
+    prepareUniformBuffers();
+
+    setupDescriptors();
+    preparePipelines();
+
+    rectanganleSetupDescriptors();
+    rectanglePreparePipelines();
+
+    prepared = true;
+}
+
+void VulkanRenderer::buildCommandBuffer() {
+    VkCommandBuffer cmdBuffer = drawCmdBuffers[currentBuffer];
+
+    VkCommandBufferBeginInfo cmdBufInfo = vks::initializers::commandBufferBeginInfo();
+
+    VkClearValue clearValues[2]{};
+    clearValues[0].color = defaultClearColor;
+    clearValues[1].depthStencil = {1.0f, 0};
+
+    VkRenderPassBeginInfo renderPassBeginInfo = vks::initializers::renderPassBeginInfo();
+    renderPassBeginInfo.renderPass = renderPass;
+    renderPassBeginInfo.renderArea.offset.x = 0;
+    renderPassBeginInfo.renderArea.offset.y = 0;
+    renderPassBeginInfo.renderArea.extent.width = width;
+    renderPassBeginInfo.renderArea.extent.height = height;
+    renderPassBeginInfo.clearValueCount = 2;
+    renderPassBeginInfo.pClearValues = clearValues;
+    renderPassBeginInfo.framebuffer = frameBuffers[currentImageIndex];
+
+    VK_CHECK_RESULT(vkBeginCommandBuffer(cmdBuffer, &cmdBufInfo));
+
+    vkCmdBeginRenderPass(cmdBuffer, &renderPassBeginInfo, VK_SUBPASS_CONTENTS_INLINE);
+
+    VkViewport viewport = vks::initializers::viewport((float)width, (float)height, 0.0f, 1.0f);
+    vkCmdSetViewport(cmdBuffer, 0, 1, &viewport);
+
+    VkRect2D scissor = vks::initializers::rect2D(width, height, 0, 0);
+    vkCmdSetScissor(cmdBuffer, 0, 1, &scissor);
+
+    // This will bind the descriptor set that contains our image (texture), so
+    // it can be accessed in the fragment shader
+    vkCmdBindDescriptorSets(cmdBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, texturePipelineLayout, 0, 1,
+                            &descriptorSets[currentBuffer], 0, nullptr);
+    vkCmdBindPipeline(cmdBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, texturePipeline);
+
+    VkDeviceSize offsets[1] = {0};
+    vkCmdBindVertexBuffers(cmdBuffer, 0, 1, &textureVertexBuffer.buffer, offsets);
+    vkCmdBindIndexBuffer(cmdBuffer, textureIndexBuffer.buffer, 0, VK_INDEX_TYPE_UINT32);
+
+    vkCmdDrawIndexed(cmdBuffer, textureIndexCount, 1, 0, 0, 0);
+
+    drawShapes(cmdBuffer);
+    drawUI(cmdBuffer);
+
+    vkCmdEndRenderPass(cmdBuffer);
+
+    VK_CHECK_RESULT(vkEndCommandBuffer(cmdBuffer));
+}
+
+void VulkanRenderer::render() {
+    if (!prepared)
+        return;
+    VulkanBase::prepareFrame();
+    updateUniformBuffers();
+    buildCommandBuffer();
+    VulkanBase::submitFrame();
+}
+
+void VulkanRenderer::OnUpdateUIOverlay(vks::UIOverlay *overlay) {
+    if (overlay->header("Settings")) {
+        overlay->sliderFloat("LOD bias", &uniformData.lodBias, 0.0f, (float)texture.mipLevels);
+    }
+}
+
+void VulkanRenderer::Init() {
+    if (benchmark.active) {
+        benchmark.run([=, this] { render(); }, vulkanDevice->properties);
+        vkDeviceWaitIdle(device);
+        if (!benchmark.filename.empty()) {
+            benchmark.saveResults();
+        }
+        return;
+    }
+
+    destWidth = width;
+    destHeight = height;
+    lastTimestamp = std::chrono::high_resolution_clock::now();
+    tPrevEnd = lastTimestamp;
+}
+
+void VulkanRenderer::InitWindowInfo(HWND win, HINSTANCE instance, uint32_t windowWidth, uint32_t windowHeight) {
+    window = win;
+    windowInstance = instance;
+    width = windowWidth;
+    height = windowHeight;
+}
+
+void VulkanRenderer::StartDrawing() {
+    textureIndices.clear();
+    textureVertices.clear();
+
+    rectangleIndices.clear();
+    rectangleVertices.clear();
+
+    // Ensure previous GPU work finished using the buffers before destroying them.
+    // This prevents vkDestroyBuffer() on a buffer still referenced by a submitted command buffer.
+    if (device != VK_NULL_HANDLE) {
+        vkDeviceWaitIdle(device);
+    }
+
+    textureVertexBuffer.destroy();
+    textureIndexBuffer.destroy();
+
+    rectangleVertexBuffer.destroy();
+    rectangleIndexBuffer.destroy();
+}
+
+void VulkanRenderer::EndDrawing() {
+    if (textureVertices.size() != 0) {
+        // Create buffers and upload data to the GPU
+        struct StagingBuffers {
+            vks::Buffer vertices;
+            vks::Buffer indices;
+        } stagingBuffers;
+
+        // Host visible source buffers (staging)
+        VK_CHECK_RESULT(vulkanDevice->createBuffer(
+            VK_BUFFER_USAGE_TRANSFER_SRC_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT,
+            &stagingBuffers.vertices, textureVertices.size() * sizeof(TextureVertex), textureVertices.data()));
+        VK_CHECK_RESULT(vulkanDevice->createBuffer(
+            VK_BUFFER_USAGE_TRANSFER_SRC_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT,
+            &stagingBuffers.indices, textureIndices.size() * sizeof(uint32_t), textureIndices.data()));
+
+        // Device local destination buffers
+        VK_CHECK_RESULT(vulkanDevice->createBuffer(VK_BUFFER_USAGE_VERTEX_BUFFER_BIT | VK_BUFFER_USAGE_TRANSFER_DST_BIT,
+                                                   VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, &textureVertexBuffer,
+                                                   textureVertices.size() * sizeof(TextureVertex)));
+        VK_CHECK_RESULT(vulkanDevice->createBuffer(VK_BUFFER_USAGE_INDEX_BUFFER_BIT | VK_BUFFER_USAGE_TRANSFER_DST_BIT,
+                                                   VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, &textureIndexBuffer,
+                                                   textureIndices.size() * sizeof(uint32_t)));
+
+        // Copy from host do device
+        vulkanDevice->copyBuffer(&stagingBuffers.vertices, &textureVertexBuffer, queue);
+        vulkanDevice->copyBuffer(&stagingBuffers.indices, &textureIndexBuffer, queue);
+
+        // Clean up
+        stagingBuffers.vertices.destroy();
+        stagingBuffers.indices.destroy();
+
+        textureIndexCount = static_cast<uint32_t>(textureIndices.size());
+    } else {
+        textureIndexCount = 0;
+    }
+
+    if (rectangleVertices.size() != 0) {
+        // Create buffers and upload data to the GPU
+        struct StagingBuffers {
+            vks::Buffer vertices;
+            vks::Buffer indices;
+        } stagingBuffers;
+
+        // Host visible source buffers (staging)
+        VK_CHECK_RESULT(vulkanDevice->createBuffer(
+            VK_BUFFER_USAGE_TRANSFER_SRC_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT,
+            &stagingBuffers.vertices, rectangleVertices.size() * sizeof(RectangleVertex), rectangleVertices.data()));
+        VK_CHECK_RESULT(vulkanDevice->createBuffer(
+            VK_BUFFER_USAGE_TRANSFER_SRC_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT,
+            &stagingBuffers.indices, rectangleIndices.size() * sizeof(uint32_t), rectangleIndices.data()));
+
+        // Device local destination buffers
+        VK_CHECK_RESULT(vulkanDevice->createBuffer(VK_BUFFER_USAGE_VERTEX_BUFFER_BIT | VK_BUFFER_USAGE_TRANSFER_DST_BIT,
+                                                   VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, &rectangleVertexBuffer,
+                                                   rectangleVertices.size() * sizeof(RectangleVertex)));
+        VK_CHECK_RESULT(vulkanDevice->createBuffer(VK_BUFFER_USAGE_INDEX_BUFFER_BIT | VK_BUFFER_USAGE_TRANSFER_DST_BIT,
+                                                   VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, &rectangleIndexBuffer,
+                                                   rectangleIndices.size() * sizeof(uint32_t)));
+
+        // Copy from host do device
+        vulkanDevice->copyBuffer(&stagingBuffers.vertices, &rectangleVertexBuffer, queue);
+        vulkanDevice->copyBuffer(&stagingBuffers.indices, &rectangleIndexBuffer, queue);
+
+        // Clean up
+        stagingBuffers.vertices.destroy();
+        stagingBuffers.indices.destroy();
+
+        rectangleIndexCount = static_cast<uint32_t>(rectangleIndices.size());
+    } else {
+        rectangleIndexCount = 0;
+    }
+
+    if (prepared && !IsIconic(window)) {
+        nextFrame();
+    }
+}
+
+void VulkanRenderer::DrawTextureRec(Rectangle rectangle, glm::vec2 position) {
+    float tex_w = static_cast<float>(texture.width);
+    float tex_h = static_cast<float>(texture.height);
+
+    float ndc_x = (position.x / width) * 2.0f - 1.0f;
+    float ndc_y = (position.y / height) * 2.0f - 1.0f;
+    float ndc_width = (rectangle.width / width) * 2.0f;
+    float ndc_height = (rectangle.height / height) * 2.0f;
+
+    // Calculate UVs (guard divisions)
+    float u0 = rectangle.x / tex_w;
+    float u1 = (rectangle.x + rectangle.width) / tex_w;
+
+    float v0 = rectangle.y / tex_h;
+    float v1 = (rectangle.y + rectangle.height) / tex_h;
+
+    uint32_t vertexOffset = static_cast<uint32_t>(textureVertices.size());
+
+    std::vector<TextureVertex> vertices = {
+        {{ndc_x, ndc_y, 0.0f}, {u0, v0}, {0.0f, 0.0f, 1.0f}},                          // Top-left
+        {{ndc_x + ndc_width, ndc_y, 0.0f}, {u1, v0}, {0.0f, 0.0f, 1.0f}},              // Top-right
+        {{ndc_x + ndc_width, ndc_y + ndc_height, 0.0f}, {u1, v1}, {0.0f, 0.0f, 1.0f}}, // Bottom-right
+        {{ndc_x, ndc_y + ndc_height, 0.0f}, {u0, v1}, {0.0f, 0.0f, 1.0f}}              // Bottom-left
+    };
+
+    std::vector<uint32_t> indices = {vertexOffset + 0, vertexOffset + 1, vertexOffset + 2,
+                                     vertexOffset + 2, vertexOffset + 3, vertexOffset + 0};
+
+    textureIndices.insert(textureIndices.end(), indices.begin(), indices.end());
+    textureVertices.insert(textureVertices.end(), vertices.begin(), vertices.end());
+}
+
+void VulkanRenderer::DrawRect(Rectangle rect, Color color) {
+    float ndc_x = (rect.x / width) * 2.0f - 1.0f;
+    float ndc_y = (rect.y / height) * 2.0f - 1.0f;
+    float ndc_width = (rect.width / width) * 2.0f;
+    float ndc_height = (rect.height / height) * 2.0f;
+
+    // A note on memory management in Vulkan in general:
+    // This is a very complex topic and while it's fine for an example application to small individual memory allocations that is
+    // not what should be done a real-world application, where you should allocate large chunks of memory at once instead.
+
+    // Setup vertices
+    std::vector<RectangleVertex> vertexBuffer{
+        {{ndc_x, ndc_y, 0.0f}, {color.r, color.g, color.b}},                          // Top-left
+        {{ndc_x + ndc_width, ndc_y, 0.0f}, {color.r, color.g, color.b}},              // Top-right
+        {{ndc_x + ndc_width, ndc_y + ndc_height, 0.0f}, {color.r, color.g, color.b}}, // Bottom-right
+        {{ndc_x, ndc_y + ndc_height, 0.0f}, {color.r, color.g, color.b}}              // Bottom-left
+    };
+
+    // Setup indices
+    uint32_t vertexOffset = static_cast<uint32_t>(rectangleVertices.size());
+    std::vector<uint32_t> indexBuffer{vertexOffset + 0, vertexOffset + 1, vertexOffset + 2,
+                                      vertexOffset + 2, vertexOffset + 3, vertexOffset + 0};
+
+    rectangleIndices.insert(rectangleIndices.end(), indexBuffer.begin(), indexBuffer.end());
+    rectangleVertices.insert(rectangleVertices.end(), vertexBuffer.begin(), vertexBuffer.end());
+}
+
+// Vulkan loads its shaders from an immediate binary representation called SPIR-V
+// Shaders are compiled offline from e.g. GLSL using the reference glslang compiler
+// This function loads such a shader from a binary file and returns a shader module structure
+VkShaderModule VulkanRenderer::loadSPIRVShader(const std::string &filename) {
+    size_t shaderSize;
+    char *shaderCode{nullptr};
+
+    std::ifstream is(filename, std::ios::binary | std::ios::in | std::ios::ate);
+
+    if (is.is_open()) {
+        shaderSize = is.tellg();
+        is.seekg(0, std::ios::beg);
+        // Copy file contents into a buffer
+        shaderCode = new char[shaderSize];
+        is.read(shaderCode, shaderSize);
+        is.close();
+        assert(shaderSize > 0);
+    }
+    if (shaderCode) {
+        // Create a new shader module that will be used for pipeline creation
+        VkShaderModuleCreateInfo shaderModuleCI{};
+        shaderModuleCI.sType = VK_STRUCTURE_TYPE_SHADER_MODULE_CREATE_INFO;
+        shaderModuleCI.codeSize = shaderSize;
+        shaderModuleCI.pCode = (uint32_t *)shaderCode;
+
+        VkShaderModule shaderModule;
+        VK_CHECK_RESULT(vkCreateShaderModule(device, &shaderModuleCI, nullptr, &shaderModule));
+
+        delete[] shaderCode;
+
+        return shaderModule;
+    } else {
+        std::cerr << "Error: Could not open shader file \"" << filename << "\"" << std::endl;
+        return VK_NULL_HANDLE;
+    }
 }
 
 } // namespace rt
