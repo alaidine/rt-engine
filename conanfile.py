@@ -7,6 +7,8 @@ class CompressorRecipe(ConanFile):
     generators = "CMakeToolchain", "CMakeDeps"
 
     def requirements(self):
+        self.requires("spdlog/1.16.0",)
+        self.requires("fmt/12.0.0", force=True)
         self.requires("glfw/3.4")
         self.requires("glm/1.0.1")
         self.requires("ktx/4.3.2")

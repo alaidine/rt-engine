@@ -1,6 +1,6 @@
-#include "application.h"
-#include "layer.h"
-#include "windowevents.h"
+#include "Application.h"
+#include "Layer.h"
+#include "WindowEvents.h"
 
 class SamplesApp : public rt::Layer {
   public:
@@ -12,7 +12,7 @@ class SamplesApp : public rt::Layer {
 
         rt::EventDispatcher dispatcher(event);
         dispatcher.Dispatch<rt::WindowClosedEvent>([this](rt::WindowClosedEvent &e) {
-            rt::Application::Get().mRenderer.prepared = false;
+            rt::Application::Get().mRenderer->prepared = false;
             return false;
         });
     }
@@ -20,7 +20,7 @@ class SamplesApp : public rt::Layer {
     void OnUpdate(float st) override {}
     void OnRender() override {
         rt::Rectangle rect = {0, 0, 100, 100};
-        rt::Application::Get().mRenderer.DrawRect(rect, {1.0f, 1.0f, 1.0f, 1.0f});
+        rt::Application::Get().mRenderer->DrawRect(rect, {1.0f, 1.0f, 1.0f});
     }
 };
 

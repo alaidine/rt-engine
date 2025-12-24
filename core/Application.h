@@ -1,10 +1,10 @@
 #pragma once
 
-#include "event.h"
-#include "layer.h"
-#include "window.h"
+#include "Event.h"
+#include "Layer.h"
+#include "Window.h"
 
-#include "renderer.h"
+#include "Renderer.h"
 
 #include <glm/glm.hpp>
 
@@ -57,7 +57,7 @@ class Application {
     static Application &Get();
     static float GetTime();
 
-    VulkanRenderer mRenderer;
+    std::shared_ptr<VulkanRenderer> mRenderer;
 
   private:
     ApplicationSpecification mSpecification;

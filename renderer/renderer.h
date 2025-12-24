@@ -61,7 +61,6 @@ typedef struct Color {
     float r;
     float g;
     float b;
-    float a;
 } Color;
 
 typedef struct Position {

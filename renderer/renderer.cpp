@@ -1087,7 +1087,7 @@ void VulkanBase::OnUpdateUIOverlay(vks::UIOverlay *overlay) {}
 void VulkanBase::OnHandleMessage(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam) {};
 
 VulkanRenderer::VulkanRenderer() : VulkanBase() {
-    title = "RTEngine Samples";
+    title = "RTEngine Renderer";
     camera.type = Camera::CameraType::lookat;
     camera.setPosition(glm::vec3(0.0f, 0.0f, -2.5f));
     camera.setRotation(glm::vec3(0.0f, 15.0f, 0.0f));

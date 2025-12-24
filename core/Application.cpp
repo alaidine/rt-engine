@@ -1,4 +1,4 @@
-#include "application.h"
+#include "Application.h"
 
 #include <glm/glm.hpp>
 
@@ -33,10 +33,11 @@ Application::Application(const ApplicationSpecification &specification, HINSTANC
     mWindow = std::make_shared<Window>(mSpecification.WindowSpec);
     mWindow->Create(hInstance);
 
-    mRenderer.InitWindowInfo(GetWindow()->window, hInstance, mSpecification.WindowSpec.Width, mSpecification.WindowSpec.Height);
-    mRenderer.initVulkan();
-    mRenderer.prepare();
-    mRenderer.Init();
+    mRenderer = std::make_shared<rt::VulkanRenderer>();
+    mRenderer->InitWindowInfo(GetWindow()->window, hInstance, mSpecification.WindowSpec.Width, mSpecification.WindowSpec.Height);
+    mRenderer->initVulkan();
+    mRenderer->prepare();
+    mRenderer->Init();
 }
 
 Application::~Application() {
@@ -62,15 +63,17 @@ void Application::Run() {
         float timestep = glm::clamp(currentTime - lastTime, 0.001f, 0.1f);
         lastTime = currentTime;
 
+        // Start frame drawing (clears previous frame buffers)
+        mRenderer->StartDrawing();
+
         // Main layer update here
         for (const std::unique_ptr<Layer> &layer : m_LayerStack)
             layer->OnUpdate(timestep);
 
         // NOTE: rendering can be done elsewhere (eg. render thread)
-        mRenderer.StartDrawing();
         for (const std::unique_ptr<Layer> &layer : m_LayerStack)
             layer->OnRender();
-        mRenderer.EndDrawing();
+        mRenderer->EndDrawing();
 
         // m_Window->Update();
     }
