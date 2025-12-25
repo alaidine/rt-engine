@@ -79,9 +79,10 @@ void Scripting::InitMono() {
     mono_runtime_invoke(printCustomMessageFunc, instance, &stringParam, nullptr);
 }
 
-void Scripting::ShutdownMono() { 
-    mono_domain_unload(sData->AppDomain);
-    mono_jit_cleanup(sData->RootDomain);
+void Scripting::ShutdownMono() {
+    // Mono is a little confusing to shutdown.
+    // mono_domain_unload(sData->AppDomain);
+    // mono_jit_cleanup(sData->RootDomain);
 
     sData->AppDomain = nullptr;
     sData->RootDomain = nullptr;
