@@ -1,4 +1,6 @@
 build/
 validation_output.txt
 
-*.exe
+RTEngine.exe
+.vs/
+.vscode/

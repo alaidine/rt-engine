@@ -1,4 +1,5 @@
 #include "Application.h"
+#include "Scripting.h"
 
 #include <glm/glm.hpp>
 
@@ -25,6 +26,7 @@ Application::Application(const ApplicationSpecification &specification) : mSpeci
 
 Application::Application(const ApplicationSpecification &specification, HINSTANCE hInstance) : mSpecification(specification) {
     sApplication = this;
+
     if (mSpecification.WindowSpec.Title.empty())
         mSpecification.WindowSpec.Title = mSpecification.Title;
     if (mSpecification.WindowSpec.Name.empty())
@@ -32,6 +34,8 @@ Application::Application(const ApplicationSpecification &specification, HINSTANC
     mSpecification.WindowSpec.EventCallback = [this](Event &event) { RaiseEvent(event); };
     mWindow = std::make_shared<Window>(mSpecification.WindowSpec);
     mWindow->Create(hInstance);
+
+    Scripting::Init();
 
     mRenderer = std::make_shared<rt::VulkanRenderer>();
     mRenderer->InitWindowInfo(GetWindow()->window, hInstance, mSpecification.WindowSpec.Width, mSpecification.WindowSpec.Height);

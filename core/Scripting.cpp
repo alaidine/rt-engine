@@ -1,14 +1,27 @@
-#include <mono/jit/jit.h>
-#include <mono/metadata/assembly.h>
+#include "Scripting.h"
 
-#include <fstream>
-#include <string>
+namespace rt {
 
-MonoDomain *sRootDomain = nullptr;
-MonoDomain *sAppDomain = nullptr;
-MonoAssembly *sAppAssembly = nullptr;
+struct ScriptingData {
+    MonoDomain *RootDomain = nullptr;
+    MonoDomain *AppDomain = nullptr;
+    MonoAssembly *AppAssembly = nullptr;
+};
 
-void InitMono() {
+static ScriptingData *sData = nullptr;
+
+Scripting::Scripting() {}
+
+Scripting::~Scripting() {}
+
+void Scripting::Init() {
+    sData = new ScriptingData;
+    InitMono();
+}
+
+void Scripting::Shutdown() { delete sData; }
+
+void Scripting::InitMono() {
     mono_set_assemblies_path("mono/lib");
 
     MonoDomain *rootDomain = mono_jit_init("MyScriptRuntime");
@@ -17,11 +30,18 @@ void InitMono() {
     }
 
     // Store the root domain pointer
-    sRootDomain = rootDomain;
+    sData->RootDomain = rootDomain;
 
     // Create an App Domain
-    sAppDomain = mono_domain_create_appdomain((char *)"MyAppDomain", nullptr);
-    mono_domain_set(sAppDomain, true);
+    sData->AppDomain = mono_domain_create_appdomain((char *)"MyAppDomain", nullptr);
+    mono_domain_set(sData->AppDomain, true);
+
+    LoadCSharpAssembly("rtmodule.dll");
+    PrintAssemblyTypes();
+}
+
+void Scripting::ShutdownMono() {
+
 }
 
 char *ReadBytes(const std::string &filepath, uint32_t *outSize) {
@@ -89,7 +109,7 @@ void PrintAssemblyTypes(MonoAssembly *assembly) {
     }
 }
 
-MonoClass *GetClassInAssembly(MonoAssembly *assembly, const char *namespaceName, const char *className) {
+MonoClass *Scripting::GetClassInAssembly(MonoAssembly *assembly, const char *namespaceName, const char *className) {
     MonoImage *image = mono_assembly_get_image(assembly);
     MonoClass *klass = mono_class_from_name(image, namespaceName, className);
 
@@ -101,12 +121,12 @@ MonoClass *GetClassInAssembly(MonoAssembly *assembly, const char *namespaceName,
     return klass;
 }
 
-MonoObject *InstantiateClass(const char *namespaceName, const char *className) {
+MonoObject *Scripting::InstantiateClass(const char *namespaceName, const char *className) {
     // Get a reference to the class we want to instantiate
-    MonoClass *testingClass = GetClassInAssembly(sAppAssembly, "", "CSharpTesting");
+    MonoClass *testingClass = GetClassInAssembly(sData->AppAssembly, "", "CSharpTesting");
 
     // Allocate an instance of our class
-    MonoObject *classInstance = mono_object_new(sAppDomain, testingClass);
+    MonoObject *classInstance = mono_object_new(sData->AppDomain, testingClass);
 
     if (classInstance == nullptr) {
         // Log error here and abort
@@ -116,7 +136,7 @@ MonoObject *InstantiateClass(const char *namespaceName, const char *className) {
     mono_runtime_object_init(classInstance);
 }
 
-void CallPrintFloatVarMethod(MonoObject *objectInstance) {
+void Scripting::CallPrintFloatVarMethod(MonoObject *objectInstance) {
     // Get the MonoClass pointer from the instance
     MonoClass *instanceClass = mono_object_get_class(objectInstance);
 
@@ -135,7 +155,7 @@ void CallPrintFloatVarMethod(MonoObject *objectInstance) {
     // TODO: Handle the exception
 }
 
-void CallIncrementFloatVarMethod(MonoObject *objectInstance, float value) {
+void Scripting::CallIncrementFloatVarMethod(MonoObject *objectInstance, float value) {
     // Get the MonoClass pointer from the instance
     MonoClass *instanceClass = mono_object_get_class(objectInstance);
 
@@ -156,4 +176,4 @@ void CallIncrementFloatVarMethod(MonoObject *objectInstance, float value) {
     // TODO: Handle the exception
 }
 
-void PrintFromCpp() { printf("Hello from native C++\n"); }
+} // namespace rt
