@@ -25,4 +25,9 @@ class Scripting {
     void CallIncrementFloatVarMethod(MonoObject *objectInstance, float value);
 };
 
+
+char *ReadBytes(const std::string &filepath, uint32_t *outSize);
+MonoAssembly *LoadCSharpAssembly(const std::string &assemblyPath);
+void PrintAssemblyTypes(MonoAssembly *assembly);
+
 } // namespace rt

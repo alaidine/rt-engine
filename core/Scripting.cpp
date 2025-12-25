@@ -36,8 +36,12 @@ void Scripting::InitMono() {
     sData->AppDomain = mono_domain_create_appdomain((char *)"MyAppDomain", nullptr);
     mono_domain_set(sData->AppDomain, true);
 
-    LoadCSharpAssembly("rtmodule.dll");
-    PrintAssemblyTypes();
+    sData->AppAssembly = LoadCSharpAssembly("./rtmodule.dll");
+    PrintAssemblyTypes(sData->AppAssembly);
+
+    // 1. Create an object (and call constructor)
+    // 2. Call function
+    // 3. Call function with param
 }
 
 void Scripting::ShutdownMono() {
@@ -134,6 +138,7 @@ MonoObject *Scripting::InstantiateClass(const char *namespaceName, const char *c
 
     // Call the parameterless (default) constructor
     mono_runtime_object_init(classInstance);
+    return classInstance;
 }
 
 void Scripting::CallPrintFloatVarMethod(MonoObject *objectInstance) {

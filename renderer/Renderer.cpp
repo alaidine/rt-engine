@@ -1088,6 +1088,7 @@ void VulkanBase::OnHandleMessage(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lPa
 
 VulkanRenderer::VulkanRenderer() : VulkanBase() {
     title = "RTEngine Renderer";
+    name = "RTengine";
     camera.type = Camera::CameraType::lookat;
     camera.setPosition(glm::vec3(0.0f, 0.0f, -2.5f));
     camera.setRotation(glm::vec3(0.0f, 15.0f, 0.0f));
@@ -1118,9 +1119,8 @@ VulkanRenderer::~VulkanRenderer() {
         vkDestroyDescriptorSetLayout(device, rectangleDescriptorSetLayout, nullptr);
         rectangleVertexBuffer.destroy();
         rectangleIndexBuffer.destroy();
-        for (uint32_t i = 0; i < maxConcurrentFrames; i++) {
-            vkDestroyBuffer(device, rectangleUniformBuffers[i].buffer, nullptr);
-            vkFreeMemory(device, rectangleUniformBuffers[i].memory, nullptr);
+        for (auto& buffer : uniformBuffers) {
+            buffer.destroy();
         }
     }
 
@@ -1588,32 +1588,16 @@ void VulkanRenderer::rectangleSetupDescriptors() {
     descriptorLayoutCI.pBindings = &layoutBinding;
     VK_CHECK_RESULT(vkCreateDescriptorSetLayout(device, &descriptorLayoutCI, nullptr, &rectangleDescriptorSetLayout));
 
-    // Allocate one descriptor set per frame from the global descriptor pool
-    for (uint32_t i = 0; i < maxConcurrentFrames; i++) {
-        VkDescriptorSetAllocateInfo allocInfo{};
-        allocInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_ALLOCATE_INFO;
-        allocInfo.descriptorPool = rectangledescriptorPool;
-        allocInfo.descriptorSetCount = 1;
-        allocInfo.pSetLayouts = &rectangleDescriptorSetLayout;
-        VK_CHECK_RESULT(vkAllocateDescriptorSets(device, &allocInfo, &rectangleUniformBuffers[i].descriptorSet));
+    for (size_t i = 0; i < rectangleUniformBuffers.size(); i++) {
+        VkDescriptorSetAllocateInfo allocInfo =
+            vks::initializers::descriptorSetAllocateInfo(rectangledescriptorPool, &rectangleDescriptorSetLayout, 1);
+        VK_CHECK_RESULT(vkAllocateDescriptorSets(device, &allocInfo, &rectangledescriptorSets[i]));
 
-        // Update the descriptor set determining the shader binding points
-        // For every binding point used in a shader there needs to be one
-        // descriptor set matching that binding point
-        VkWriteDescriptorSet writeDescriptorSet{};
+        // Use the 'descriptor' member of vks::Buffer instead of manual VkDescriptorBufferInfo
+        VkWriteDescriptorSet writeDescriptorSet =
+            vks::initializers::writeDescriptorSet(rectangledescriptorSets[i], VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, 0,
+                                                  &rectangleUniformBuffers[i].descriptor);
 
-        // The buffer's information is passed using a descriptor info structure
-        VkDescriptorBufferInfo bufferInfo{};
-        bufferInfo.buffer = rectangleUniformBuffers[i].buffer;
-        bufferInfo.range = sizeof(ShaderData);
-
-        // Binding 0 : Uniform buffer
-        writeDescriptorSet.sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
-        writeDescriptorSet.dstSet = rectangleUniformBuffers[i].descriptorSet;
-        writeDescriptorSet.descriptorCount = 1;
-        writeDescriptorSet.descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
-        writeDescriptorSet.pBufferInfo = &bufferInfo;
-        writeDescriptorSet.dstBinding = 0;
         vkUpdateDescriptorSets(device, 1, &writeDescriptorSet, 0, nullptr);
     }
 }
@@ -1801,7 +1785,7 @@ void VulkanRenderer::drawShapes(const VkCommandBuffer commandBuffer) {
 
     // Copy the current matrices to the current frame's uniform buffer
     // Note: Since we requested a host coherent memory type for the uniform buffer, the write is instantly visible to the GPU
-    memcpy(uniformBuffers[currentBuffer].mapped, &shaderData, sizeof(ShaderData));
+    memcpy(rectangleUniformBuffers[currentBuffer].mapped, &shaderData, sizeof(ShaderData));
 
     // Update dynamic viewport state
     VkViewport viewport{};
@@ -1819,7 +1803,7 @@ void VulkanRenderer::drawShapes(const VkCommandBuffer commandBuffer) {
     vkCmdSetScissor(commandBuffer, 0, 1, &scissor);
     // Bind descriptor set for the current frame's uniform buffer, so the shader uses the data from that buffer for this draw
     vkCmdBindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, rectanglePipelineLayout, 0, 1,
-                            &rectangleUniformBuffers[currentBuffer].descriptorSet, 0, nullptr);
+                            &rectangledescriptorSets[currentBuffer], 0, nullptr);
     // Bind the rendering pipeline
     // The pipeline (state object) contains all states of the rendering pipeline, binding it will set all the states specified at
     // pipeline creation time
@@ -1915,43 +1899,12 @@ void VulkanRenderer::prepareUniformBuffers() {
         VK_CHECK_RESULT(buffer.map());
     }
 
-    // Prepare and initialize the per-frame uniform buffer blocks containing shader uniforms
-    // Single uniforms like in OpenGL are no longer present in Vulkan. All hader uniforms are passed via uniform buffer blocks
-    VkMemoryRequirements memReqs;
-
-    // Vertex shader uniform buffer block
-    VkBufferCreateInfo bufferInfo{};
-    VkMemoryAllocateInfo allocInfo{};
-    allocInfo.sType = VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_INFO;
-    allocInfo.pNext = nullptr;
-    allocInfo.allocationSize = 0;
-    allocInfo.memoryTypeIndex = 0;
-
-    bufferInfo.sType = VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO;
-    bufferInfo.size = sizeof(ShaderData);
-    // This buffer will be used as a uniform buffer
-    bufferInfo.usage = VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT;
-
-    // Create the buffers
-    for (uint32_t i = 0; i < maxConcurrentFrames; i++) {
-        VK_CHECK_RESULT(vkCreateBuffer(device, &bufferInfo, nullptr, &rectangleUniformBuffers[i].buffer));
-        // Get memory requirements including size, alignment and memory type
-        vkGetBufferMemoryRequirements(device, rectangleUniformBuffers[i].buffer, &memReqs);
-        allocInfo.allocationSize = memReqs.size;
-        // Get the memory type index that supports host visible memory access
-        // Most implementations offer multiple memory types and selecting the correct one to allocate memory from is crucial
-        // We also want the buffer to be host coherent so we don't have to flush (or sync after every update.
-        // Note: This may affect performance so you might not want to do this in a real world application that updates buffers on
-        // a regular base
-        allocInfo.memoryTypeIndex = getMemoryTypeIndex(memReqs.memoryTypeBits, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT |
-                                                                                   VK_MEMORY_PROPERTY_HOST_COHERENT_BIT);
-        // Allocate memory for the uniform buffer
-        VK_CHECK_RESULT(vkAllocateMemory(device, &allocInfo, nullptr, &(rectangleUniformBuffers[i].memory)));
-        // Bind memory to buffer
-        VK_CHECK_RESULT(vkBindBufferMemory(device, rectangleUniformBuffers[i].buffer, rectangleUniformBuffers[i].memory, 0));
-        // We map the buffer once, so we can update it without having to map it again
-        VK_CHECK_RESULT(vkMapMemory(device, rectangleUniformBuffers[i].memory, 0, sizeof(ShaderData), 0,
-                                    (void **)&rectangleUniformBuffers[i].mapped));
+    // Rectangle Buffers - Use the helper to ensure correct alignment and allocation
+    for (auto &buffer : rectangleUniformBuffers) {
+        VK_CHECK_RESULT(vulkanDevice->createBuffer(VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT,
+                                                   VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT,
+                                                   &buffer, sizeof(ShaderData)));
+        VK_CHECK_RESULT(buffer.map());
     }
 }
 

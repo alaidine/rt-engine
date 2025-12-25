@@ -35,13 +35,13 @@ Application::Application(const ApplicationSpecification &specification, HINSTANC
     mWindow = std::make_shared<Window>(mSpecification.WindowSpec);
     mWindow->Create(hInstance);
 
-    Scripting::Init();
-
     mRenderer = std::make_shared<rt::VulkanRenderer>();
     mRenderer->InitWindowInfo(GetWindow()->window, hInstance, mSpecification.WindowSpec.Width, mSpecification.WindowSpec.Height);
     mRenderer->initVulkan();
     mRenderer->prepare();
     mRenderer->Init();
+
+    Scripting::Init();
 }
 
 Application::~Application() {

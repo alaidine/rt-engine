@@ -13,7 +13,7 @@ find_package(Boost REQUIRED)
 find_package(spdlog REQUIRED)
 
 # Put all runtime/library/archive outputs into the same directory
-set(RT_ENGINE_OUT_DIR ${CMAKE_BINARY_DIR}/${PROJECT_NAME})
+set(RT_ENGINE_OUT_DIR ${CMAKE_BINARY_DIR}/RTEngine)
 
 # Single-config generators
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY     ${RT_ENGINE_OUT_DIR})

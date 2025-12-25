@@ -387,7 +387,7 @@ class VulkanRenderer : public VulkanBase {
         uint8_t *mapped{nullptr};
     };
     // We use one UBO per frame, so we can have a frame overlap and make sure that uniforms aren't updated while still in use
-    std::array<RectangleUniformBuffer, maxConcurrentFrames> rectangleUniformBuffers;
+    std::array<vks::Buffer, maxConcurrentFrames> rectangleUniformBuffers;
 
     struct UniformData {
         glm::mat4 projection;
