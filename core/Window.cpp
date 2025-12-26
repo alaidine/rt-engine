@@ -164,20 +164,45 @@ void Window::handleMessages(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam) 
     }
     */
 
-    WindowClosedEvent event;
+    WindowClosedEvent windowClosedEvent;
+    KeyPressedEvent keyPressedEvent(wParam, false);
+    KeyReleasedEvent keyReleasedEvent(wParam);
 
     switch (uMsg) {
     case WM_CLOSE:
         DestroyWindow(hWnd);
         PostQuitMessage(0);
-        RaiseEvent(event);
+        RaiseEvent(windowClosedEvent);
         break;
     case WM_KEYDOWN:
+        RaiseEvent(keyPressedEvent);
         switch (wParam) {
         case KEY_ESCAPE:
             PostQuitMessage(0);
             break;
         }
+        break;
+    case WM_KEYUP:
+        RaiseEvent(keyReleasedEvent);
+        break;
+    case WM_LBUTTONDOWN:
+        break;
+    case WM_RBUTTONDOWN:
+        break;
+    case WM_MBUTTONDOWN:
+        break;
+    case WM_LBUTTONUP:
+        break;
+    case WM_RBUTTONUP:
+        break;
+    case WM_MBUTTONUP:
+        break;
+    case WM_MOUSEWHEEL: {
+        break;
+    }
+    case WM_MOUSEMOVE: {
+        break;
+    }
     }
 
     OnHandleMessage(hWnd, uMsg, wParam, lParam);

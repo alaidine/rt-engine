@@ -1119,7 +1119,7 @@ VulkanRenderer::~VulkanRenderer() {
         vkDestroyDescriptorSetLayout(device, rectangleDescriptorSetLayout, nullptr);
         rectangleVertexBuffer.destroy();
         rectangleIndexBuffer.destroy();
-        for (auto& buffer : uniformBuffers) {
+        for (auto& buffer : rectangleUniformBuffers) {
             buffer.destroy();
         }
     }

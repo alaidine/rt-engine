@@ -7,6 +7,12 @@
 #include <fstream>
 #include <string>
 
+#define GLM_FORCE_RADIANS
+#define GLM_FORM_DEPTH_ZERO_TO_ONE
+#define GML_ENABLE_EXPERIMENTAL
+
+#include <glm/glm.hpp>
+
 namespace rt {
 
 class Scripting {

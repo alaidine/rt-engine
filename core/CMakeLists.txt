@@ -24,7 +24,7 @@ add_executable(RTEngine
 target_include_directories(core PRIVATE ${CMAKE_SOURCE_DIR}/renderer)
 target_include_directories(core PRIVATE ${CMAKE_SOURCE_DIR}/mono/include)
 target_include_directories(core PRIVATE ${CMAKE_SOURCE_DIR}/ecs)
-target_link_libraries(core PRIVATE ecs Vulkan::Vulkan boost::boost glm::glm glfw KTX::ktx imgui::imgui)
+target_link_libraries(core PRIVATE ecs Vulkan::Vulkan boost::boost glm::glm glfw KTX::ktx imgui::imgui spdlog::spdlog)
 
 target_include_directories(CoreTests PRIVATE ${CMAKE_SOURCE_DIR}/ecs)
 target_link_libraries(CoreTests PRIVATE core Vulkan::Vulkan boost::boost glm::glm glfw KTX::ktx imgui::imgui)

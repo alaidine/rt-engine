@@ -1,4 +1,5 @@
 #include "Scripting.h"
+#include <iostream>
 
 namespace rt {
 
@@ -24,6 +25,20 @@ void Scripting::Shutdown() {
     delete sData;
 }
 
+static void NativeLog(MonoString *string, int parameter) {
+    char *cStr = mono_string_to_utf8(string);
+    std::string str(cStr);
+    mono_free(cStr);
+    std::cout << str << ", " << parameter << std::endl;
+}
+
+static void NativeLogVector2(glm::vec2 *vec, glm::vec2 *out) {
+    std::cout << vec->x << ", " << vec->y << std::endl;
+    *out = glm::vec2(42.0f, 42.0f);
+}
+
+static float NativeLogVectorDot(glm::vec2 *vec) { return glm::dot(*vec, *vec); }
+
 void Scripting::InitMono() {
     mono_set_assemblies_path("mono/lib/4.5/");
 
@@ -39,10 +54,14 @@ void Scripting::InitMono() {
     sData->AppDomain = mono_domain_create_appdomain((char *)"MyAppDomain", nullptr);
     mono_domain_set(sData->AppDomain, true);
 
+    mono_add_internal_call("RTEngine.Main::NativeLog", NativeLog);
+    mono_add_internal_call("RTEngine.Main::NativeLogVector2", NativeLogVector2);
+    mono_add_internal_call("RTEngine.Main::NativeLogVectorDot", NativeLogVectorDot);
+
     sData->AppAssembly = LoadCSharpAssembly("./rtmodule.dll");
     PrintAssemblyTypes(sData->AppAssembly);
 
-    MonoImage* assemblyImage = mono_assembly_get_image(sData->AppAssembly);
+    MonoImage *assemblyImage = mono_assembly_get_image(sData->AppAssembly);
     MonoClass *monoClass = mono_class_from_name(assemblyImage, "RTEngine", "Main");
 
     // 1. Create an object (and call constructor)
@@ -52,13 +71,13 @@ void Scripting::InitMono() {
     // 2. Call function
     MonoMethod *printMessageFunc = mono_class_get_method_from_name(monoClass, "PrintMessage", 0);
     mono_runtime_invoke(printMessageFunc, instance, nullptr, nullptr);
-    
+
     // 3. Call function with param
     MonoMethod *printIntFunc = mono_class_get_method_from_name(monoClass, "PrintInt", 1);
-    
+
     int value = 3;
     void *param = &value;
-    
+
     mono_runtime_invoke(printIntFunc, instance, &param, nullptr);
 
     MonoMethod *printIntsFunc = mono_class_get_method_from_name(monoClass, "PrintInts", 2);
@@ -71,7 +90,7 @@ void Scripting::InitMono() {
     };
 
     mono_runtime_invoke(printIntsFunc, instance, params, nullptr);
-    
+
     MonoString *monoString = mono_string_new(sData->AppDomain, "Hello World from C++!!!");
     MonoMethod *printCustomMessageFunc = mono_class_get_method_from_name(monoClass, "PrintCustomMessage", 1);
 
