@@ -4,7 +4,9 @@
 #include <mono/metadata/assembly.h>
 #include <mono/metadata/object.h>
 
+#include <filesystem>
 #include <fstream>
+#include <iostream>
 #include <string>
 
 #define GLM_FORCE_RADIANS
@@ -15,26 +17,40 @@
 
 namespace rt {
 
+#define ADD_INTERNAL_CALL(icall) mono_add_internal_call("RTEngine.InternalCalls::" #icall, (void *)InternalCalls::icall)
+
 class Scripting {
-
   public:
-    Scripting();
-    ~Scripting();
-
-    static void InitMono();
-    static void ShutdownMono();
     static void Init();
     static void Shutdown();
 
-    MonoClass *GetClassInAssembly(MonoAssembly *assembly, const char *namespaceName, const char *className);
-    MonoObject *InstantiateClass(const char *namespaceName, const char *className);
-    void CallPrintFloatVarMethod(MonoObject *objectInstance);
-    void CallIncrementFloatVarMethod(MonoObject *objectInstance, float value);
+    static void LoadAssembly(const std::filesystem::path &filepath);
+    static MonoObject* InstantiateKlass(MonoClass* klass);
+
+  private:
+    static void InitMono();
+    static void ShutdownMono();
+
+    friend class ScriptClass;
 };
 
+class ScriptGlue {
+  public:
+    static void RegisterFunctions();
+};
 
-char *ReadBytes(const std::string &filepath, uint32_t *outSize);
-MonoAssembly *LoadCSharpAssembly(const std::string &assemblyPath);
-void PrintAssemblyTypes(MonoAssembly *assembly);
+class ScriptClass {
+  public:
+    ScriptClass() = default;
+    ScriptClass(const std::string &classNamespace, const std::string &className);
+
+    MonoObject *Instantiate();
+    MonoMethod *GetMethod(const std::string &name, int parameterCount);
+    MonoObject *InvokeMethod(MonoObject *instance, MonoMethod *monoMethod, void **params = nullptr);
+  private:
+    std::string mClassNamespace;
+    std::string mClassName;
+    MonoClass *mMonoClass = nullptr;
+};
 
 } // namespace rt

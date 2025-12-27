@@ -1,113 +1,26 @@
 #include "Scripting.h"
-#include <iostream>
 
 namespace rt {
 
-struct ScriptingData {
-    MonoDomain *RootDomain = nullptr;
-    MonoDomain *AppDomain = nullptr;
-    MonoAssembly *AppAssembly = nullptr;
-};
+namespace Utils {
 
-static ScriptingData *sData = nullptr;
+static void PrintAssemblyTypes(MonoAssembly *assembly) {
+    MonoImage *image = mono_assembly_get_image(assembly);
+    const MonoTableInfo *typeDefinitionsTable = mono_image_get_table_info(image, MONO_TABLE_TYPEDEF);
+    int32_t numTypes = mono_table_info_get_rows(typeDefinitionsTable);
 
-Scripting::Scripting() {}
+    for (int32_t i = 0; i < numTypes; i++) {
+        uint32_t cols[MONO_TYPEDEF_SIZE];
+        mono_metadata_decode_row(typeDefinitionsTable, i, cols, MONO_TYPEDEF_SIZE);
 
-Scripting::~Scripting() {}
+        const char *nameSpace = mono_metadata_string_heap(image, cols[MONO_TYPEDEF_NAMESPACE]);
+        const char *name = mono_metadata_string_heap(image, cols[MONO_TYPEDEF_NAME]);
 
-void Scripting::Init() {
-    sData = new ScriptingData;
-    InitMono();
-}
-
-void Scripting::Shutdown() {
-    ShutdownMono();
-    delete sData;
-}
-
-static void NativeLog(MonoString *string, int parameter) {
-    char *cStr = mono_string_to_utf8(string);
-    std::string str(cStr);
-    mono_free(cStr);
-    std::cout << str << ", " << parameter << std::endl;
-}
-
-static void NativeLogVector2(glm::vec2 *vec, glm::vec2 *out) {
-    std::cout << vec->x << ", " << vec->y << std::endl;
-    *out = glm::vec2(42.0f, 42.0f);
-}
-
-static float NativeLogVectorDot(glm::vec2 *vec) { return glm::dot(*vec, *vec); }
-
-void Scripting::InitMono() {
-    mono_set_assemblies_path("mono/lib/4.5/");
-
-    MonoDomain *rootDomain = mono_jit_init("MyScriptRuntime");
-    if (rootDomain == nullptr) {
-        return;
+        printf("%s.%s\n", nameSpace, name);
     }
-
-    // Store the root domain pointer
-    sData->RootDomain = rootDomain;
-
-    // Create an App Domain
-    sData->AppDomain = mono_domain_create_appdomain((char *)"MyAppDomain", nullptr);
-    mono_domain_set(sData->AppDomain, true);
-
-    mono_add_internal_call("RTEngine.Main::NativeLog", NativeLog);
-    mono_add_internal_call("RTEngine.Main::NativeLogVector2", NativeLogVector2);
-    mono_add_internal_call("RTEngine.Main::NativeLogVectorDot", NativeLogVectorDot);
-
-    sData->AppAssembly = LoadCSharpAssembly("./rtmodule.dll");
-    PrintAssemblyTypes(sData->AppAssembly);
-
-    MonoImage *assemblyImage = mono_assembly_get_image(sData->AppAssembly);
-    MonoClass *monoClass = mono_class_from_name(assemblyImage, "RTEngine", "Main");
-
-    // 1. Create an object (and call constructor)
-    MonoObject *instance = mono_object_new(sData->AppDomain, monoClass);
-    mono_runtime_object_init(instance);
-
-    // 2. Call function
-    MonoMethod *printMessageFunc = mono_class_get_method_from_name(monoClass, "PrintMessage", 0);
-    mono_runtime_invoke(printMessageFunc, instance, nullptr, nullptr);
-
-    // 3. Call function with param
-    MonoMethod *printIntFunc = mono_class_get_method_from_name(monoClass, "PrintInt", 1);
-
-    int value = 3;
-    void *param = &value;
-
-    mono_runtime_invoke(printIntFunc, instance, &param, nullptr);
-
-    MonoMethod *printIntsFunc = mono_class_get_method_from_name(monoClass, "PrintInts", 2);
-
-    int value1 = 1;
-    int value2 = 2;
-    void *params[2] = {
-        &value1,
-        &value2,
-    };
-
-    mono_runtime_invoke(printIntsFunc, instance, params, nullptr);
-
-    MonoString *monoString = mono_string_new(sData->AppDomain, "Hello World from C++!!!");
-    MonoMethod *printCustomMessageFunc = mono_class_get_method_from_name(monoClass, "PrintCustomMessage", 1);
-
-    void *stringParam = monoString;
-    mono_runtime_invoke(printCustomMessageFunc, instance, &stringParam, nullptr);
 }
 
-void Scripting::ShutdownMono() {
-    // Mono is a little confusing to shutdown.
-    // mono_domain_unload(sData->AppDomain);
-    // mono_jit_cleanup(sData->RootDomain);
-
-    sData->AppDomain = nullptr;
-    sData->RootDomain = nullptr;
-}
-
-char *ReadBytes(const std::string &filepath, uint32_t *outSize) {
+static char *ReadBytes(const std::filesystem::path &filepath, uint32_t *outSize) {
     std::ifstream stream(filepath, std::ios::binary | std::ios::ate);
 
     if (!stream) {
@@ -132,7 +45,7 @@ char *ReadBytes(const std::string &filepath, uint32_t *outSize) {
     return buffer;
 }
 
-MonoAssembly *LoadCSharpAssembly(const std::string &assemblyPath) {
+static MonoAssembly *LoadCSharpAssembly(const std::filesystem::path &assemblyPath) {
     uint32_t fileSize = 0;
     char *fileData = ReadBytes(assemblyPath, &fileSize);
 
@@ -147,7 +60,7 @@ MonoAssembly *LoadCSharpAssembly(const std::string &assemblyPath) {
         return nullptr;
     }
 
-    MonoAssembly *assembly = mono_assembly_load_from_full(image, assemblyPath.c_str(), &status, 0);
+    MonoAssembly *assembly = mono_assembly_load_from_full(image, assemblyPath.string().c_str(), &status, 0);
     mono_image_close(image);
 
     // Don't forget to free the file data
@@ -156,88 +69,139 @@ MonoAssembly *LoadCSharpAssembly(const std::string &assemblyPath) {
     return assembly;
 }
 
-void PrintAssemblyTypes(MonoAssembly *assembly) {
-    MonoImage *image = mono_assembly_get_image(assembly);
-    const MonoTableInfo *typeDefinitionsTable = mono_image_get_table_info(image, MONO_TABLE_TYPEDEF);
-    int32_t numTypes = mono_table_info_get_rows(typeDefinitionsTable);
+} // namespace Utils
 
-    for (int32_t i = 0; i < numTypes; i++) {
-        uint32_t cols[MONO_TYPEDEF_SIZE];
-        mono_metadata_decode_row(typeDefinitionsTable, i, cols, MONO_TYPEDEF_SIZE);
+struct ScriptingData {
+    MonoDomain *RootDomain = nullptr;
+    MonoDomain *AppDomain = nullptr;
+    MonoAssembly *AppAssembly = nullptr;
+    MonoImage *AppAssemblyImage = nullptr;
+    ScriptClass EntityClass;
+};
 
-        const char *nameSpace = mono_metadata_string_heap(image, cols[MONO_TYPEDEF_NAMESPACE]);
-        const char *name = mono_metadata_string_heap(image, cols[MONO_TYPEDEF_NAME]);
+static ScriptingData *sData = nullptr;
 
-        printf("%s.%s\n", nameSpace, name);
-    }
+void Scripting::Init() {
+    sData = new ScriptingData;
+    InitMono();
+    LoadAssembly("rtmodule.dll");
+
+    ScriptGlue::RegisterFunctions();
+
+    // 1. Create an object (and call constructor)
+    sData->EntityClass = ScriptClass("RTEngine", "Entity");
+    MonoObject *instance = sData->EntityClass.Instantiate();
+
+    // 2. Call function
+    MonoMethod *printMessageFunc = sData->EntityClass.GetMethod("PrintMessage", 0);
+    mono_runtime_invoke(printMessageFunc, instance, nullptr, nullptr);
+    sData->EntityClass.InvokeMethod(instance, printMessageFunc);
+
+    // 3. Call function with param
+    MonoMethod *printIntFunc = sData->EntityClass.GetMethod("PrintInt", 1);
+
+    int value = 3;
+    void *param = &value;
+
+    sData->EntityClass.InvokeMethod(instance, printIntFunc, &param);
+    MonoMethod *printIntsFunc = sData->EntityClass.GetMethod("PrintInts", 2);
+
+    int value1 = 1;
+    int value2 = 2;
+    void *params[2] = {
+        &value1,
+        &value2,
+    };
+
+    sData->EntityClass.InvokeMethod(instance, printIntsFunc, params);
+
+    MonoString *monoString = mono_string_new(sData->AppDomain, "Hello World from C++!!!");
+    MonoMethod *printCustomMessageFunc = sData->EntityClass.GetMethod("PrintCustomMessage", 1);
+
+    void *stringParam = monoString;
+    sData->EntityClass.InvokeMethod(instance, printCustomMessageFunc, &stringParam);
 }
 
-MonoClass *Scripting::GetClassInAssembly(MonoAssembly *assembly, const char *namespaceName, const char *className) {
-    MonoImage *image = mono_assembly_get_image(assembly);
-    MonoClass *klass = mono_class_from_name(image, namespaceName, className);
-
-    if (klass == nullptr) {
-        // Log error here
-        return nullptr;
-    }
-
-    return klass;
+void Scripting::Shutdown() {
+    ShutdownMono();
+    delete sData;
 }
 
-MonoObject *Scripting::InstantiateClass(const char *namespaceName, const char *className) {
-    // Get a reference to the class we want to instantiate
-    MonoClass *testingClass = GetClassInAssembly(sData->AppAssembly, "", "CSharpTesting");
+void Scripting::LoadAssembly(const std::filesystem::path &filepath) {
+    // Create an App Domain
+    sData->AppDomain = mono_domain_create_appdomain((char *)"MyAppDomain", nullptr);
+    mono_domain_set(sData->AppDomain, true);
 
-    // Allocate an instance of our class
-    MonoObject *classInstance = mono_object_new(sData->AppDomain, testingClass);
+    sData->AppAssembly = Utils::LoadCSharpAssembly(filepath.c_str());
+    sData->AppAssemblyImage = mono_assembly_get_image(sData->AppAssembly);
 
-    if (classInstance == nullptr) {
-        // Log error here and abort
-    }
-
-    // Call the parameterless (default) constructor
-    mono_runtime_object_init(classInstance);
-    return classInstance;
+    // PrintAssemblyTypes(sData->AppAssembly);
 }
 
-void Scripting::CallPrintFloatVarMethod(MonoObject *objectInstance) {
-    // Get the MonoClass pointer from the instance
-    MonoClass *instanceClass = mono_object_get_class(objectInstance);
+MonoObject *Scripting::InstantiateKlass(MonoClass *klass) {
+    MonoObject *instance = mono_object_new(sData->AppDomain, klass);
+    mono_runtime_object_init(instance);
+    return instance;
+}
 
-    // Get a reference to the method in the class
-    MonoMethod *method = mono_class_get_method_from_name(instanceClass, "PrintFloatVar", 0);
+void Scripting::InitMono() {
+    mono_set_assemblies_path("mono/lib/4.5");
 
-    if (method == nullptr) {
-        // No method called "PrintFloatVar" with 0 parameters in the class, log error or something
+    MonoDomain *rootDomain = mono_jit_init("MyScriptRuntime");
+    if (rootDomain == nullptr) {
         return;
     }
 
-    // Call the C# method on the objectInstance instance, and get any potential exceptions
-    MonoObject *exception = nullptr;
-    mono_runtime_invoke(method, objectInstance, nullptr, &exception);
-
-    // TODO: Handle the exception
+    // Store the root domain pointer
+    sData->RootDomain = rootDomain;
 }
 
-void Scripting::CallIncrementFloatVarMethod(MonoObject *objectInstance, float value) {
-    // Get the MonoClass pointer from the instance
-    MonoClass *instanceClass = mono_object_get_class(objectInstance);
+void Scripting::ShutdownMono() {
+    // Mono is a little confusing to shutdown.
+    // mono_domain_unload(sData->AppDomain);
+    // mono_jit_cleanup(sData->RootDomain);
 
-    // Get a reference to the method in the class
-    MonoMethod *method = mono_class_get_method_from_name(instanceClass, "IncrementFloatVar", 1);
+    sData->AppDomain = nullptr;
+    sData->RootDomain = nullptr;
+}
 
-    if (method == nullptr) {
-        // No method called "IncrementFloatVar" with 1 parameter in the class, log error or something
-        return;
-    }
+namespace InternalCalls {
 
-    // Call the C# method on the objectInstance instance, and get any potential exceptions
-    MonoObject *exception = nullptr;
-    void *params[] = {&value};
+static void NativeLog(MonoString *string, int parameter) {
+    char *cStr = mono_string_to_utf8(string);
+    std::string str(cStr);
+    mono_free(cStr);
+    std::cout << str << ", " << parameter << std::endl;
+}
 
-    mono_runtime_invoke(method, objectInstance, params, &exception);
+static void NativeLogVector2(glm::vec2 *vec, glm::vec2 *out) {
+    std::cout << vec->x << ", " << vec->y << std::endl;
+    *out = glm::vec2(42.0f, 42.0f);
+}
 
-    // TODO: Handle the exception
+static float NativeLogVectorDot(glm::vec2 *vec) { return glm::dot(*vec, *vec); }
+
+} // namespace InternalCalls
+
+void ScriptGlue::RegisterFunctions() {
+    ADD_INTERNAL_CALL(NativeLog);
+    ADD_INTERNAL_CALL(NativeLogVector2);
+    ADD_INTERNAL_CALL(NativeLogVectorDot);
+}
+
+ScriptClass::ScriptClass(const std::string &classNamespace, const std::string &className)
+    : mClassNamespace(classNamespace), mClassName(className) {
+    mMonoClass = mono_class_from_name(sData->AppAssemblyImage, mClassNamespace.c_str(), mClassName.c_str());
+}
+
+MonoObject *ScriptClass::Instantiate() { return Scripting::InstantiateKlass(mMonoClass); }
+
+MonoMethod *ScriptClass::GetMethod(const std::string &name, int parameterCount) {
+    return mono_class_get_method_from_name(mMonoClass, name.c_str(), parameterCount);
+}
+
+MonoObject *ScriptClass::InvokeMethod(MonoObject *instance, MonoMethod *monoMethod, void **params) {
+    return mono_runtime_invoke(monoMethod, instance, params, nullptr);
 }
 
 } // namespace rt
