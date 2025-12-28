@@ -20,14 +20,13 @@
 
 #include <glm/glm.hpp>
 
+#include "Common.h"
+#include "ECS.h"
+#include "Component.h"
+
 namespace Roar {
 
 #define ADD_INTERNAL_CALL(icall) mono_add_internal_call("RoarEngine.InternalCalls::" #icall, (void *)InternalCalls::icall)
-
-template <typename T> using Ref = std::shared_ptr<T>;
-template <typename T, typename... Args> constexpr Ref<T> CreateRef(Args &&...args) {
-    return std::make_shared<T>(std::forward<Args>(args)...);
-}
 
 class ScriptGlue {
   public:
@@ -51,8 +50,7 @@ class ScriptClass {
 
 class ScriptInstance {
   public:
-    ScriptInstance() = default;
-    ScriptInstance(Ref<ScriptClass> scriptClass);
+    ScriptInstance(Ref<ScriptClass> scriptClass, uint32_t entity);
 
     void InvokeOnCreate();
     void InvokeOnUpdate(float ts);
@@ -61,6 +59,7 @@ class ScriptInstance {
     Ref<ScriptClass> mScriptClass;
 
     MonoObject *mInstance = nullptr;
+    MonoMethod *mConstructor = nullptr;
     MonoMethod *mOnCreateMethod = nullptr;
     MonoMethod *mOnUpdateMethod = nullptr;
 };
@@ -72,8 +71,13 @@ class Scripting {
 
     static void LoadAssembly(const std::filesystem::path &filepath);
     static MonoObject *InstantiateKlass(MonoClass *klass);
-
     static std::unordered_map<std::string, Ref<ScriptClass>> GetEntityClasses();
+    static bool EntityClassExists(const std::string& fullClassName);
+    static void OnCreateEntity(uint32_t entity);
+    static void OnUpdateEntity(uint32_t entity, float ts);
+    static void SetScene(Ref<Scene> scene);
+    static void UnsetScene();
+    static Ref<Scene> GetSceneContext();
   private:
     static void InitMono();
     static void ShutdownMono();

@@ -1,5 +1,6 @@
 using System;
 using System.Runtime.CompilerServices;
+using RoarEngine;
 
 namespace RoarEngine
 {
@@ -137,54 +138,36 @@ namespace RoarEngine
 
         [MethodImplAttribute(MethodImplOptions.InternalCall)]
         public extern static float NativeLogVectorDot(ref Vector2 vec);
+
+        [MethodImplAttribute(MethodImplOptions.InternalCall)]
+        public extern static void Entity_GetTranslation(UInt32 entityID, out Vector2 translation);
+
+        [MethodImplAttribute(MethodImplOptions.InternalCall)]
+        public extern static void Entity_SetTranslation(UInt32 entityID, ref Vector2 translation);
     }
 
     public class Entity
     {
-        public float FloatVar { get; set; }
+        protected Entity() { ID = 0; }
 
-        public Entity()
+        internal Entity(UInt32 id)
         {
-            Console.WriteLine("Entity Contructor!!!!");
-            Log("Testing native log", 42069);
-
-            Vector2 pos = new Vector2(1, 2.3f);
-            Vector2 result = Log(pos);
-            Console.WriteLine($"{result.X} {result.Y}");
-
-            float dot = InternalCalls.NativeLogVectorDot(ref pos);
-            Console.WriteLine(dot);
+            ID = id;
         }
 
-        public void PrintInt(int value)
-        {
-            Console.WriteLine($"C# says: {value}");
-        }
+        public readonly UInt32 ID;
 
-        public void PrintInts(int value1, int value2)
+        public Vector2 Translation
         {
-            Console.WriteLine($"C# says: {value1} and {value2}");
-        }
-
-        public void PrintMessage()
-        {
-            Console.WriteLine("Hello world from C#!");
-        }
-
-        public void PrintCustomMessage(string message)
-        {
-            Console.WriteLine($"C# says: {message}");
-        }
-
-        public void Log(string message, int parameter)
-        {
-            InternalCalls.NativeLog(message, parameter);
-        }
-
-        public Vector2 Log(Vector2 vector)
-        {
-            InternalCalls.NativeLogVector2(ref vector, out Vector2 vec);
-            return vec;
+            get
+            {
+                InternalCalls.Entity_GetTranslation(ID, out Vector2 translation);
+                return translation;
+            }
+            set
+            {
+                InternalCalls.Entity_SetTranslation(ID, ref value);
+            }
         }
     }
 
@@ -197,12 +180,18 @@ namespace Sandbox
     {
         void OnCreate()
         {
-            Console.WriteLine("Player.OnCreate");
+            Console.WriteLine($"Player.OnCreate - {ID}");
         }
 
         void OnUpdate(float ts)
         {
             Console.WriteLine($"Player.OnUpdate: {ts}");
+
+            float speed = 5.0f;
+
+            Vector2 translation = Translation;
+            translation.X += speed * ts;
+            Translation = translation;
         }
 
     }

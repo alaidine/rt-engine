@@ -1,5 +1,7 @@
 #include "Layer.h"
+#include "Common.h"
 #include "RenderSystem.h"
+#include "ScriptSystem.h"
 
 class SceneLayer : public Roar::Layer {
   public:
@@ -11,6 +13,7 @@ class SceneLayer : public Roar::Layer {
     void OnRender() override;
 
   private:
-    Scene mScene;
+    Ref<Scene> mScene;
     std::shared_ptr<RenderSystem> mRenderSystem;
+    std::shared_ptr<ScriptSystem> mScriptSystem;
 };

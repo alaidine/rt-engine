@@ -2,20 +2,21 @@
 
 #include "Component.h"
 #include "ECS.h"
+#include <spdlog/spdlog.h>
 
 #include <fstream>
 #include <iostream>
 #include <sstream>
 #include <string>
 
-typedef enum { NEWLINE, IDENT, NUMBER, SEMICOLON } RTETokenType;
+typedef enum { IDENT, NUMBER, SEMICOLON } RoarTokenType;
 
-struct RTEToken {
-    RTETokenType type;
+struct RoarToken {
+    RoarTokenType type;
     std::string value;
 };
 
-struct RTELexer {
+struct RoarLexer {
     void fromFile(std::string_view path) {
         currentIndex = 0;
 
@@ -42,17 +43,13 @@ struct RTELexer {
     }
 
     std::string nextToken() {
-        while (content[currentIndex] == ' ' || content[currentIndex] == '\t') {
+        while (content[currentIndex] == ' ' || content[currentIndex] == '\t' || content[currentIndex] == '\r' ||
+               content[currentIndex] == '\n') {
             currentIndex++;
         }
 
         if (currentIndex >= content.size())
             return "EOF";
-
-        if (content[currentIndex] == '\n') {
-            currentIndex += 1;
-            return "\n";
-        }
 
         if (content[currentIndex] == ';') {
             currentIndex += 1;
@@ -90,4 +87,23 @@ struct RTELexer {
 
     int currentIndex = 0;
     std::string content;
+};
+
+struct RoarConfig {
+    RoarLexer lexer;
+    std::string currentToken;
+
+    bool fromFile(std::shared_ptr<Scene> scene, const char *filename) {
+        lexer.fromFile(filename);
+
+        while (true) {
+            currentToken = lexer.nextToken();
+
+            if (currentToken == "EOF") {
+                break;
+            }
+        }
+
+        return true;
+    }
 };

@@ -82,6 +82,4 @@ Application &Application::Get() {
     return *sApplication;
 }
 
-float Application::GetTime() { return (float)0; }
-
 } // namespace Roar

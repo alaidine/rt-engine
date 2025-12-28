@@ -160,7 +160,10 @@ EditorLayer::EditorLayer() {
     io.Fonts->AddFontDefault(&defaultConfig);
 }
 
-EditorLayer::~EditorLayer() {}
+EditorLayer::~EditorLayer() {
+    rlImGuiShutdown();
+    SceneView.Shutdown();
+}
 
 void EditorLayer::OnEvent(Roar::Event &event) {}
 

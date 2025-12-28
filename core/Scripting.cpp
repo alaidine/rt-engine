@@ -78,6 +78,8 @@ struct ScriptingData {
     MonoImage *AppAssemblyImage = nullptr;
     ScriptClass EntityClass;
     std::unordered_map<std::string, Ref<ScriptClass>> EntityClasses;
+    std::unordered_map<uint32_t, Ref<ScriptInstance>> EntityInstances;
+    Ref<Scene> SceneContext;
 };
 
 static ScriptingData *sData = nullptr;
@@ -90,10 +92,8 @@ void Scripting::Init() {
 
     ScriptGlue::RegisterFunctions();
 
-#if 0
-    // 1. Create an object (and call constructor)
     sData->EntityClass = ScriptClass("RoarEngine", "Entity");
-    MonoObject *instance = sData->EntityClass.Instantiate();
+#if 0
 
     // 2. Call function
     MonoMethod *printMessageFunc = sData->EntityClass.GetMethod("PrintMessage", 0);
@@ -185,9 +185,7 @@ MonoObject *Scripting::InstantiateKlass(MonoClass *klass) {
     return instance;
 }
 
-std::unordered_map<std::string, Ref<ScriptClass>> Scripting::GetEntityClasses() {
-    return sData->EntityClasses;
-}
+std::unordered_map<std::string, Ref<ScriptClass>> Scripting::GetEntityClasses() { return sData->EntityClasses; }
 
 void Scripting::InitMono() {
     mono_set_assemblies_path("mono/lib/4.5");
@@ -210,6 +208,34 @@ void Scripting::ShutdownMono() {
     sData->RootDomain = nullptr;
 }
 
+bool Scripting::EntityClassExists(const std::string &fullClassName) {
+    return sData->EntityClasses.find(fullClassName) != sData->EntityClasses.end();
+}
+
+void Scripting::OnCreateEntity(uint32_t entity) {
+    const auto &sc = sData->SceneContext->GetComponent<ScriptComponent>(entity);
+    if (EntityClassExists(sc.name)) {
+        Ref<ScriptInstance> instance = sData->EntityInstances[entity] =
+            CreateRef<ScriptInstance>(sData->EntityClasses[sc.name], entity);
+        sData->EntityInstances[entity] = instance;
+        instance->InvokeOnCreate();
+    }
+}
+
+void Scripting::OnUpdateEntity(uint32_t entity, float ts) {
+    Ref<ScriptInstance> instance = sData->EntityInstances[entity];
+    instance->InvokeOnUpdate(ts);
+}
+
+void Scripting::SetScene(Ref<Scene> scene) { sData->SceneContext = scene; }
+
+void Scripting::UnsetScene() {
+    sData->SceneContext = nullptr;
+    sData->EntityInstances.clear();
+}
+
+Ref<Scene> Scripting::GetSceneContext() { return sData->SceneContext; }
+
 namespace InternalCalls {
 
 static void NativeLog(MonoString *string, int parameter) {
@@ -226,12 +252,25 @@ static void NativeLogVector2(glm::vec2 *vec, glm::vec2 *out) {
 
 static float NativeLogVectorDot(glm::vec2 *vec) { return glm::dot(*vec, *vec); }
 
+static void Entity_GetTranslation(uint32_t entity, glm::vec2 *outTranslation) {
+    Ref<Scene> scene = Scripting::GetSceneContext();
+    Transform2D &transform = sData->SceneContext->GetComponent<Transform2D>(entity);
+    *outTranslation = transform.pos;
+}
+
+static void Entity_SetTranslation(uint32_t entity, glm::vec2 *translation) {
+    Ref<Scene> scene = Scripting::GetSceneContext();
+    sData->SceneContext->GetComponent<Transform2D>(entity).pos = *translation;
+}
+
 } // namespace InternalCalls
 
 void ScriptGlue::RegisterFunctions() {
     ADD_INTERNAL_CALL(NativeLog);
     ADD_INTERNAL_CALL(NativeLogVector2);
     ADD_INTERNAL_CALL(NativeLogVectorDot);
+    ADD_INTERNAL_CALL(Entity_SetTranslation);
+    ADD_INTERNAL_CALL(Entity_GetTranslation);
 }
 
 ScriptClass::ScriptClass(const std::string &classNamespace, const std::string &className)
@@ -249,10 +288,16 @@ MonoObject *ScriptClass::InvokeMethod(MonoObject *instance, MonoMethod *monoMeth
     return mono_runtime_invoke(monoMethod, instance, params, nullptr);
 }
 
-ScriptInstance::ScriptInstance(Ref<ScriptClass> scriptClass) : mScriptClass(scriptClass) {
+ScriptInstance::ScriptInstance(Ref<ScriptClass> scriptClass, uint32_t entity) : mScriptClass(scriptClass) {
     mInstance = mScriptClass->Instantiate();
+    mConstructor = sData->EntityClass.GetMethod(".ctor", 1);
     mOnCreateMethod = mScriptClass->GetMethod("OnCreate", 0);
     mOnUpdateMethod = mScriptClass->GetMethod("OnUpdate", 1);
+
+    {
+        void *param = &entity;
+        mScriptClass->InvokeMethod(mInstance, mConstructor, &param);
+    }
 }
 
 void ScriptInstance::InvokeOnCreate() { mScriptClass->InvokeMethod(mInstance, mOnCreateMethod); }

@@ -54,7 +54,6 @@ class Application {
     std::shared_ptr<Window> GetWindow() const { return mWindow; }
 
     static Application &Get();
-    static float GetTime();
 
   private:
     ApplicationSpecification mSpecification;
