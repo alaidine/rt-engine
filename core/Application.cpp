@@ -7,7 +7,7 @@
 #include <iostream>
 #include <ranges>
 
-namespace rt {
+namespace Roar {
 
 static Application *sApplication = nullptr;
 
@@ -84,4 +84,4 @@ Application &Application::Get() {
 
 float Application::GetTime() { return (float)0; }
 
-} // namespace rt
+} // namespace Roar

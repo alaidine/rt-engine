@@ -4,7 +4,7 @@
 
 #include <format>
 
-namespace rt {
+namespace Roar {
 
 class WindowClosedEvent : public Event {
   public:
@@ -27,4 +27,4 @@ class WindowResizeEvent : public Event {
     uint32_t m_Width, m_Height;
 };
 
-} // namespace rt
+} // namespace Roar

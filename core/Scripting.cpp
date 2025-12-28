@@ -1,6 +1,6 @@
 #include "Scripting.h"
 
-namespace rt {
+namespace Roar {
 
 namespace Utils {
 
@@ -77,6 +77,7 @@ struct ScriptingData {
     MonoAssembly *AppAssembly = nullptr;
     MonoImage *AppAssemblyImage = nullptr;
     ScriptClass EntityClass;
+    std::unordered_map<std::string, Ref<ScriptClass>> EntityClasses;
 };
 
 static ScriptingData *sData = nullptr;
@@ -85,11 +86,13 @@ void Scripting::Init() {
     sData = new ScriptingData;
     InitMono();
     LoadAssembly("rtmodule.dll");
+    LoadAssemblyClasses(sData->AppAssembly);
 
     ScriptGlue::RegisterFunctions();
 
+#if 0
     // 1. Create an object (and call constructor)
-    sData->EntityClass = ScriptClass("RTEngine", "Entity");
+    sData->EntityClass = ScriptClass("RoarEngine", "Entity");
     MonoObject *instance = sData->EntityClass.Instantiate();
 
     // 2. Call function
@@ -120,6 +123,44 @@ void Scripting::Init() {
 
     void *stringParam = monoString;
     sData->EntityClass.InvokeMethod(instance, printCustomMessageFunc, &stringParam);
+#endif
+}
+
+void Scripting::LoadAssemblyClasses(MonoAssembly *assembly) {
+    sData->EntityClasses.clear();
+
+    MonoImage *image = mono_assembly_get_image(assembly);
+    const MonoTableInfo *typeDefinitionsTable = mono_image_get_table_info(image, MONO_TABLE_TYPEDEF);
+    int32_t numTypes = mono_table_info_get_rows(typeDefinitionsTable);
+
+    for (int32_t i = 0; i < numTypes; i++) {
+        uint32_t cols[MONO_TYPEDEF_SIZE];
+        mono_metadata_decode_row(typeDefinitionsTable, i, cols, MONO_TYPEDEF_SIZE);
+
+        const char *nameSpace = mono_metadata_string_heap(image, cols[MONO_TYPEDEF_NAMESPACE]);
+        const char *name = mono_metadata_string_heap(image, cols[MONO_TYPEDEF_NAME]);
+        std::string fullName;
+
+        if (strlen(nameSpace) != 0) {
+            fullName = fmt::format("{}.{}", nameSpace, name);
+        } else {
+            fullName = name;
+        }
+
+        MonoClass *monoClass = mono_class_from_name(image, nameSpace, name);
+        MonoClass *entityClass = mono_class_from_name(image, "RoarEngine", "Entity");
+
+        if (monoClass == entityClass) {
+            continue;
+        }
+
+        bool isEntity = mono_class_is_subclass_of(monoClass, entityClass, false);
+        if (isEntity) {
+            sData->EntityClasses[fullName] = CreateRef<ScriptClass>(nameSpace, name);
+        }
+
+        printf("%s.%s\n", nameSpace, name);
+    }
 }
 
 void Scripting::Shutdown() {
@@ -135,13 +176,17 @@ void Scripting::LoadAssembly(const std::filesystem::path &filepath) {
     sData->AppAssembly = Utils::LoadCSharpAssembly(filepath.c_str());
     sData->AppAssemblyImage = mono_assembly_get_image(sData->AppAssembly);
 
-    // PrintAssemblyTypes(sData->AppAssembly);
+    Utils::PrintAssemblyTypes(sData->AppAssembly);
 }
 
 MonoObject *Scripting::InstantiateKlass(MonoClass *klass) {
     MonoObject *instance = mono_object_new(sData->AppDomain, klass);
     mono_runtime_object_init(instance);
     return instance;
+}
+
+std::unordered_map<std::string, Ref<ScriptClass>> Scripting::GetEntityClasses() {
+    return sData->EntityClasses;
 }
 
 void Scripting::InitMono() {
@@ -204,4 +249,17 @@ MonoObject *ScriptClass::InvokeMethod(MonoObject *instance, MonoMethod *monoMeth
     return mono_runtime_invoke(monoMethod, instance, params, nullptr);
 }
 
-} // namespace rt
+ScriptInstance::ScriptInstance(Ref<ScriptClass> scriptClass) : mScriptClass(scriptClass) {
+    mInstance = mScriptClass->Instantiate();
+    mOnCreateMethod = mScriptClass->GetMethod("OnCreate", 0);
+    mOnUpdateMethod = mScriptClass->GetMethod("OnUpdate", 1);
+}
+
+void ScriptInstance::InvokeOnCreate() { mScriptClass->InvokeMethod(mInstance, mOnCreateMethod); }
+
+void ScriptInstance::InvokeOnUpdate(float ts) {
+    void *param = &ts;
+    mScriptClass->InvokeMethod(mInstance, mOnUpdateMethod, &param);
+}
+
+} // namespace Roar

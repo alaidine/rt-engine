@@ -3,7 +3,7 @@
 #include <functional>
 #include <string>
 
-namespace rt {
+namespace Roar {
 
 enum class EventType {
     None = 0,
@@ -50,4 +50,4 @@ class EventDispatcher {
     Event &m_Event;
 };
 
-} // namespace rt
+} // namespace Roar

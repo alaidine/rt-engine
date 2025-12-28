@@ -14,7 +14,7 @@
 #include <string>
 #include <vector>
 
-namespace rt {
+namespace Roar {
 
 struct ApplicationSpecification {
     std::string Name = "Application";
@@ -64,4 +64,4 @@ class Application {
     friend class Layer;
 };
 
-} // namespace rt
+} // namespace Roar

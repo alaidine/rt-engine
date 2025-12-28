@@ -1,7 +1,7 @@
 build/
 validation_output.txt
 
-RTEngine.exe
+RoarEngine.exe
 .vs/
 .vscode/
 out/

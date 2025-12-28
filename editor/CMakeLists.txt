@@ -1,14 +1,10 @@
-add_executable(editor main.cpp)
+add_executable(RoarEditor
+    Editor.cpp)
 
-target_include_directories(editor PRIVATE ${CMAKE_SOURCE_DIR}/renderer)
-target_link_libraries(editor PRIVATE renderer Vulkan::Vulkan glfw glm::glm KTX::ktx)
-target_link_libraries(editor PUBLIC imgui::imgui)
+target_include_directories(RoarEditor PRIVATE ${CMAKE_SOURCE_DIR}/renderer)
+target_include_directories(RoarEditor PRIVATE ${CMAKE_SOURCE_DIR}/ecs)
+target_include_directories(RoarEditor PRIVATE ${CMAKE_SOURCE_DIR}/core)
+target_link_libraries(RoarEditor PRIVATE core renderer raylib glm::glm)
 
-# Add ImGui backend sources (from Dear ImGui backends/).
-set(IMGUI_BACKENDS_DIR ${CMAKE_SOURCE_DIR}/third_party/imgui/backends)
-if(EXISTS ${IMGUI_BACKENDS_DIR}/imgui_impl_win32.cpp)
-	target_sources(editor PRIVATE
-		${IMGUI_BACKENDS_DIR}/imgui_impl_win32.cpp
-		${IMGUI_BACKENDS_DIR}/imgui_impl_vulkan.cpp)
-	target_include_directories(editor PRIVATE ${IMGUI_BACKENDS_DIR})
-endif()
+set_target_properties(RoarEditor PROPERTIES VS_DEBUGGER_WORKING_DIRECTORY "$<TARGET_FILE_DIR:RoarEditor>")
+

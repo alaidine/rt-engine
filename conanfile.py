@@ -8,10 +8,7 @@ class CompressorRecipe(ConanFile):
 
     def requirements(self):
         self.requires("spdlog/1.16.0",)
-        self.requires("fmt/12.0.0", force=True)
-        self.requires("glfw/3.4")
         self.requires("glm/1.0.1")
-        self.requires("ktx/4.3.2")
         self.requires("imgui/1.92.5-docking")
         self.requires("boost/1.90.0")
         self.requires("raylib/5.5")

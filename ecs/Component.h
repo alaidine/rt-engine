@@ -6,6 +6,8 @@
 
 #include <glm/glm.hpp>
 
+#include <filesystem>
+
 struct Transform2D {
     glm::vec2 pos;
     glm::vec2 size;
@@ -13,4 +15,8 @@ struct Transform2D {
 
 struct RectangleShape {
     unsigned char color[4];
+};
+
+struct ScriptComponent {
+    std::string name;
 };

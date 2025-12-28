@@ -6,7 +6,7 @@
 #include <assert.h>
 #include <iostream>
 
-namespace rt {
+namespace Roar {
 
 Window::Window(const WindowSpecification &specification) : mSpecification(specification) {  }
 
@@ -59,4 +59,4 @@ bool Window::ShouldClose() const {
     return WindowShouldClose();
 }
 
-} // namespace rt
+} // namespace Roar

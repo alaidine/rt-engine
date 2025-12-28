@@ -2,7 +2,7 @@
 
 #include "Application.h"
 
-namespace rt {
+namespace Roar {
 
 void Layer::QueueTransition(std::unique_ptr<Layer> toLayer) {
     // TODO: don't do this
@@ -15,4 +15,4 @@ void Layer::QueueTransition(std::unique_ptr<Layer> toLayer) {
     }
 }
 
-} // namespace rt
+} // namespace Roar

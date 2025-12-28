@@ -1239,7 +1239,7 @@ void ImGui_ImplWin32_EnableAlphaCompositing(void *hwnd) {
 
 // Helper structure we store in the void* PlatformUserData field of each ImGuiViewport to easily retrieve our backend data.
 struct ImGui_ImplWin32_ViewportData {
-    HWND Hwnd; // Stored in ImGuiViewport::PlatformHandle + PlatformHandleRaw
+    HWND Hwnd; // Stored in ImGuiViewpoRoar::PlatformHandle + PlatformHandleRaw
     HWND HwndParent;
     bool HwndOwned;
     DWORD DwStyle;

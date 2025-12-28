@@ -10,7 +10,7 @@
 #include "framework.h"
 #include "raylib.h"
 
-namespace rt {
+namespace Roar {
 
 struct WindowSpecification {
     std::string Title;
@@ -60,4 +60,4 @@ class Window {
     uint32_t mLastFPS = 0;
 };
 
-} // namespace rt
+} // namespace Roar

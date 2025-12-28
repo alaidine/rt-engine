@@ -4,7 +4,7 @@
 
 #include <format>
 
-namespace rt {
+namespace Roar {
 
 class KeyEvent : public Event {
   public:
@@ -94,4 +94,4 @@ class MouseButtonReleasedEvent : public MouseButtonEvent {
     EVENT_CLASS_TYPE(MouseButtonReleased)
 };
 
-} // namespace rt
+} // namespace Roar

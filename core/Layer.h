@@ -4,7 +4,7 @@
 
 #include <memory>
 
-namespace rt {
+namespace Roar {
 
 class Layer {
   public:
@@ -23,4 +23,4 @@ class Layer {
     void QueueTransition(std::unique_ptr<Layer> layer);
 };
 
-} // namespace rt
+} // namespace Roar
