@@ -4,6 +4,8 @@
 
 #include <filesystem>
 
+namespace fs = std::filesystem;
+
 namespace Roar {
 
 class ProjectManagerLayer : public Layer {
@@ -12,8 +14,11 @@ class ProjectManagerLayer : public Layer {
     void OnUpdate(float ts) override;
     void OnRender() override;
 
-    void CreateProject();
+    bool CreateProject();
     bool OpenProject();
+
+    void BuildProject();
+    void ExportProject();
     
     std::filesystem::path projectRoot;
     std::filesystem::path scenePath;

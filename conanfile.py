@@ -10,7 +10,6 @@ class CompressorRecipe(ConanFile):
         self.requires("spdlog/1.16.0",)
         self.requires("glm/1.0.1")
         self.requires("imgui/1.92.5-docking")
-        self.requires("boost/1.90.0")
         self.requires("raylib/5.5")
     
     def layout(self):

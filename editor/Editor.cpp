@@ -65,7 +65,9 @@ class HubLayer : public Layer {
         ImGui::SetCursorPos(ImVec2((GetScreenWidth() - 200) / 2, (GetScreenHeight() + 25) / 2));
 
         if (ImGui::Button("Create new project", ImVec2(200, 20))) {
-            Application::Get().GetLayer<ProjectManagerLayer>()->CreateProject();
+            if (Application::Get().GetLayer<ProjectManagerLayer>()->CreateProject()) {
+                TransitionTo<EditorLayer>();
+            }
             ImGui::End();
             ImGui::PopStyleVar();
             rlImGuiEnd();

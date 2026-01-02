@@ -7,7 +7,6 @@ include(CTest)
 find_package(glm REQUIRED)
 find_package(glfw3 REQUIRED)
 find_package(imgui REQUIRED)
-find_package(Boost REQUIRED)
 find_package(spdlog REQUIRED)
 find_package(raylib REQUIRED)
 

@@ -4,6 +4,7 @@
 #include "Common.h"
 #include "Component.h"
 #include "ECS.h"
+#include "Scripting.h"
 
 #include <spdlog/spdlog.h>
 

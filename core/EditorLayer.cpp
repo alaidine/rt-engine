@@ -1,7 +1,7 @@
 #include "EditorLayer.h"
 #include "Application.h"
-#include "SceneLayer.h"
 #include "ProjectManager.h"
+#include "SceneLayer.h"
 
 #include "imgui.h"
 #include "raylib.h"
@@ -119,10 +119,17 @@ class SceneViewWindow : public DocumentWindow {
 SceneViewWindow SceneView;
 
 void DrawMenu() {
+    ProjectManagerLayer *projectManager = Application::Get().GetLayer<ProjectManagerLayer>();
+
     if (ImGui::BeginMainMenuBar()) {
+
         if (ImGui::BeginMenu("File")) {
             if (ImGui::MenuItem("Exit"))
                 Quit = true;
+            if (ImGui::MenuItem("Build Project"))
+                projectManager->BuildProject();
+            if (ImGui::MenuItem("Export Project"))
+                projectManager->ExportProject();   
             ImGui::EndMenu();
         }
         ImGui::EndMainMenuBar();
@@ -133,17 +140,17 @@ EditorLayer::EditorLayer() {
     SetWindowSize(1280.0f, 720.0f);
     Open = true;
 
-    SceneManager* sceneManger = Application::Get().GetLayer<SceneManager>();
-    ProjectManagerLayer* projectManager = Application::Get().GetLayer<ProjectManagerLayer>();
+    SceneManager *sceneManger = Application::Get().GetLayer<SceneManager>();
+    ProjectManagerLayer *projectManager = Application::Get().GetLayer<ProjectManagerLayer>();
     std::string scenePath = projectManager->scenePath.string();
     sceneManger->LoadScene(scenePath);
 }
 
-EditorLayer::~EditorLayer() { }
+EditorLayer::~EditorLayer() {}
 
 void EditorLayer::OnEvent(Event &event) {}
 
-void EditorLayer::OnUpdate(float st) { }
+void EditorLayer::OnUpdate(float st) {}
 
 void EditorLayer::OnRender() {
     ImVec4 clear_color = ImVec4(0.45f, 0.55f, 0.60f, 1.00f);
