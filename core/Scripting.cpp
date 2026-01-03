@@ -104,8 +104,7 @@ void Scripting::Init(bool isEditor, std::string gameName) {
 
         LoadAssembly(corePath);
         LoadAppAssembly(gamePath);
-    }
-    else {
+    } else {
         LoadAssembly("RoarScriptCore.dll");
         LoadAppAssembly("RoarSandbox.dll");
     }
@@ -182,6 +181,13 @@ void Scripting::LoadAssemblyClasses() {
         }
 
         printf("%s.%s\n", nameSpace, name);
+
+        void *iterator = nullptr;
+        MonoClassField *field;
+
+        while (field = mono_class_get_fields(monoClass, &iterator)) {
+            
+        }
     }
 }
 

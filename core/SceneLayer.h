@@ -31,7 +31,7 @@ class SceneManager : public Layer {
     RoarConfig config;
     std::shared_ptr<RenderSystem> mRenderSystem;
     std::shared_ptr<ScriptSystem> mScriptSystem;
-    bool paused = true;
+    bool paused = false;
 };
 
 class SceneLayer : public Layer {

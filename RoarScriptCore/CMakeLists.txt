@@ -1,6 +1,20 @@
-project(RoarScriptCore LANGUAGES CSharp)
+project(RoarScriptCore NONE)
 
-add_library(RoarScriptCore SHARED RoarScriptCore.cs)
+set(CSPROJ_NAME "RoarScriptCore.csproj")
 
-add_library(RoarSandbox SHARED RoarSandbox.cs)
-target_link_libraries(RoarSandbox RoarScriptCore)
+if(CMAKE_BUILD_TYPE STREQUAL "Release")
+    set(DOTNET_CONFIG "Release")
+else()
+    set(DOTNET_CONFIG "Debug")
+endif()
+
+file(MAKE_DIRECTORY "${COMMON_OUTPUT_DIR}")
+
+add_custom_target(RoarScriptCore_Build ALL
+    # WE USE "RoarScriptCore.csproj" (Relative Path)
+    # AND WE SET WORKING_DIRECTORY to where that file is.
+    COMMAND ${CMAKE_COMMAND} -E env LIB="" dotnet build "${CSPROJ_NAME}" -c $<CONFIG> -o "${COMMON_OUTPUT_DIR}/$<CONFIG>"
+    WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}"
+    COMMENT "Compiling C# Core..."
+    VERBATIM
+)

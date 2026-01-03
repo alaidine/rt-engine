@@ -44,7 +44,8 @@ glm::vec2 Window::GetFramebufferSize() const {
 }
 
 glm::vec2 Window::GetMousePos() const {
-    double x, y;
+    double x = 0;
+    double y = 0;
     return {static_cast<float>(x), static_cast<float>(y)};
 }
 
