@@ -7,7 +7,7 @@ int main(int argc, char *argv[]) {
     spec.Name = "RoarEngine";
     spec.isEditor = false;
 
-    Roar::Application samples(spec);
-    samples.PushLayer<Roar::SceneLayer>();
-    samples.Run();
+    Roar::Application engine(spec);
+    engine.PushLayer<Roar::SceneManager>();
+    engine.Run();
 }

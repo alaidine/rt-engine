@@ -42,7 +42,7 @@ void ProjectManagerLayer::BuildProject() {
     std::string projectName = projectDir.filename().string();
     fs::path projectPath = projectDir / projectName;
     RO_LOG_INFO("Project Name: {}", projectName);
-    std::string buildCmd = "dotnet build " + projectPath.string()  + ".csproj -c Release ";
+    std::string buildCmd = "dotnet build " + projectPath.string() + ".csproj -c Release ";
 
     // 2. Run in a background thread to keep UI responsive
     std::thread buildThread([buildCmd]() {
@@ -64,10 +64,35 @@ void ProjectManagerLayer::BuildProject() {
     buildThread.detach();
 }
 
+void CopyDirectoryRecursively(const fs::path &source, const fs::path &destination) {
+    try {
+        // Check if source exists
+        if (!fs::exists(source)) {
+            std::cerr << "Error: Source directory does not exist: " << source << std::endl;
+            return;
+        }
+
+        // Create the destination folder if it doesn't exist
+        //    (copy() would fail if the parent folder didn't exist)
+        if (!fs::exists(destination)) {
+            fs::create_directories(destination);
+        }
+
+        // Copy recursively
+        //    overwrite_existing: Update files if we are re-building
+        //    recursive: Copy subfolders (lib/mono/4.5/...)
+        fs::copy(source, destination, fs::copy_options::recursive | fs::copy_options::overwrite_existing);
+
+        std::cout << "Copied: " << source.filename() << std::endl;
+    } catch (std::exception &e) {
+        std::cerr << "File System Error: " << e.what() << std::endl;
+    }
+}
+
 void ProjectManagerLayer::ExportProject() {
     RO_LOG_INFO("Starting Export process");
 
-    // 1. COMPILE THE GAME (Release Mode)
+    // COMPILE THE GAME (Release Mode)
     // We assume the project file is named the same as the folder for this example
     fs::path projectDir = projectRoot;
     std::string projectName = projectDir.filename().string();
@@ -83,9 +108,10 @@ void ProjectManagerLayer::ExportProject() {
     }
     std::cout << "Compilation Successful." << std::endl;
 
-    // 2. PREPARE DESTINATION FOLDER
+    // PREPARE DESTINATION FOLDER
     fs::path exportPath = projectRoot / (projectName + "_Release");
     fs::path gameDataPath = exportPath / "GameData";
+    fs::path monoPath = gameDataPath / "mono";
 
     try {
         // Clean old build if exists
@@ -94,6 +120,7 @@ void ProjectManagerLayer::ExportProject() {
 
         fs::create_directories(exportPath);
         fs::create_directories(gameDataPath);
+        fs::create_directories(monoPath);
     } catch (std::exception &e) {
         std::cerr << "File System Error: " << e.what() << std::endl;
         RO_LOG_ERR("Fil system error: {}", e.what());
@@ -115,6 +142,8 @@ void ProjectManagerLayer::ExportProject() {
     fs::path sourcePlayer = fs::current_path() / ("RoarEngine" + exeExt);
     fs::path destPlayer = exportPath / (projectName + exeExt); // Rename to GameName.exe
 
+    RO_LOG_INFO("Copying engine runtime. Copied {} to {}", sourcePlayer.string(), destPlayer.string());
+
     // Copy the Executable
     fs::copy_file(sourcePlayer, destPlayer, fs::copy_options::overwrite_existing);
 
@@ -122,15 +151,20 @@ void ProjectManagerLayer::ExportProject() {
     // Adjust naming based on what your engine specifically links against
     fs::copy_file(fs::current_path() / "mono-2.0-sgen.dll", exportPath / "mono-2.0-sgen.dll", fs::copy_options::skip_existing);
 
-    // 4. COPY GAME BINARIES
+    // COPY GAME BINARIES
     // We copy the DLLs into "GameData" to keep the root clean
     fs::path compiledDll = projectDir / "Build" / "bin" / (projectName + ".dll");
     fs::path engineCoreDll = fs::current_path() / "RoarScriptCore.dll";
 
+
     fs::copy_file(compiledDll, gameDataPath / (projectName + ".dll"), fs::copy_options::overwrite_existing);
     fs::copy_file(engineCoreDll, gameDataPath / "RoarScriptCore.dll", fs::copy_options::overwrite_existing);
 
-    // 5. GENERATE BOOT CONFIG
+    // COPY MONO STUFF
+    CopyDirectoryRecursively(fs::current_path() / "mono" / "lib", monoPath / "lib");
+    CopyDirectoryRecursively(fs::current_path() / "mono" / "etc", monoPath / "etc");
+
+    // GENERATE BOOT CONFIG
     // This tells Player.exe what to load
     std::ofstream bootFile(gameDataPath / "boot.config");
     bootFile << "entry_assembly=" << projectName << ".dll" << std::endl;
@@ -138,7 +172,6 @@ void ProjectManagerLayer::ExportProject() {
 
     RO_LOG_INFO("Export Compelete! Output: {}", exportPath.string());
 }
-
 
 void CreateGameProject(const std::string &projectRoot, const std::string &projectName, const std::string &engineDllPath) {
     fs::path rootPath = projectRoot;

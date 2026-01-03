@@ -82,17 +82,23 @@ add_custom_command(TARGET RoarEngine POST_BUILD
         COMMENT "Copying Mono Runtime to output directory..."
 )
 
-# Copy Common Configs (mscorlib, etc.)
-add_custom_command(TARGET MyEngine POST_BUILD
+add_custom_command(TARGET RoarEngine POST_BUILD
         COMMAND ${CMAKE_COMMAND} -E copy_directory
-        "${MONO_PATH}/Common/lib"
-        "$<TARGET_FILE_DIR:MyEngine>/mono/lib"
+        "${MONO_ROOT}/common/lib/4.5"
+        "$<TARGET_FILE_DIR:RoarEngine>/mono/lib/mono/4.5"
         COMMENT "Copying Mono Class Libraries..."
 )
 
-add_custom_command(TARGET MyEngine POST_BUILD
+add_custom_command(TARGET RoarEngine POST_BUILD
+        COMMAND ${CMAKE_COMMAND} -E copy_directory
+        "${MONO_ROOT}/common/include"
+        "$<TARGET_FILE_DIR:RoarEngine>/mono/include"
+        COMMENT "Copying Mono include dirs..."
+)
+
+add_custom_command(TARGET RoarEngine POST_BUILD
         COMMAND ${CMAKE_COMMAND} -E copy_directory
         "${MONO_ROOT}/common/etc"
-        "$<TARGET_FILE_DIR:MyEngine>/mono/etc"
+        "$<TARGET_FILE_DIR:RoarEngine>/mono/etc"
         COMMENT "Copying Mono Config..."
 )

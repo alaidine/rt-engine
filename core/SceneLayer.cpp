@@ -95,8 +95,6 @@ void SceneManager::OnUpdate(float st) {
 }
 
 void SceneManager::OnRender() {
-    if (paused)
-        return;
     // if (IsWindowResized()) {
     //     UnloadRenderTexture(ViewTexture);
     //     ViewTexture = LoadRenderTexture(GetScreenWidth(), GetScreenHeight());

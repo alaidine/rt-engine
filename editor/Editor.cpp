@@ -11,14 +11,6 @@
 
 namespace Roar {
 
-class SceneView : public Layer {
-    SceneView() {}
-
-    void OnEvent(Event &event) override {}
-    void OnUpdate(float ts) override {}
-    void OnRender() override {}
-};
-
 class HubLayer : public Layer {
   public:
     // DPI scaling functions

@@ -86,7 +86,7 @@ class Scripting {
     static Ref<Scene> GetSceneContext();
     static MonoImage *GetAssemblyImage();
   private:
-    static void InitMono();
+    static void InitMono(bool isEditor);
     static void ShutdownMono();
     static void LoadAssemblyClasses();
 

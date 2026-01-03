@@ -1,5 +1,4 @@
 #include "Scripting.h"
-
 #include <filesystem>
 
 namespace Roar {
@@ -95,9 +94,22 @@ static ScriptingData *sData = nullptr;
 
 void Scripting::Init(bool isEditor, std::string gameName) {
     sData = new ScriptingData;
-    InitMono();
-    LoadAssembly("RoarScriptCore.dll");
-    LoadAppAssembly("RoarSandbox.dll");
+    InitMono(isEditor);
+
+    if (isEditor == false) {
+        std::string projectName = std::filesystem::current_path().filename().string();
+        std::filesystem::path gameData = std::filesystem::current_path() / "GameData";
+        std::string corePath = (gameData / "RoarScriptCore.dll").string();
+        std::string gamePath = (gameData / (projectName + ".dll")).string();
+
+        LoadAssembly(corePath);
+        LoadAppAssembly(gamePath);
+    }
+    else {
+        LoadAssembly("RoarScriptCore.dll");
+        LoadAppAssembly("RoarSandbox.dll");
+    }
+
     LoadAssemblyClasses();
 
     ScriptGlue::RegisterComponents();
@@ -204,8 +216,15 @@ MonoObject *Scripting::InstantiateKlass(MonoClass *klass) {
 
 std::unordered_map<std::string, Ref<ScriptClass>> Scripting::GetEntityClasses() { return sData->EntityClasses; }
 
-void Scripting::InitMono() {
-    mono_set_assemblies_path("mono/lib/4.5");
+void Scripting::InitMono(bool isEditor) {
+    if (isEditor == false) {
+        std::string projectName = std::filesystem::current_path().filename().string();
+        std::filesystem::path gameData = std::filesystem::current_path() / "GameData";
+
+        mono_set_dirs((gameData / "mono/lib/").string().c_str(), (gameData / "mono/etc/").string().c_str());
+    } else {
+        mono_set_dirs("mono/lib/", "mono/etc/");
+    }
 
     MonoDomain *rootDomain = mono_jit_init("MyScriptRuntime");
     if (rootDomain == nullptr) {
