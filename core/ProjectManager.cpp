@@ -200,7 +200,7 @@ void CreateGameProject(const std::string &projectRoot, const std::string &projec
 
     // Create a dummy script so the folder isn't empty
     std::ofstream scriptFile(sourcePath / "Main.cs");
-    scriptFile << "using System;\nusing MyEngine.Core;\n\nnamespace Game {\n\tpublic class Main : Component {\n\t}\n}";
+    scriptFile << "using System;\nusing RoarEngine;\n\nnamespace Game {\n\tpublic class Main {\n\t}\n}";
     scriptFile.close();
 }
 

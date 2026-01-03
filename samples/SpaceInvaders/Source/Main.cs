@@ -1,7 +1,6 @@
 using System;
-using MyEngine.Core;
 
 namespace Game {
-	public class Main : Component {
+	public class Main {
 	}
 }

@@ -73,7 +73,7 @@ Application::Application(const ApplicationSpecification &specification) : mSpeci
     defaultConfig.PixelSnapH = true;
     io.Fonts->AddFontDefault(&defaultConfig);
 
-    Scripting::Init();
+    Scripting::Init(specification.isEditor);
 }
 
 Application::~Application() {

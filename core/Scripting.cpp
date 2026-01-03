@@ -93,7 +93,7 @@ struct ScriptingData {
 
 static ScriptingData *sData = nullptr;
 
-void Scripting::Init() {
+void Scripting::Init(bool isEditor, std::string gameName) {
     sData = new ScriptingData;
     InitMono();
     LoadAssembly("RoarScriptCore.dll");

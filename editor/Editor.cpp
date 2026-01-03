@@ -93,6 +93,7 @@ int main(int argc, char *argv[]) {
     Roar::ApplicationSpecification spec;
     spec.Title = "RoarEditor";
     spec.Name = "RoarEditor";
+    spec.isEditor = true;
     spec.WindowSpec.Width = 400;
     spec.WindowSpec.Height = 650;
 

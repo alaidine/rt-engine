@@ -71,7 +71,7 @@ class ScriptInstance {
 
 class Scripting {
   public:
-    static void Init();
+    static void Init(bool isEditor, std::string gameName = "");
     static void Shutdown();
 
     static void LoadAssembly(const std::filesystem::path &filepath);

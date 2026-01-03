@@ -19,6 +19,7 @@ namespace Roar {
 struct ApplicationSpecification {
     std::string Name = "Application";
     std::string Title = "app";
+    bool isEditor = false;
     bool headless = false;
     WindowSpecification WindowSpec;
 };
