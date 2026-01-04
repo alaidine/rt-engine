@@ -47,6 +47,7 @@ class SceneLayer : public Layer {
     Ref<Scene> mScene;
     std::shared_ptr<RenderSystem> mRenderSystem;
     std::shared_ptr<ScriptSystem> mScriptSystem;
+    RoarConfig config;
 };
 
 } // namespace Roar

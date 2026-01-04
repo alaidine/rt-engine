@@ -177,13 +177,16 @@ void CreateGameProject(const std::string &projectRoot, const std::string &projec
     fs::path rootPath = projectRoot;
     fs::path sourcePath = rootPath / "Source";
     fs::path buildPath = rootPath / "Build";
+    fs::path scenePath = rootPath / "Scenes";
     fs::path csprojPath = rootPath / (projectName + ".csproj");
 
     try {
         // fs::create_directories(rootPath);
         fs::create_directories(sourcePath);
-        // We don't strictly need to create 'Build' now; dotnet does it, but it's cleaner to have it.
         fs::create_directories(buildPath);
+        fs::create_directories(scenePath);
+        std::ofstream ofs(scenePath / "Game.ro");
+        ofs.close();
     } catch (std::exception &e) {
         std::cerr << "Failed to create directories: " << e.what() << std::endl;
         return;

@@ -8,6 +8,6 @@ int main(int argc, char *argv[]) {
     spec.isEditor = false;
 
     Roar::Application engine(spec);
-    engine.PushLayer<Roar::SceneManager>();
+    engine.PushLayer<Roar::SceneLayer>();
     engine.Run();
 }

@@ -181,12 +181,13 @@ void Scripting::LoadAssemblyClasses() {
         }
 
         printf("%s.%s\n", nameSpace, name);
-
         void *iterator = nullptr;
         MonoClassField *field;
-
+        int fieldCount = mono_class_num_fields(monoClass);
+        RO_LOG_WARN("{} has {} fields: ", name, fieldCount);
         while (field = mono_class_get_fields(monoClass, &iterator)) {
-            
+            const char *fieldName = mono_field_get_name(field);
+            RO_LOG_WARN("  {}", fieldName);
         }
     }
 }

@@ -18,7 +18,7 @@
 
   <ItemGroup>
     <Reference Include="RoarScriptCore">
-      <HintPath>C:\Users\aaali\Documents\Projects\RoarEngine\build\build\bin\Debug\RoarScriptCore.dll</HintPath>
+      <HintPath>C:\Users\aaali\Documents\Projects\RoarEngine\build\build\bin\Debug</HintPath>
     </Reference>
   </ItemGroup>
 

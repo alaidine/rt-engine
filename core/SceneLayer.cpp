@@ -32,12 +32,7 @@ SceneLayer::SceneLayer() {
     }
     mScriptSystem->Init();
 
-    auto entity = mScene->CreateEntity();
-    mScene->AddComponent(entity, RectangleComponent{.color = {230, 41, 55, 255}});
-    mScene->AddComponent(entity, TransformComponent{{0.0f, 0.0f}, {10.0f, 10.0f}});
-
-    mScene->AddComponent(entity, ScriptComponent{"Sandbox.Player"});
-    Roar::Scripting::OnCreateEntity(entity);
+    config.fromFile(mScene, (std::filesystem::current_path() / "Scenes" / "Game.ro").string());
 }
 
 SceneLayer::~SceneLayer() {}

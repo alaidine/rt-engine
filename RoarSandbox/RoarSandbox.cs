@@ -7,6 +7,7 @@ namespace Sandbox
     public class Player : RoarEngine.Entity
     {
         private TransformComponent mTransform;
+        public float Speed;
 
         void OnCreate()
         {

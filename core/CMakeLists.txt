@@ -75,30 +75,35 @@ if(UNIX AND NOT APPLE)
     )
 endif()
 
-add_custom_command(TARGET RoarEngine POST_BUILD
-        COMMAND ${CMAKE_COMMAND} -E copy_if_different
-        "${MONO_RUNTIME_LIB}"
-        "$<TARGET_FILE_DIR:RoarEngine>"
-        COMMENT "Copying Mono Runtime to output directory..."
+set(MONO_SRC_DIR "${MONO_ROOT}")
+set(MONO_DEST_DIR "${CMAKE_CURRENT_BINARY_DIR}/mono")
+
+set(MONO_SENTINEL "${MONO_DEST_DIR}/lib/mono/4.5/mscorlib.dll")
+
+add_custom_command(
+    OUTPUT "${MONO_SENTINEL}"
+    
+    COMMAND ${CMAKE_COMMAND} -E copy_directory
+    "${MONO_SRC_DIR}/common/lib/4.5"
+    "$<TARGET_FILE_DIR:RoarEngine>/mono/lib/mono/4.5"
+
+    
+    COMMAND ${CMAKE_COMMAND} -E copy_directory
+    "${MONO_SRC_DIR}/common/etc"
+    "$<TARGET_FILE_DIR:RoarEngine>/mono/etc"
+
+    COMMAND ${CMAKE_COMMAND} -E copy_directory
+    "${MONO_SRC_DIR}/common/include"
+    "$<TARGET_FILE_DIR:RoarEngine>/mono/include"
+
+    
+    COMMAND ${CMAKE_COMMAND} -E copy_if_different
+    "${MONO_RUNTIME_LIB}" 
+    "$<TARGET_FILE_DIR:RoarEngine>"
+    
+    COMMENT "Initializing Mono Dependencies (Run Once)..."
+    VERBATIM
 )
 
-add_custom_command(TARGET RoarEngine POST_BUILD
-        COMMAND ${CMAKE_COMMAND} -E copy_directory
-        "${MONO_ROOT}/common/lib/4.5"
-        "$<TARGET_FILE_DIR:RoarEngine>/mono/lib/mono/4.5"
-        COMMENT "Copying Mono Class Libraries..."
-)
-
-add_custom_command(TARGET RoarEngine POST_BUILD
-        COMMAND ${CMAKE_COMMAND} -E copy_directory
-        "${MONO_ROOT}/common/include"
-        "$<TARGET_FILE_DIR:RoarEngine>/mono/include"
-        COMMENT "Copying Mono include dirs..."
-)
-
-add_custom_command(TARGET RoarEngine POST_BUILD
-        COMMAND ${CMAKE_COMMAND} -E copy_directory
-        "${MONO_ROOT}/common/etc"
-        "$<TARGET_FILE_DIR:RoarEngine>/mono/etc"
-        COMMENT "Copying Mono Config..."
-)
+add_custom_target(EnsureMonoDependencies DEPENDS "${MONO_SENTINEL}")
+add_dependencies(RoarEngine EnsureMonoDependencies)
