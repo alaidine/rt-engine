@@ -7,6 +7,7 @@ class CompressorRecipe(ConanFile):
     generators = "CMakeToolchain", "CMakeDeps"
 
     def requirements(self):
+        self.requires("asio/1.36.0")
         self.requires("spdlog/1.16.0",)
         self.requires("glm/1.0.1")
         self.requires("imgui/1.92.5-docking")

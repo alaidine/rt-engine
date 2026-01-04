@@ -9,6 +9,7 @@ find_package(glfw3 REQUIRED)
 find_package(imgui REQUIRED)
 find_package(spdlog REQUIRED)
 find_package(raylib REQUIRED)
+find_package(asio REQUIRED)
 
 # Download CPM.cmake
 file(
@@ -55,6 +56,7 @@ set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${COMMON_OUTPUT_DIR}")
 set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY "${COMMON_OUTPUT_DIR}")
 set(CMAKE_LIBRARY_OUTPUT_DIRECTORY "${COMMON_OUTPUT_DIR}")
 
+add_subdirectory(networking)
 add_subdirectory(renderer)
 add_subdirectory(ecs)
 add_subdirectory(core)

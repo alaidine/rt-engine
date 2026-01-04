@@ -5,6 +5,16 @@ namespace Roar {
 
 std::unordered_map<MonoType *, std::function<bool(uint32_t)>> sEntityHasComponentFuncs;
 
+enum class ScriptFieldType { Name = 0, Float, Vector2, Int, UInt, Bool, Double, Short, Byte, Entity };
+
+static std::unordered_map<std::string, ScriptFieldType> sScriptFieldTypeMap = {
+    {"System.Single", ScriptFieldType::Float},      {"System.UInt", ScriptFieldType::UInt},
+    {"System.Double", ScriptFieldType::Double},     {"System.Bool", ScriptFieldType::Bool},
+    {"System.Int", ScriptFieldType::Int},
+    {"RoarEngine.Vector2", ScriptFieldType::Vector2},
+    {"RoarEngine.Entity", ScriptFieldType::Entity},
+};
+
 namespace Utils {
 
 static void PrintAssemblyTypes(MonoAssembly *assembly) {
@@ -148,6 +158,21 @@ void Scripting::Init(bool isEditor, std::string gameName) {
 #endif
 }
 
+ScriptFieldType MonoTypeToScriptFieldType(MonoType *monoType) {
+    const char *typeName = mono_type_get_name(monoType);
+    return sScriptFieldTypeMap.at(typeName);
+}
+
+const char *ScriptFieldTypeToString(ScriptFieldType type) {
+    switch (type) {
+    case ScriptFieldType::Float:
+        return "Float";
+    case ScriptFieldType::Double:
+        return "Double";
+    };
+    return "NONE";
+}
+
 void Scripting::LoadAssemblyClasses() {
     sData->EntityClasses.clear();
 
@@ -181,13 +206,19 @@ void Scripting::LoadAssemblyClasses() {
         }
 
         printf("%s.%s\n", nameSpace, name);
+
         void *iterator = nullptr;
         MonoClassField *field;
         int fieldCount = mono_class_num_fields(monoClass);
         RO_LOG_WARN("{} has {} fields: ", name, fieldCount);
         while (field = mono_class_get_fields(monoClass, &iterator)) {
             const char *fieldName = mono_field_get_name(field);
-            RO_LOG_WARN("  {}", fieldName);
+            uint32_t flags = mono_field_get_flags(field);
+            if (flags & MONO_FIELD_ATTR_PUBLIC) {
+                MonoType *type = mono_field_get_type(field);
+                ScriptFieldType fieldType = MonoTypeToScriptFieldType(type);
+                RO_LOG_WARN("    {} ({})", fieldName, ScriptFieldTypeToString(fieldType));
+            }
         }
     }
 }

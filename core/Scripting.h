@@ -4,6 +4,7 @@
 #include <mono/metadata/assembly.h>
 #include <mono/metadata/object.h>
 #include <mono/metadata/reflection.h>
+#include <mono/metadata/attrdefs.h>
 
 #include <filesystem>
 #include <fstream>
