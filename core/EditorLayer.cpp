@@ -160,19 +160,42 @@ void EditorLayer::OnRender() {
                           uint8_t(clear_color.w * 255)});
     BeginDrawing();
     rlImGuiBegin();
+
+    //---------------  This is where the editor UI is rendered
+
     DrawMenu();
     style.WindowRounding = 10.0f; // Set rounding
-    ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0, 0));
-    ImGui::SetNextWindowSizeConstraints(ImVec2(ScaleToDPIF(400.0f), ScaleToDPIF(400.0f)),
-                                        ImVec2((float)GetScreenWidth(), (float)GetScreenHeight()));
-    if (ImGui::Begin("Viewport", &Open, ImGuiWindowFlags_NoScrollbar)) {
-        Focused = ImGui::IsWindowFocused(ImGuiFocusedFlags_ChildWindows);
-        // draw the view
-        auto sm = Application::Get().GetLayer<SceneManager>();
-        rlImGuiImageRenderTextureFit(&sm->ViewTexture, true);
+    
+    {
+        // Viewport
+        std::string viewportTitle = "Viewport (Unpaused)";
+        if (Application::Get().GetLayer<SceneManager>()->paused) {
+            viewportTitle = "Viewpoart (Paused)";
+        }
+        ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0, 0));
+        ImGui::SetNextWindowSizeConstraints(ImVec2(ScaleToDPIF(400.0f), ScaleToDPIF(400.0f)),
+                                            ImVec2((float)GetScreenWidth(), (float)GetScreenHeight()));
+        if (ImGui::Begin(viewportTitle.c_str(), &Open, ImGuiWindowFlags_NoScrollbar)) {
+            Focused = ImGui::IsWindowFocused(ImGuiFocusedFlags_ChildWindows);
+            // draw the view
+            auto sm = Application::Get().GetLayer<SceneManager>();
+            rlImGuiImageRenderTextureFit(&sm->ViewTexture, true);
+        }
+        ImGui::End();
+        ImGui::PopStyleVar();
     }
-    ImGui::End();
-    ImGui::PopStyleVar();
+
+    {
+        // Scene Hierarchy
+    }
+
+    {
+        // Entity Properties
+    }
+
+    //----------------
+
+
     rlImGuiEnd();
     EndDrawing();
 }

@@ -183,6 +183,11 @@ struct RoarConfig {
             expectToken("end");
             scene->AddComponent(entity, script);
             Roar::Scripting::OnCreateEntity(entity);
+
+            Ref<Roar::ScriptInstance> scriptInstance = Roar::Scripting::GetEntityScriptInstance(entity);
+            RO_LOG_INFO("Speed value: {}", scriptInstance->GetFieldValue<float>("Speed"));
+            scriptInstance->SetFieldValue("Speed", 2.3f);
+            RO_LOG_INFO("Speed value after change: {}", scriptInstance->GetFieldValue<float>("Speed"));
         } else if (currentToken == "rectangle") {
             Roar::RectangleComponent rect;
 
@@ -249,8 +254,6 @@ struct RoarConfig {
         lexer.fromFile(filename);
 
         while (true) {
-            currentToken = lexer.nextToken();
-
             if (currentToken == "EOF") {
                 break;
             }

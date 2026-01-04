@@ -16,7 +16,7 @@ template <typename T, typename... Args> constexpr Ref<T> CreateRef(Args &&...arg
 #define RO_LOG_INFO(...) spdlog::info(__VA_ARGS__)
 #define RO_LOG_WARN(...) spdlog::warn(__VA_ARGS__)
 #define RO_LOG_ERR(...) spdlog::error(__VA_ARGS__)
-#define RL_ASSERT(_EXPR) assert(_EXPR)
+#define RO_ASSERT(_EXPR) assert(_EXPR)
 
 #ifdef _WIN32
 #include <stdio.h>

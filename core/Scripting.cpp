@@ -5,14 +5,11 @@ namespace Roar {
 
 std::unordered_map<MonoType *, std::function<bool(uint32_t)>> sEntityHasComponentFuncs;
 
-enum class ScriptFieldType { Name = 0, Float, Vector2, Int, UInt, Bool, Double, Short, Byte, Entity };
-
 static std::unordered_map<std::string, ScriptFieldType> sScriptFieldTypeMap = {
-    {"System.Single", ScriptFieldType::Float},      {"System.UInt", ScriptFieldType::UInt},
-    {"System.Double", ScriptFieldType::Double},     {"System.Bool", ScriptFieldType::Bool},
-    {"System.Int", ScriptFieldType::Int},
-    {"RoarEngine.Vector2", ScriptFieldType::Vector2},
-    {"RoarEngine.Entity", ScriptFieldType::Entity},
+    {"System.Single", ScriptFieldType::Float},        {"System.UInt32", ScriptFieldType::UInt},
+    {"System.Double", ScriptFieldType::Double},       {"System.Boolean", ScriptFieldType::Bool},
+    {"System.Int32", ScriptFieldType::Int},           {"System.Byte", ScriptFieldType::Vector2},
+    {"RoarEngine.Vector2", ScriptFieldType::Vector2}, {"RoarEngine.Entity", ScriptFieldType::Entity},
 };
 
 namespace Utils {
@@ -160,7 +157,12 @@ void Scripting::Init(bool isEditor, std::string gameName) {
 
 ScriptFieldType MonoTypeToScriptFieldType(MonoType *monoType) {
     const char *typeName = mono_type_get_name(monoType);
-    return sScriptFieldTypeMap.at(typeName);
+    auto it = sScriptFieldTypeMap.find(typeName);
+    if (it == sScriptFieldTypeMap.end()) {
+        RO_LOG_ERR("Unknown type: {}", typeName);
+        return ScriptFieldType::None;
+    }
+    return it->second;
 }
 
 const char *ScriptFieldTypeToString(ScriptFieldType type) {
@@ -169,6 +171,14 @@ const char *ScriptFieldTypeToString(ScriptFieldType type) {
         return "Float";
     case ScriptFieldType::Double:
         return "Double";
+    case ScriptFieldType::Entity:
+        return "Entity";
+    case ScriptFieldType::Int:
+        return "Int";
+    case ScriptFieldType::UInt:
+        return "UInt";
+    case ScriptFieldType::Vector2:
+        return "Vector2";
     };
     return "NONE";
 }
@@ -201,9 +211,11 @@ void Scripting::LoadAssemblyClasses() {
         }
 
         bool isEntity = mono_class_is_subclass_of(monoClass, entityClass, false);
-        if (isEntity) {
-            sData->EntityClasses[fullName] = CreateRef<ScriptClass>(nameSpace, name);
+        if (!isEntity) {
+            continue;
         }
+        Ref<ScriptClass> scriptClass = CreateRef<ScriptClass>(nameSpace, name);
+        sData->EntityClasses[fullName] = scriptClass;
 
         printf("%s.%s\n", nameSpace, name);
 
@@ -218,12 +230,22 @@ void Scripting::LoadAssemblyClasses() {
                 MonoType *type = mono_field_get_type(field);
                 ScriptFieldType fieldType = MonoTypeToScriptFieldType(type);
                 RO_LOG_WARN("    {} ({})", fieldName, ScriptFieldTypeToString(fieldType));
+
+                scriptClass->mFields[fieldName] = {fieldType, fieldName, field};
             }
         }
     }
 }
 
 MonoImage *Scripting::GetAssemblyImage() { return sData->CoreAssemblyImage; }
+
+Ref<ScriptInstance> Scripting::GetEntityScriptInstance(uint32_t entity) {
+    auto it = sData->EntityInstances.find(entity);
+    if (it == sData->EntityInstances.end()) {
+        return nullptr;
+    }
+    return it->second;
+}
 
 void Scripting::Shutdown() {
     ShutdownMono();
@@ -405,6 +427,26 @@ void ScriptInstance::InvokeOnCreate() { mScriptClass->InvokeMethod(mInstance, mO
 void ScriptInstance::InvokeOnUpdate(float ts) {
     void *param = &ts;
     mScriptClass->InvokeMethod(mInstance, mOnUpdateMethod, &param);
+}
+
+bool ScriptInstance::GetFieldValueInternal(const std::string &name, void* buffer) {
+    const auto &fields = mScriptClass->GetFields();
+    auto it = fields.find(name);
+    if (it == fields.end())
+        return false;
+    const ScriptField &field = it->second;
+    mono_field_get_value(mInstance, field.field, buffer);
+    return true;
+}
+
+bool ScriptInstance::SetFieldValueInternal(const std::string &name, const void *value) {
+    const auto &fields = mScriptClass->GetFields();
+    auto it = fields.find(name);
+    if (it == fields.end())
+        return false;
+    const ScriptField &field = it->second;
+    mono_field_set_value(mInstance, field.field, (void*)value);
+    return true;
 }
 
 } // namespace Roar

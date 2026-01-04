@@ -84,6 +84,8 @@ SceneManager::~SceneManager() { UnloadRenderTexture(ViewTexture); }
 void SceneManager::OnEvent(Event &event) {}
 
 void SceneManager::OnUpdate(float st) {
+    if (IsKeyPressed(KEY_P))
+        PauseUnpause();
     if (paused)
         return;
     mScriptSystem->Update(st);

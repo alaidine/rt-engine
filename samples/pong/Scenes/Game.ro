@@ -1,19 +1,19 @@
 entity paddle1 start
     component transform2D start
         pos {
-            x = 20
-            y = 100
+            x = 30
+            y = 150
         }
 
         size {
             x = 40
-            y = 100
+            y = 420
         }
     end
 
     component rectangle start
         color {
-            r = 255
+            r = 0
             g = 0
             b = 0
             a = 255
@@ -28,19 +28,19 @@ end
 entity paddle2 start
     component transform2D start
         pos {
-            x = 1240
-            y = 100
+            x = 1210
+            y = 150
         }
 
         size {
             x = 40
-            y = 100
+            y = 420
         }
     end
 
     component rectangle start
         color {
-            r = 255
+            r = 0
             g = 0
             b = 0
             a = 255
