@@ -186,6 +186,9 @@ void ProjectManagerLayer::ExportProject() {
     CopyDirectoryRecursively(fs::current_path() / "mono" / "lib", monoPath / "lib");
     CopyDirectoryRecursively(fs::current_path() / "mono" / "etc", monoPath / "etc");
 
+    // COPY SCENES
+    CopyDirectoryRecursively(projectRoot / "Scenes", gameDataPath / "Scenes");
+
     // GENERATE BOOT CONFIG
     // This tells Player.exe what to load
     std::ofstream bootFile(gameDataPath / "boot.config");

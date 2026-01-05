@@ -1,6 +1,6 @@
 #include "Scripting.h"
-#include "SceneLayer.h"
 #include "Application.h"
+#include "SceneLayer.h"
 #include "ScriptSystem.h"
 
 namespace Roar {
@@ -106,6 +106,16 @@ struct ScriptingData {
 
 static ScriptingData *sData = nullptr;
 
+std::string GetEntryAssemblyName(std::filesystem::path path) {
+    std::ifstream inFile(path);
+    std::string line;
+    std::getline(inFile, line);
+    std::string delim = "=";
+    std::string dllName = line.substr(line.find(delim) + 1);
+    RO_LOG_DEBUG("Dll name to load: {}", dllName);
+    return dllName;
+}
+
 void Scripting::Init(bool isEditor, std::filesystem::path appPath) {
     sData = new ScriptingData;
     InitMono(isEditor);
@@ -114,7 +124,8 @@ void Scripting::Init(bool isEditor, std::filesystem::path appPath) {
         std::string projectName = std::filesystem::current_path().filename().string();
         std::filesystem::path gameData = std::filesystem::current_path() / "GameData";
         std::string corePath = (gameData / "RoarScriptCore.dll").string();
-        std::string gamePath = (gameData / (projectName + ".dll")).string();
+        std::string gamePath =
+            (gameData / GetEntryAssemblyName(std::filesystem::current_path() / "GameData" / "boot.config")).string();
 
         LoadAssembly(corePath);
         LoadAppAssembly(gamePath);

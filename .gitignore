@@ -9,3 +9,5 @@ out/
 mono/
 mono64.zip
 CMakeUserPresets.json
+
+samples/

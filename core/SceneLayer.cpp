@@ -32,7 +32,7 @@ SceneLayer::SceneLayer() {
     }
     mScriptSystem->Init();
 
-    config.fromFile(mScene, (std::filesystem::current_path() / "Scenes" / "Game.ro").string());
+    config.fromFile(mScene, (std::filesystem::current_path() / "GameData" / "Scenes" / "Game.ro").string());
 }
 
 SceneLayer::~SceneLayer() {}
