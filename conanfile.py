@@ -7,7 +7,8 @@ class CompressorRecipe(ConanFile):
     generators = "CMakeToolchain", "CMakeDeps"
 
     def requirements(self):
-        self.requires("gtk/system")
+        if self.settings.os == "Linux":
+            self.requires("gtk/system")
         self.requires("asio/1.36.0")
         self.requires("spdlog/1.16.0",)
         self.requires("glm/1.0.1")
