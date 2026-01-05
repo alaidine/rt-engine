@@ -2,14 +2,13 @@ cmake_minimum_required(VERSION 3.28)
 
 project(RoarEngine)
 
-include(CTest)
-
 find_package(glm REQUIRED)
 find_package(glfw3 REQUIRED)
 find_package(imgui REQUIRED)
 find_package(spdlog REQUIRED)
 find_package(raylib REQUIRED)
 find_package(asio REQUIRED)
+find_package(gtk REQUIRED)
 
 # Download CPM.cmake
 file(
@@ -42,6 +41,7 @@ if (WIN32) # Windows
     set(MONO_RUNTIME_LIB "${MONO_LIB_DIR}/mono-2.0-sgen.dll")
     set(MONO_LINK_LIB "${MONO_LIB_DIR}/mono-2.0-sgen.lib")
 elseif (UNIX AND NOT APPLE) # Linux
+    set(MONO_INCLUDE_DIR "${MONO_ROOT}/common/include/")
     set(MONO_LIB_DIR "${MONO_ROOT}/linux/")
     set(MONO_RUNTIME_LIB "${MONO_LIB_DIR}/libmonosgen-2.0.so")
     set(MONO_LINK_LIB "${MONO_RUNTIME_LIB}") # On Linux, link directly to .so

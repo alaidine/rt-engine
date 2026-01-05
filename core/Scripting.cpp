@@ -378,28 +378,6 @@ void Scripting::InitMono(bool isEditor) {
 
 void Scripting::ShutdownMono() {
     // Mono is a little confusing to shutdown.
-
-    // Switch back to the Root Domain
-    // This "parks" the current thread safely in the main domain.
-    // param 2 'force' = false (usually safe)
-    if (sData->RootDomain) {
-        mono_domain_set(sData->RootDomain, false);
-    }
-
-    // Unload the App Domain
-    // Now that we are standing in the Root Domain, it is safe to destroy the App Domain.
-    if (sData->AppDomain && sData->AppDomain != sData->RootDomain) {
-        mono_domain_unload(sData->AppDomain);
-        sData->AppDomain = nullptr;
-    }
-
-    // Cleanup the Engine
-    // This shuts down the Root Domain and the JIT itself.
-    if (sData->RootDomain) {
-        mono_jit_cleanup(sData->RootDomain);
-        sData->RootDomain = nullptr;
-    }
-
     sData->AppDomain = nullptr;
     sData->RootDomain = nullptr;
     sData->CoreAssembly = nullptr;

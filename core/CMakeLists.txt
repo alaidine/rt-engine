@@ -11,10 +11,10 @@ add_library(core
         Scripting.h
         Event.h
         Entrypoints.h
-        Inputevents.h
+        InputEvents.h
         Window.cpp
         Window.h
-        Windowevents.h
+        WindowEvents.h
         Application.cpp
         Application.h
         Layer.cpp
@@ -45,6 +45,7 @@ elseif (UNIX AND NOT APPLE) # Linux
             ${NFD_SRC}/simple_exec.h
     )
     target_include_directories(nfd PRIVATE ${NFD_INCLUDE})
+    target_link_libraries(nfd PRIVATE gtk::gtk)
 endif ()
 
 
@@ -52,15 +53,17 @@ target_include_directories(core PRIVATE ${MONO_INCLUDE_DIR})
 target_include_directories(core PRIVATE ${NFD_INCLUDE})
 target_include_directories(core PRIVATE ${CMAKE_SOURCE_DIR}/renderer)
 target_include_directories(core PRIVATE ${CMAKE_SOURCE_DIR}/ecs)
+target_include_directories(core PRIVATE ${CMAKE_SOURCE_DIR}/core)
 target_link_libraries(core PRIVATE renderer ecs nfd raylib glm::glm imgui::imgui spdlog::spdlog)
-target_link_libraries(core PRIVATE "${MONO_LIB_DIR}/mono-2.0-sgen.lib")
+target_link_libraries(core PRIVATE "${MONO_LINK_LIB}")
 
 target_include_directories(RoarEngine PRIVATE ${NFD_INCLUDE})
 target_include_directories(RoarEngine PRIVATE ${MONO_INCLUDE_DIR})
 target_include_directories(RoarEngine PRIVATE ${CMAKE_SOURCE_DIR}/renderer)
 target_include_directories(RoarEngine PRIVATE ${CMAKE_SOURCE_DIR}/ecs)
+target_include_directories(RoarEngine PRIVATE ${CMAKE_SOURCE_DIR}/core)
 target_link_libraries(RoarEngine PRIVATE renderer core nfd raylib glm::glm imgui::imgui spdlog::spdlog)
-target_link_libraries(RoarEngine PRIVATE "${MONO_LIB_DIR}/mono-2.0-sgen.lib")
+target_link_libraries(RoarEngine PRIVATE "${MONO_LINK_LIB}")
 set_target_properties(RoarEngine PROPERTIES VS_DEBUGGER_WORKING_DIRECTORY "$<TARGET_FILE_DIR:RoarEngine>")
 
 if (MSVC)
