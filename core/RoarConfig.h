@@ -12,6 +12,8 @@
 #include <iostream>
 #include <sstream>
 #include <string>
+#include <vector>
+#include <utility>
 
 typedef enum { IDENT, NUMBER, SEMICOLON } RoarTokenType;
 
@@ -176,6 +178,8 @@ struct RoarConfig {
                     currentToken = lexer.nextToken();
                     expectToken("=");
                     script.name = "Sandbox." + currentToken;
+                } else if (currentToken == "ref") {
+                    // parse references
                 } else {
                     currentToken = lexer.nextToken();
                 }
@@ -188,6 +192,7 @@ struct RoarConfig {
             RO_LOG_INFO("Speed value: {}", scriptInstance->GetFieldValue<float>("Speed"));
             scriptInstance->SetFieldValue("Speed", 2.3f);
             RO_LOG_INFO("Speed value after change: {}", scriptInstance->GetFieldValue<float>("Speed"));
+            RO_LOG_INFO("Current ID: {}", scriptInstance->GetFieldValue<uint32_t>("ID"));
         } else if (currentToken == "rectangle") {
             Roar::RectangleComponent rect;
 

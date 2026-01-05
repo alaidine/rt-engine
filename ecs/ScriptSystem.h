@@ -13,6 +13,7 @@ class ScriptSystem : public System {
 
     void Init();
     void Update(float dt);
+    void Reload();
 };
 
 } // namespace Roar

@@ -39,7 +39,7 @@ class ScriptGlue {
     static void RegisterComponents();
 };
 
-enum class ScriptFieldType { None = 0, Float, Vector2, Int, UInt, Bool, Double, Short, Byte, Entity };
+enum class ScriptFieldType { None = 0, Float, Vector2, Int, UInt, Bool, Double, Short, Byte, Entity, TransformComponent };
 
 struct ScriptField {
     ScriptFieldType type;
@@ -104,8 +104,9 @@ class ScriptInstance {
 
 class Scripting {
   public:
-    static void Init(bool isEditor, std::string gameName = "");
+    static void Init(bool isEditor, std::filesystem::path appPath = std::filesystem::current_path() / "RoarSandbox.dll");
     static void Shutdown();
+    static void Reload(std::filesystem::path appPath);
 
     static void LoadAssembly(const std::filesystem::path &filepath);
     static void LoadAppAssembly(const std::filesystem::path &filepath);
@@ -119,7 +120,7 @@ class Scripting {
     static Ref<Scene> GetSceneContext();
     static MonoImage *GetAssemblyImage();
     static Ref<ScriptInstance> GetEntityScriptInstance(uint32_t entity);
-
+    static void LoadFields(MonoClass *startClass, Ref<ScriptClass> scriptClass);
   private:
     static void InitMono(bool isEditor);
     static void ShutdownMono();

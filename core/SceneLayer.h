@@ -25,14 +25,14 @@ class SceneManager : public Layer {
     void LoadScene(std::string scenePath);
 
     RenderTexture ViewTexture;
+    Ref<Scene> mScene;
+    std::shared_ptr<ScriptSystem> mScriptSystem;
 
     bool paused = true;
 
   private:
-    Ref<Scene> mScene;
     RoarConfig config;
     std::shared_ptr<RenderSystem> mRenderSystem;
-    std::shared_ptr<ScriptSystem> mScriptSystem;
 };
 
 class SceneLayer : public Layer {

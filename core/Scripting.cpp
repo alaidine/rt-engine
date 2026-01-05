@@ -1,15 +1,22 @@
 #include "Scripting.h"
-#include <filesystem>
+#include "SceneLayer.h"
+#include "Application.h"
+#include "ScriptSystem.h"
 
 namespace Roar {
 
 std::unordered_map<MonoType *, std::function<bool(uint32_t)>> sEntityHasComponentFuncs;
 
 static std::unordered_map<std::string, ScriptFieldType> sScriptFieldTypeMap = {
-    {"System.Single", ScriptFieldType::Float},        {"System.UInt32", ScriptFieldType::UInt},
-    {"System.Double", ScriptFieldType::Double},       {"System.Boolean", ScriptFieldType::Bool},
-    {"System.Int32", ScriptFieldType::Int},           {"System.Byte", ScriptFieldType::Vector2},
-    {"RoarEngine.Vector2", ScriptFieldType::Vector2}, {"RoarEngine.Entity", ScriptFieldType::Entity},
+    {"System.Single", ScriptFieldType::Float},
+    {"System.UInt32", ScriptFieldType::UInt},
+    {"System.Double", ScriptFieldType::Double},
+    {"System.Boolean", ScriptFieldType::Bool},
+    {"System.Int32", ScriptFieldType::Int},
+    {"System.Byte", ScriptFieldType::Byte},
+    {"RoarEngine.Vector2", ScriptFieldType::Vector2},
+    {"RoarEngine.Entity", ScriptFieldType::Entity},
+    {"RoarEngine.TransformComponent", ScriptFieldType::TransformComponent},
 };
 
 namespace Utils {
@@ -99,7 +106,7 @@ struct ScriptingData {
 
 static ScriptingData *sData = nullptr;
 
-void Scripting::Init(bool isEditor, std::string gameName) {
+void Scripting::Init(bool isEditor, std::filesystem::path appPath) {
     sData = new ScriptingData;
     InitMono(isEditor);
 
@@ -113,7 +120,7 @@ void Scripting::Init(bool isEditor, std::string gameName) {
         LoadAppAssembly(gamePath);
     } else {
         LoadAssembly("RoarScriptCore.dll");
-        LoadAppAssembly("RoarSandbox.dll");
+        LoadAppAssembly(appPath.string().c_str());
     }
 
     LoadAssemblyClasses();
@@ -179,8 +186,51 @@ const char *ScriptFieldTypeToString(ScriptFieldType type) {
         return "UInt";
     case ScriptFieldType::Vector2:
         return "Vector2";
+    case ScriptFieldType::Byte:
+        return "Byte";
+    case ScriptFieldType::TransformComponent:
+        return "TransformComponent";
     };
     return "NONE";
+}
+
+void Scripting::LoadFields(MonoClass *startClass, Ref<ScriptClass> scriptClass) {
+    MonoClass *currentClass = startClass;
+
+    // Loop until we hit System.Object
+    while (currentClass) {
+
+        // Get Iterator for the CURRENT class in the hierarchy
+        void *iterator = nullptr;
+        MonoClassField *field;
+
+        while ((field = mono_class_get_fields(currentClass, &iterator))) {
+            const char *fieldName = mono_field_get_name(field);
+
+            // CHECK: Have we already found a field with this name?
+            // If yes, it means the Child class defined it, so we skip the Parent version.
+            if (scriptClass->mFields.find(fieldName) != scriptClass->mFields.end()) {
+                continue;
+            }
+
+            uint32_t flags = mono_field_get_flags(field);
+            if (flags & MONO_FIELD_ATTR_PUBLIC) {
+                MonoType *type = mono_field_get_type(field);
+                ScriptFieldType fieldType = MonoTypeToScriptFieldType(type);
+
+                // Store it
+                RO_LOG_WARN("   Found Field: {} ({}) in class {}", fieldName, ScriptFieldTypeToString(fieldType),
+                            mono_class_get_name(currentClass));
+                scriptClass->mFields[fieldName] = {fieldType, fieldName, field};
+            }
+        }
+
+        // MOVE UP: Switch to the parent class for the next loop
+        currentClass = mono_class_get_parent(currentClass);
+
+        if (currentClass == mono_get_object_class())
+            break;
+    }
 }
 
 void Scripting::LoadAssemblyClasses() {
@@ -219,6 +269,7 @@ void Scripting::LoadAssemblyClasses() {
 
         printf("%s.%s\n", nameSpace, name);
 
+        /*
         void *iterator = nullptr;
         MonoClassField *field;
         int fieldCount = mono_class_num_fields(monoClass);
@@ -234,6 +285,9 @@ void Scripting::LoadAssemblyClasses() {
                 scriptClass->mFields[fieldName] = {fieldType, fieldName, field};
             }
         }
+        */
+
+        LoadFields(monoClass, scriptClass);
     }
 }
 
@@ -250,6 +304,33 @@ Ref<ScriptInstance> Scripting::GetEntityScriptInstance(uint32_t entity) {
 void Scripting::Shutdown() {
     ShutdownMono();
     delete sData;
+}
+
+void Scripting::Reload(std::filesystem::path appPath) {
+    if (sData->RootDomain) {
+        // Switch to Root Domain (Safety Step)
+        // You cannot unload the domain you are currently standing in.
+        mono_domain_set(sData->RootDomain, false);
+
+        // Unload the old Sandbox
+        // This frees the DLLs and memory, but KEEPS the VM running.
+        if (sData->AppDomain) {
+            mono_domain_unload(sData->AppDomain);
+            sData->AppDomain = nullptr;
+        }
+    }
+
+    LoadAssembly("RoarScriptCore.dll");
+    LoadAppAssembly(appPath.string().c_str());
+    LoadAssemblyClasses();
+
+    ScriptGlue::RegisterComponents();
+    ScriptGlue::RegisterFunctions();
+    sData->EntityClass = ScriptClass("RoarEngine", "Entity", true);
+
+    Application::Get().GetLayer<SceneManager>()->mScriptSystem->Reload();
+
+    RO_LOG_INFO("Scripts reloaded successfully!!!");
 }
 
 void Scripting::LoadAssembly(const std::filesystem::path &filepath) {
@@ -297,11 +378,34 @@ void Scripting::InitMono(bool isEditor) {
 
 void Scripting::ShutdownMono() {
     // Mono is a little confusing to shutdown.
-    // mono_domain_unload(sData->AppDomain);
-    // mono_jit_cleanup(sData->RootDomain);
+
+    // Switch back to the Root Domain
+    // This "parks" the current thread safely in the main domain.
+    // param 2 'force' = false (usually safe)
+    if (sData->RootDomain) {
+        mono_domain_set(sData->RootDomain, false);
+    }
+
+    // Unload the App Domain
+    // Now that we are standing in the Root Domain, it is safe to destroy the App Domain.
+    if (sData->AppDomain && sData->AppDomain != sData->RootDomain) {
+        mono_domain_unload(sData->AppDomain);
+        sData->AppDomain = nullptr;
+    }
+
+    // Cleanup the Engine
+    // This shuts down the Root Domain and the JIT itself.
+    if (sData->RootDomain) {
+        mono_jit_cleanup(sData->RootDomain);
+        sData->RootDomain = nullptr;
+    }
 
     sData->AppDomain = nullptr;
     sData->RootDomain = nullptr;
+    sData->CoreAssembly = nullptr;
+    sData->CoreAssemblyImage = nullptr;
+    sData->AppAssembly = nullptr;
+    sData->AppAssemblyImage = nullptr;
 }
 
 bool Scripting::EntityClassExists(const std::string &fullClassName) {
@@ -429,7 +533,7 @@ void ScriptInstance::InvokeOnUpdate(float ts) {
     mScriptClass->InvokeMethod(mInstance, mOnUpdateMethod, &param);
 }
 
-bool ScriptInstance::GetFieldValueInternal(const std::string &name, void* buffer) {
+bool ScriptInstance::GetFieldValueInternal(const std::string &name, void *buffer) {
     const auto &fields = mScriptClass->GetFields();
     auto it = fields.find(name);
     if (it == fields.end())
@@ -445,7 +549,7 @@ bool ScriptInstance::SetFieldValueInternal(const std::string &name, const void *
     if (it == fields.end())
         return false;
     const ScriptField &field = it->second;
-    mono_field_set_value(mInstance, field.field, (void*)value);
+    mono_field_set_value(mInstance, field.field, (void *)value);
     return true;
 }
 

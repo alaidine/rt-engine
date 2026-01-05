@@ -14,4 +14,10 @@ void ScriptSystem::Update(float dt) {
     }
 }
 
+void ScriptSystem::Reload() {
+    for (auto const &entity : mEntities) {
+        Roar::Scripting::OnCreateEntity(entity);
+    }
+}
+
 } // namespace Roar

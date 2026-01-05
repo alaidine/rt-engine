@@ -1,5 +1,8 @@
 #include "ProjectManager.h"
+#include "SceneLayer.h"
+#include "Application.h"
 #include "Common.h"
+#include "Scripting.h"
 #include "nfd.h"
 #include <fstream>
 #include <iostream>
@@ -35,7 +38,7 @@ bool ProjectManagerLayer::OpenProject() {
 }
 
 void ProjectManagerLayer::BuildProject() {
-    // 1. Define the command
+    // Define the command
     // Note: 'dotnet' is usually in the global PATH on both Windows and Linux.
     // We use forward slashes '/' because dotnet accepts them on Windows too.
     fs::path projectDir = projectRoot;
@@ -44,9 +47,10 @@ void ProjectManagerLayer::BuildProject() {
     RO_LOG_INFO("Project Name: {}", projectName);
     std::string buildCmd = "dotnet build " + projectPath.string() + ".csproj -c Release ";
 
-    // 2. Run in a background thread to keep UI responsive
+    /*
+    
+    // Run in a background thread to keep UI responsive
     std::thread buildThread([buildCmd]() {
-        std::cout << "Starting Build..." << std::endl;
         RO_LOG_INFO("Starting Build...");
 
         auto result = ProcessRunner::Execute(buildCmd);
@@ -54,14 +58,32 @@ void ProjectManagerLayer::BuildProject() {
         if (result.ExitCode == 0) {
             std::cout << "Build Success!" << std::endl;
             RO_LOG_INFO("Build Success !");
-            // TODO: Queue a "Reload Assembly" task on the main thread
         } else {
             RO_LOG_ERR("Build Failed: {}", result.Output);
         }
     });
 
+
     // Detach so it runs independently, or join if you want to wait.
     buildThread.detach();
+
+    */
+    
+    std::filesystem::path appLibPath = projectRoot / "Build" / "bin" / (projectName + ".dll");
+
+    RO_LOG_INFO("Starting Build...");
+
+    auto result = ProcessRunner::Execute(buildCmd);
+
+    if (result.ExitCode == 0) {
+        std::cout << "Build Success!" << std::endl;
+        RO_LOG_INFO("Build Success !");
+    } else {
+        RO_LOG_ERR("Build Failed: {}", result.Output);
+    }
+
+    RO_LOG_INFO("Reloading scripts...");
+    Scripting::Reload(appLibPath);
 }
 
 void CopyDirectoryRecursively(const fs::path &source, const fs::path &destination) {

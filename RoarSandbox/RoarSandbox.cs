@@ -8,11 +8,12 @@ namespace Sandbox
     {
         private TransformComponent mTransform;
         public float Speed = 1.2f;
+        public UInt32 publicID;
 
         void OnCreate()
         {
             Console.WriteLine($"Player.OnCreate - {ID}");
-
+            publicID = ID;
             mTransform = GetComponent<TransformComponent>();
             //mTransform.Translation = new Vector2(0.0f);
         }
