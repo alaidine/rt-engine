@@ -9,8 +9,6 @@ add_library(ecs
     ClientSystem.cpp
     TextureSystem.h
     TextureSystem.cpp
-    ScriptSystem.cpp
-    ScriptSystem.h
     RenderSystem.cpp
     RenderSystem.h)
 
