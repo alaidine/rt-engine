@@ -6,6 +6,7 @@
 
 #include <filesystem>
 #include <glm/glm.hpp>
+#include <string>
 
 namespace Roar {
 

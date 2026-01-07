@@ -1,17 +1,15 @@
 #include "Application.h"
 #include "Common.h"
-#include "Scripting.h"
 
-#include "imgui.h"
 #include "raylib.h"
-#include "rlImGui.h"
 
 #include <glm/glm.hpp>
 
 #include <assert.h>
-#include <fmt/format.h>
 #include <iostream>
 #include <ranges>
+
+extern bool g_ApplicationRunning;
 
 namespace Roar {
 
@@ -59,34 +57,10 @@ Application::Application(const ApplicationSpecification &specification) : mSpeci
 
     mWindow = std::make_shared<Window>(mSpecification.WindowSpec);
     mWindow->Create();
-
-    rlImGuiSetup(true); // tell ImGui the display scale
-
-    ImGuiIO &io = ImGui::GetIO();
-
-    // tell ImGui the display scale
-    if (!IsWindowState(FLAG_WINDOW_HIGHDPI)) {
-        io.DisplayFramebufferScale.x = GetWindowScaleDPI().x;
-        io.DisplayFramebufferScale.y = GetWindowScaleDPI().y;
-    }
-
-    static constexpr int DefaultFonSize = 13;
-    ImFontConfig defaultConfig;
-    defaultConfig.SizePixels = DefaultFonSize;
-
-    if (!IsWindowState(FLAG_WINDOW_HIGHDPI)) {
-        defaultConfig.SizePixels = defaultConfig.SizePixels * GetWindowScaleDPI().y;
-        defaultConfig.RasterizerMultiply = GetWindowScaleDPI().y;
-    }
-
-    defaultConfig.PixelSnapH = true;
-    io.Fonts->AddFontDefault(&defaultConfig);
-
-    Scripting::Init(specification.isEditor);
 }
 
 Application::~Application() {
-    Scripting::Shutdown();
+    g_ApplicationRunning = false;
     rlImGuiShutdown();
     sApplication = nullptr;
 }
@@ -149,9 +123,6 @@ void Application::RaiseEvent(Event &event) {
             break;
     }
 }
-
-// glm::vec2 Application::GetFramebufferSize() const { return m_Window->GetFramebufferSize(); }
-glm::vec2 Application::GetFramebufferSize() const { return glm::vec2(0); }
 
 Application &Application::Get() {
     assert(sApplication);

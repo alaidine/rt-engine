@@ -3,7 +3,6 @@
 #include "Event.h"
 #include "Layer.h"
 #include "Window.h"
-
 #include "Renderer.h"
 
 #include <glm/glm.hpp>
@@ -51,8 +50,6 @@ class Application {
         return nullptr;
     }
 
-    glm::vec2 GetFramebufferSize() const;
-
     std::shared_ptr<Window> GetWindow() const { return mWindow; }
 
     static Application &Get();
@@ -67,5 +64,7 @@ class Application {
     std::vector<std::pair<Layer *, std::unique_ptr<Layer>>> m_QueuedTransitions;
     friend class Layer;
 };
+
+Application *CreateApplication(int argc, char **argv);
 
 } // namespace Roar

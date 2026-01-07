@@ -35,9 +35,7 @@ class Window {
     void Update();
 
     void RaiseEvent(Event &event);
-    void PollEvent();
 
-    glm::vec2 GetFramebufferSize() const;
     glm::vec2 GetMousePos() const;
 
     bool ShouldClose() const;
