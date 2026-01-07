@@ -72,6 +72,20 @@ class EntityManager {
         return mSignatures[entity];
     }
 
+    void Clear() {
+        // Reset the queue of available IDs
+        mAvailableEntities = {}; // Clear current queue
+        for (Entity entity = 0; entity < MAX_ENTITIES; ++entity) {
+            mAvailableEntities.push(entity);
+        }
+
+        // Reset tracking data
+        mSignatures.fill(Signature(0));
+        mLivingEntityCount = 0;
+        mEntityToNameMap.clear();
+        mNameToEntityMap.clear();
+    }
+
   private:
     // Queue of unused entity IDs
     std::queue<Entity> mAvailableEntities{};
@@ -93,6 +107,7 @@ class IComponentArray {
   public:
     virtual ~IComponentArray() = default;
     virtual void EntityDestroyed(Entity entity) = 0;
+    virtual void Clear() = 0;
 };
 
 template <typename T> class ComponentArray : public IComponentArray {
@@ -139,6 +154,12 @@ template <typename T> class ComponentArray : public IComponentArray {
             // Remove the entity's component if it existed
             RemoveData(entity);
         }
+    }
+
+    void Clear() override {
+        mEntityToIndexMap.clear();
+        mIndexToEntityMap.clear();
+        mSize = 0;
     }
 
   private:
@@ -206,6 +227,13 @@ class ComponentManager {
             auto const &component = pair.second;
 
             component->EntityDestroyed(entity);
+        }
+    }
+
+    void Clear() {
+        for (auto const &pair : mComponentArrays) {
+            auto const &component = pair.second;
+            component->Clear();
         }
     }
 
@@ -284,6 +312,13 @@ class SystemManager {
         }
     }
 
+    void Clear() {
+        for (auto const &pair : mSystems) {
+            auto const &system = pair.second;
+            system->mEntities.clear();
+        }
+    }
+
   private:
     // Map from system type string pointer to a signature
     std::unordered_map<const char *, Signature> mSignatures{};
@@ -345,6 +380,12 @@ class Scene {
     template <typename T> std::shared_ptr<T> RegisterSystem() { return mSystemManager->RegisterSystem<T>(); }
 
     template <typename T> void SetSystemSignature(Signature signature) { mSystemManager->SetSignature<T>(signature); }
+
+    void Clear() {
+        mComponentManager->Clear();
+        mSystemManager->Clear();
+        mEntityManager->Clear();
+    }
 
   private:
     std::unique_ptr<ComponentManager> mComponentManager;

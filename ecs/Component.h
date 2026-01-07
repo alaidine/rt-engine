@@ -4,11 +4,36 @@
 #define GLM_FORM_DEPTH_ZERO_TO_ONE
 #define GML_ENABLE_EXPERIMENTAL
 
+#include <filesystem>
 #include <glm/glm.hpp>
 
-#include <filesystem>
-
 namespace Roar {
+
+struct ButtonComponent {
+    std::string text;
+    bool clicked;
+};
+
+struct InputComponent {
+    std::string text;
+};
+
+struct ClientComponent {
+    uint32_t addr;
+    uint16_t port;
+};
+
+struct ServerComponent {
+    uint16_t port;
+};
+
+struct TextureComponent {
+    std::string path;
+    int x;
+    int y;
+    int width;
+    int height;
+};
 
 struct TransformComponent {
     glm::vec2 pos;

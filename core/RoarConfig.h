@@ -77,6 +77,20 @@ struct RoarLexer {
             return "}";
         }
 
+        if (content[currentIndex] == '\"') {
+            int endOfIndentifier = currentIndex;
+
+            while (currentIndex != '\"') {
+                endOfIndentifier++;
+            }
+
+            int sizeOfIdentifier = endOfIndentifier - currentIndex;
+            int startOfIdentifier = currentIndex;
+            currentIndex = endOfIndentifier;
+            return content.substr(startOfIdentifier, sizeOfIdentifier);
+        }
+
+
         if (isalnum(content[currentIndex])) {
             int endOfIndentifier = currentIndex;
 
@@ -225,6 +239,25 @@ struct RoarConfig {
             }
             expectToken("end");
             scene->AddComponent(entity, rect);
+        } else if (currentToken == "button") {
+            Roar::Gui::ButtonComponent button;
+
+            currentToken = lexer.nextToken();
+            expectToken("start");
+            while (true) {
+                if (currentToken == "end" || currentToken == "EOF") {
+                    break;
+                }
+                if (currentToken == "text") {
+                    currentToken = lexer.nextToken();
+                    expectToken("=");
+                    button.text = currentToken;
+                } else {
+                    currentToken = lexer.nextToken();
+                }
+            }
+
+            scene->AddComponent(entity, button);
         }
     }
 

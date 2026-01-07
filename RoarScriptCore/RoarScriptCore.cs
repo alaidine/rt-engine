@@ -158,6 +158,9 @@ namespace RoarEngine
         public extern static void TransformComponent_SetTranslation(UInt32 entityID, ref Vector2 translation);
 
         [MethodImplAttribute(MethodImplOptions.InternalCall)]
+        public extern static bool ButtonComponent_GetClicked(UInt32 entityID);
+
+        [MethodImplAttribute(MethodImplOptions.InternalCall)]
         public extern static bool Input_IsKeyDown(KeyCode keyCode);
     }
 
@@ -211,6 +214,10 @@ namespace RoarEngine
     public abstract class Component
     {
         public Entity Entity { get; internal set; }
+    }
+
+    public class ButtonComponent : Component
+    {
     }
 
     public class TransformComponent : Component

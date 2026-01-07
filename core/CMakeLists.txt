@@ -54,7 +54,7 @@ target_include_directories(core PRIVATE ${NFD_INCLUDE})
 target_include_directories(core PRIVATE ${CMAKE_SOURCE_DIR}/renderer)
 target_include_directories(core PRIVATE ${CMAKE_SOURCE_DIR}/ecs)
 target_include_directories(core PRIVATE ${CMAKE_SOURCE_DIR}/core)
-target_link_libraries(core PRIVATE renderer ecs nfd raylib glm::glm imgui::imgui spdlog::spdlog)
+target_link_libraries(core PRIVATE renderer ecs nfd raylib glm::glm imgui::imgui spdlog::spdlog asio::asio)
 target_link_libraries(core PRIVATE "${MONO_LINK_LIB}")
 
 target_include_directories(RoarEngine PRIVATE ${NFD_INCLUDE})
