@@ -2,7 +2,6 @@
 
 #include "Component.h"
 #include "ECS.h"
-#include "Renderer.h"
 
 namespace Roar {
 

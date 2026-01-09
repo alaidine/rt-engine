@@ -1,8 +1,6 @@
 #include "Application.h"
 #include "Common.h"
 
-#include "raylib.h"
-
 #include <glm/glm.hpp>
 
 #include <assert.h>
