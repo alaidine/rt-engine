@@ -12,8 +12,7 @@ add_library(ecs
     RenderSystem.cpp
     RenderSystem.h)
 
-target_include_directories(ecs PRIVATE ${CMAKE_SOURCE_DIR}/renderer)
-target_include_directories(ecs PRIVATE ${CMAKE_SOURCE_DIR}/core)
-target_include_directories(ecs PRIVATE ${CMAKE_SOURCE_DIR}/ecs)
-target_include_directories(ecs PRIVATE ${MONO_INCLUDE_DIR})
-target_link_libraries(ecs PRIVATE renderer core raylib asio glm::glm spdlog::spdlog)
+target_include_directories(ecs PUBLIC ${CMAKE_SOURCE_DIR}/renderer)
+target_include_directories(ecs PUBLIC ${CMAKE_SOURCE_DIR}/core)
+target_include_directories(ecs PUBLIC ${CMAKE_SOURCE_DIR}/ecs)
+target_link_libraries(ecs PUBLIC renderer core raylib asio glm::glm spdlog::spdlog)

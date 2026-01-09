@@ -61,7 +61,6 @@ Application::Application(const ApplicationSpecification &specification) : mSpeci
 
 Application::~Application() {
     g_ApplicationRunning = false;
-    rlImGuiShutdown();
     sApplication = nullptr;
 }
 
@@ -72,8 +71,6 @@ void Application::Run() {
 
     // Main Application loop
     while (m_Running) {
-        mWindow->PollEvent();
-
         if (mWindow->ShouldClose()) {
             Stop();
             break;

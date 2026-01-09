@@ -6,6 +6,8 @@ RoarEngine.exe
 .vscode/
 out/
 
+samples/
+
 mono/
 mono64.zip
 CMakeUserPresets.json

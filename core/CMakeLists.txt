@@ -1,6 +1,6 @@
 add_library(RoarEngine
+        RoarEngine.h
         Common.h
-        framework.h
         Event.h
         Entrypoint.h
         InputEvents.h
@@ -12,5 +12,6 @@ add_library(RoarEngine
         Layer.cpp
         Layer.h)
 
-target_include_directories(RoarEngine PRIVATE ${CMAKE_SOURCE_DIR}/renderer/)
+target_include_directories(RoarEngine PUBLIC ${CMAKE_SOURCE_DIR}/core)
+target_include_directories(RoarEngine PUBLIC ${CMAKE_SOURCE_DIR}/renderer)
 target_link_libraries(RoarEngine PUBLIC networking renderer raylib spdlog::spdlog glm::glm)
