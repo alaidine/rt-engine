@@ -1,8 +1,13 @@
+#pragma once
+
+#include <filesystem>
 #include <iostream>
 #include <string>
+#include <unordered_map>
 #include <vector>
 
 #if defined(_WIN32)
+#define _WINSOCKAPI_
 #include <windows.h>
 typedef HMODULE LibraryHandle;
 #else
@@ -10,145 +15,118 @@ typedef HMODULE LibraryHandle;
 typedef void *LibraryHandle;
 #endif
 
-class LibraryLoader {
-  public:
-    static LibraryHandle Load(const std::string &path) {
-#if defined(_WIN32)
-        // Windows locks the file when loaded. For hot-reloading,
-        // you usually copy 'plugin.dll' to 'plugin_temp.dll' here
-        // before loading!
-        LibraryHandle handle = LoadLibraryA(path.c_str());
-        if (!handle)
-            std::cerr << "Win32 Load Error: " << GetLastError() << std::endl;
-        return handle;
+#if defined(_MSC_VER)
+#define PLUGIN_EXPORT __declspec(dllexport)
+#elif defined(__GNUC__) || defined(__clang__)
+#define PLUGIN_EXPORT __attribute__((visibility("default")))
 #else
-        // RTLD_NOW loads all symbols immediately
-        LibraryHandle handle = dlopen(path.c_str(), RTLD_NOW);
-        if (!handle)
-            std::cerr << "Linux Load Error: " << dlerror() << std::endl;
-        return handle;
+#define PLUGIN_EXPORT
 #endif
-    }
-
-    static void Unload(LibraryHandle handle) {
-        if (!handle)
-            return;
-#if defined(_WIN32)
-        FreeLibrary(handle);
-        std::cout << "Libary freed\n";
-#else
-        dlclose(handle);
-#endif
-    }
-
-    // Template to easily cast the function pointer
-    template <typename T> static T GetFunction(LibraryHandle handle, const std::string &funcName) {
-#if defined(_WIN32)
-        return reinterpret_cast<T>(GetProcAddress(handle, funcName.c_str()));
-#else
-        return reinterpret_cast<T>(dlsym(handle, funcName.c_str()));
-#endif
-    }
-};
-
-class IGamePlugin {
-  public:
-    virtual ~IGamePlugin() {}
-    virtual void OnLoad() = 0;
-    virtual void OnUpdate(float deltaTime) = 0;
-    virtual void OnUnload() = 0;
-};
-
-typedef IGamePlugin *(*CreatePluginFunc)();
-typedef void (*DestroyPluginFunc)(IGamePlugin *);
-
-class PluginManager {
-  private:
-    LibraryHandle m_handle = nullptr;
-    IGamePlugin *m_plugin = nullptr;
-    DestroyPluginFunc m_destroyer = nullptr;
-    std::string m_tempPath;
-
-  public:
-    PluginManager() {}
-    ~PluginManager() { UnloadCurrentPlugin(); }
-
-    void LoadPlugin(const std::string &originalPath) {
-        // Unload existing if needed
-        if (m_plugin) {
-            m_plugin->OnUnload();
-            m_destroyer(m_plugin);
-            LibraryLoader::Unload(m_handle);
-        }
-
-        // COPY the file to a temp path (Pseudo-code)
-        // std::filesystem::copy_file(originalPath, tempPath, overwrite_existing);
-        std::string loadPath = originalPath; // In production, use the temp path here!
-
-        // Load Library
-        m_handle = LibraryLoader::Load(loadPath);
-        if (!m_handle)
-            return;
-
-        // Locate Factory Functions
-        auto creator = LibraryLoader::GetFunction<CreatePluginFunc>(m_handle, "CreatePlugin");
-        m_destroyer = LibraryLoader::GetFunction<DestroyPluginFunc>(m_handle, "DestroyPlugin");
-
-        // Create Instance
-        if (creator && m_destroyer) {
-            m_plugin = creator();
-            m_plugin->OnLoad();
-        }
-    }
-
-    void Update(float dt) {
-        if (m_plugin)
-            m_plugin->OnUpdate(dt);
-    }
-
-    void UnloadCurrentPlugin() {
-        // Notify the plugin it is about to die
-        if (m_plugin) {
-            m_plugin->OnUnload();
-        }
-
-        // Destroy the C++ Object
-        // We must use the function pointer from the DLL to delete it
-        // because the DLL might use a different memory allocator than the engine.
-        if (m_destroyer && m_plugin) {
-            m_destroyer(m_plugin);
-        }
-
-        // Reset pointers
-        m_plugin = nullptr;
-        m_destroyer = nullptr;
-
-        // Unload the OS Library
-        if (m_handle) {
-            LibraryLoader::Unload(m_handle);
-            m_handle = nullptr;
-        }
-
-        // Windows Specific: Delete the temp file
-        // You cannot delete the DLL while it is loaded (step 3 must happen first)
-        if (!m_tempPath.empty()) {
-#if defined(_WIN32)
-            // Try to delete the temp file.
-            // Sometimes virus scanners or delays keep the file locked for a few ms
-            // after FreeLibrary, so a simple retry loop or ignoring failure is common here.
-            std::remove(m_tempPath.c_str());
-#endif
-            m_tempPath.clear();
-        }
-    }
-};
 
 namespace Roar {
 
+class LibraryLoader {
+  public:
+    static LibraryHandle Load(const std::string &path);
+    static void Unload(LibraryHandle handle);
+    template <typename T> static T GetFunction(LibraryHandle handle, const std::string &funcName);
+};
+
+class IPlugin {
+  public:
+    virtual ~IPlugin() = default;
+    virtual const char *GetID() const = 0;
+};
+
+class ITestPlugin : public IPlugin {
+  public:
+    virtual void OnLoad() = 0;
+    virtual void OnUnload() = 0;
+};
+
+typedef IPlugin *(*CreatePluginFunc)();
+
+class PluginRegistry {
+    std::unordered_map<std::string, IPlugin *> m_plugins;
+    std::vector<LibraryHandle> m_loadedLibraries;
+
+  public:
+    void LoadAll(const std::string &directoryPath) {
+        namespace fs = std::filesystem;
+
+        for (const auto &entry : fs::directory_iterator(directoryPath)) {
+            // Check for .dll or .so extension
+            if (entry.path().extension() == ".dll" || entry.path().extension() == ".so") {
+                LoadSingle(entry.path().string());
+            }
+        }
+    }
+
+    void LoadLibs(std::vector<std::string> names) {
+        for (const auto &entry : names) {
+            LoadSingle(entry);
+        }
+    }
+
+    void LoadSingle(const std::string &path) {
+        LibraryHandle handle;
+
+#if defined(_WIN32)
+        handle = LibraryLoader::Load(path + ".dll");
+#else
+        handle = LibraryLoader::Load(path + ".so");
+#endif
+
+        if (!handle)
+            return;
+
+        auto creator = LibraryLoader::GetFunction<CreatePluginFunc>(handle, "CreatePlugin");
+
+        if (creator) {
+            IPlugin *plugin = creator();
+
+            std::string id = plugin->GetID();
+
+            if (m_plugins.find(id) == m_plugins.end()) {
+                m_plugins[id] = plugin;
+                m_loadedLibraries.push_back(handle);
+                std::cout << "Registered Plugin: " << id << std::endl;
+            } else {
+                std::cerr << "Conflict: Plugin " << id << " already loaded!" << std::endl;
+            }
+        }
+    }
+
+    // The user asks for a specific Interface (T) and the ID string
+    template <typename T> T *GetSystem(const std::string &id) {
+        auto it = m_plugins.find(id);
+        if (it != m_plugins.end()) {
+            // Downcast the IPlugin* to the specific
+            // dynamic_cast is safer but requires RTTI to work across DLLs (can be tricky)
+            // static_cast is faster but assumes you know what you are doing.
+            return static_cast<T *>(it->second);
+        }
+        return nullptr;
+    }
+
+    void Shutdown() {
+        for (auto &pair : m_plugins) {
+            delete pair.second; // Virtual destructor handles specific cleanup
+        }
+        m_plugins.clear();
+        for (auto handle : m_loadedLibraries) {
+            LibraryLoader::Unload(handle);
+        }
+        m_loadedLibraries.clear();
+    }
+};
+
 extern std::vector<std::string> g_Plugins;
+extern PluginRegistry *registry;
 
 namespace PluginSystem {
 
+void AddPlugin(std::string pluginName);
 void Startup();
 void Shutdown();
 

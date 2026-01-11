@@ -7,8 +7,6 @@
 #include <iostream>
 #include <ranges>
 
-extern bool g_ApplicationRunning;
-
 namespace Roar {
 
 static Application *sApplication = nullptr;
@@ -58,7 +56,6 @@ Application::Application(const ApplicationSpecification &specification) : mSpeci
 }
 
 Application::~Application() {
-    g_ApplicationRunning = false;
     sApplication = nullptr;
 }
 

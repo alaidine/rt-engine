@@ -1,33 +1,17 @@
 #include "PluginManager.h"
 #include <iostream>
 
-class TestPlugin : public IGamePlugin {
+namespace Roar {
+
+class TestPlugin : public ITestPlugin {
   public:
     void OnLoad() override { std::cout << "Test Plugin Loaded" << std::endl; }
-
-    void OnUpdate(float dt) override {
-    }
-
     void OnUnload() override { std::cout << "Test Plugin Unloaded!" << std::endl; }
+    const char *GetID() const override { return "TestPlugin"; }
 };
 
-extern "C" {
-#if defined(_WIN32)
-__declspec(dllexport)
-#else
-__attribute__((visibility("default")))
-#endif
-IGamePlugin *
-CreatePlugin() {
-    return new TestPlugin();
-}
+} // namespace Roar
 
-#if defined(_WIN32)
-__declspec(dllexport)
-#else
-__attribute__((visibility("default")))
-#endif
-    void DestroyPlugin(IGamePlugin* ptr) {
-    delete ptr;
-}
+extern "C" {
+PLUGIN_EXPORT Roar::IPlugin *CreatePlugin() { return new Roar::TestPlugin(); }
 }

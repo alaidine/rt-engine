@@ -1,6 +1,8 @@
 #pragma once
 
-#if defined(_WIN32) || defined(_WIN64)
+#include "PluginManager.h"
+
+#if defined(_WIN32)
 #define WIN32_LEAN_AND_MEAN
 #include <windows.h>
 #include <winsock2.h>
@@ -25,6 +27,8 @@ typedef int socklen_t;
 #include <cstdio>
 #include <cstring>
 #include <vector>
+
+namespace Roar {
 
 class NetBuffer {
   private:
@@ -298,3 +302,20 @@ class NetClient {
     SOCKET_TYPE GetFd() const { return _socket.GetFd(); }
     bool IsConnected() const { return _connected; }
 };
+
+class INetwork : public IPlugin {
+  public:
+    virtual NetClient *NewClient() = 0;
+    virtual NetServer *NewServer(uint16_t port) = 0;
+    virtual NetBuffer *NewBuffer() = 0;
+};
+
+class NetlibNetwork : public INetwork {
+  public:
+    NetClient *NewClient() { return new NetClient(); }
+    NetServer *NewServer(uint16_t port) { return new NetServer(port); }
+    NetBuffer *NewBuffer() { return new NetBuffer(); }
+    const char *GetID() const { return "NetlibNetwork"; }
+};
+
+} // namespace Roar
