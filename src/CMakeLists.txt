@@ -10,6 +10,16 @@ target_link_libraries(RoarEngine PUBLIC raylib spdlog::spdlog glm::glm)
 
 target_compile_definitions(RoarEngine PRIVATE ENGINE_EXPORTS)
 
+if(WIN32)
+    add_custom_command(TARGET RoarEngine POST_BUILD
+        COMMAND ${CMAKE_COMMAND} -E copy_if_different
+            $<TARGET_RUNTIME_DLLS:RoarEngine>
+            $<TARGET_FILE_DIR:RoarEngine>
+        COMMAND_EXPAND_LISTS
+        COMMENT "Copying dependency DLLs to output directory..."
+    )
+endif()
+
 # ECS plugin
 add_library(ECSPlugin SHARED
     ../include/ECS.h

@@ -110,12 +110,6 @@ void SerializeGameStateMessage(Roar::NetBuffer &buffer, const GameStateMessage &
         SerializeClientState(buffer, msg.client_states[i]);
     }
 
-    buffer.WriteUInt32(msg.mob_count);
-
-    for (unsigned int i = 0; i < msg.mob_count; i++) {
-        SerializeMobState(buffer, msg.mobs[i]);
-    }
-
     // Wave system info
     buffer.WriteFloat(msg.countdown_timer);
     buffer.WriteUInt32(msg.current_wave);
@@ -131,15 +125,6 @@ GameStateMessage DeserializeGameStateMessage(Roar::NetBuffer &buffer) {
 
     for (unsigned int i = 0; i < msg.client_count; i++) {
         msg.client_states[i] = DeserializeClientState(buffer);
-    }
-
-    msg.mob_count = buffer.ReadUInt32();
-
-    if (msg.mob_count > MAX_MOBS)
-        msg.mob_count = MAX_MOBS;
-
-    for (unsigned int i = 0; i < msg.mob_count; i++) {
-        msg.mobs[i] = DeserializeMobState(buffer);
     }
 
     // Wave system info

@@ -1,17 +1,34 @@
 #include "RoarEngine.h"
 
+bool running = true;
+
 namespace Roar {
 
-void AppRun(AppData appdata) {
-    appdata.init();
-    InitWindow(appdata.width, appdata.height, appdata.name.c_str());
+void StopApp() { running = false; }
+bool IsAppRunning() { return running; }
 
-    while (!WindowShouldClose()) {
-        ClearBackground(RAYWHITE);
-        BeginDrawing();
-        appdata.frame();
-        EndDrawing();
+void AppRun(AppData appdata) {
+    if (!appdata.headless)
+        InitWindow(appdata.width, appdata.height, appdata.name.c_str());
+
+    appdata.init();
+
+    while (IsAppRunning()) {
+        if (appdata.headless) {
+            appdata.frame();
+        } else {
+            if (WindowShouldClose()) {
+                StopApp();
+            }
+            ClearBackground(RAYWHITE);
+            BeginDrawing();
+            appdata.frame();
+            EndDrawing();
+        }
     }
+
+    if (!appdata.headless)
+        CloseWindow();
 }
 
-};
+}; // namespace Roar

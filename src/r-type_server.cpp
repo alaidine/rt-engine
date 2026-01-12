@@ -38,11 +38,11 @@ static void init() {
     state.tick_dt = 1.0f / TICK_RATE;
 }
 
-bool AddressEquals(const sockaddr_in &a, const sockaddr_in &b) {
+static bool AddressEquals(const sockaddr_in &a, const sockaddr_in &b) {
     return a.sin_addr.s_addr == b.sin_addr.s_addr && a.sin_port == b.sin_port;
 }
 
-ConnectedClient *FindClientByAddress(const sockaddr_in &addr) {
+static ConnectedClient *FindClientByAddress(const sockaddr_in &addr) {
     for (auto &[id, client] : state.m_clients) {
         if (AddressEquals(client.address, addr))
             return &client;
@@ -50,12 +50,12 @@ ConnectedClient *FindClientByAddress(const sockaddr_in &addr) {
     return nullptr;
 }
 
-uint32_t GetClientIdByAddress(const sockaddr_in &addr) {
+static uint32_t GetClientIdByAddress(const sockaddr_in &addr) {
     ConnectedClient *client = FindClientByAddress(addr);
     return client ? client->client_id : 0;
 }
 
-void HandleConnectRequest(const sockaddr_in &from) {
+static void HandleConnectRequest(const sockaddr_in &from) {
     TraceLog(LOG_INFO, "New connection request");
 
     // Check if already connected
@@ -106,7 +106,7 @@ void HandleConnectRequest(const sockaddr_in &from) {
     TraceLog(LOG_INFO, "Connection accepted (ID: %d)", client_id);
 }
 
-void HandleDisconnect(uint32_t client_id) {
+static void HandleDisconnect(uint32_t client_id) {
     auto it = state.m_clients.find(client_id);
     if (it != state.m_clients.end()) {
         TraceLog(LOG_INFO, "Client disconnected (ID: %d)", client_id);
@@ -114,7 +114,7 @@ void HandleDisconnect(uint32_t client_id) {
     }
 }
 
-void HandleUpdateStateMessage(Roar::NetBuffer &buffer, uint32_t client_id) {
+static void HandleUpdateStateMessage(Roar::NetBuffer &buffer, uint32_t client_id) {
     auto it = state.m_clients.find(client_id);
     if (it == state.m_clients.end())
         return;
@@ -130,7 +130,7 @@ void HandleUpdateStateMessage(Roar::NetBuffer &buffer, uint32_t client_id) {
     it->second.last_heard_tick = state.m_currentTick;
 }
 
-void HandleReceivedMessage(Roar::NetBuffer &buffer, const sockaddr_in &from) {
+static void HandleReceivedMessage(Roar::NetBuffer &buffer, const sockaddr_in &from) {
     if (!buffer.CanRead(1))
         return;
 
@@ -168,7 +168,7 @@ void HandleReceivedMessage(Roar::NetBuffer &buffer, const sockaddr_in &from) {
     }
 }
 
-void CheckClientTimeouts(void) {
+static void CheckClientTimeouts(void) {
     std::vector<uint32_t> toRemove;
 
     for (auto &[id, client] : state.m_clients) {
@@ -183,7 +183,7 @@ void CheckClientTimeouts(void) {
     }
 }
 
-int BroadcastGameState(void) {
+static int BroadcastGameState(void) {
     if (state.m_clients.empty())
         return 0;
 

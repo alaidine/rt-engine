@@ -41,5 +41,6 @@ typedef struct AppData {
 } AppData;
 
 void AppRun(AppData appdata);
+void StopApp();
 
 } // namespace Roar

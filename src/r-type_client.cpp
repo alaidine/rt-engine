@@ -47,7 +47,7 @@ struct {
 Roar::NetlibNetwork *net = nullptr;
 Roar::NetClient *client = nullptr;
 
-void init() {
+static void init() {
     Roar::PluginSystem::AddPlugin("NetworkPlugin");
     Roar::PluginSystem::Startup();
 
@@ -87,9 +87,13 @@ void init() {
     state.m_clients.push_back(nullptr);
     state.m_clients.push_back(nullptr);
 
+    state.m_updatedIds.push_back(-1);
+    state.m_updatedIds.push_back(-1);
+    state.m_updatedIds.push_back(-1);
+    state.m_updatedIds.push_back(-1);
+
     memset(state.m_serverIp, 0, MAX_INPUT_CHARS + 1);
 
-    SetTraceLogLevel(LOG_DEBUG);
     SetTargetFPS(100);
 
     state.m_player = LoadTexture("resources/sprites/player_r-9c_war-head.png");
@@ -97,14 +101,14 @@ void init() {
     state.m_mob = LoadTexture("resources/sprites/mob_bydo_minions.png");
 }
 
-void SpawnLocalClient(int x, int y, uint32_t client_id) {
+static void SpawnLocalClient(int x, int y, uint32_t client_id) {
     TraceLog(LOG_INFO, "Received spawn message, position: (%d, %d), client id: %d", x, y, client_id);
 
     state.m_localClientId = client_id;
     state.m_spawned = true;
 }
 
-void HandleConnectAccept(Roar::NetBuffer &buffer) {
+static void HandleConnectAccept(Roar::NetBuffer &buffer) {
     ConnectAcceptData data = DeserializeConnectAcceptData(buffer);
 
     TraceLog(LOG_INFO, "Connection accepted by server");
@@ -113,7 +117,7 @@ void HandleConnectAccept(Roar::NetBuffer &buffer) {
     state.m_connected = true;
 }
 
-void HandleConnectReject(Roar::NetBuffer &buffer) {
+static void HandleConnectReject(Roar::NetBuffer &buffer) {
     int code = buffer.ReadInt32();
 
     TraceLog(LOG_INFO, "Connection rejected by server (code: %d)", code);
@@ -122,7 +126,7 @@ void HandleConnectReject(Roar::NetBuffer &buffer) {
     state.m_serverCloseCode = code;
 }
 
-void CreateClient(ClientState client_state) {
+static void CreateClient(ClientState client_state) {
     TraceLog(LOG_DEBUG, "CreateClient %d", client_state.client_id);
     assert(state.m_clientCount < MAX_CLIENTS - 1);
 
@@ -130,7 +134,7 @@ void CreateClient(ClientState client_state) {
     TraceLog(LOG_INFO, "New remote client (ID: %d)", client_state.client_id);
 }
 
-bool ClientExists(uint32_t client_id) {
+static bool ClientExists(uint32_t client_id) {
     for (int i = 0; i < MAX_CLIENTS - 1; i++) {
         if (state.m_clients[i] && state.m_clients[i]->client_id == client_id)
             return true;
@@ -139,7 +143,7 @@ bool ClientExists(uint32_t client_id) {
     return false;
 }
 
-void UpdateClient(ClientState client_state) {
+static void UpdateClient(ClientState client_state) {
     ClientState *client = NULL;
 
     // Find the client matching the client id of the received remote client state
@@ -156,7 +160,24 @@ void UpdateClient(ClientState client_state) {
     memcpy(client, &client_state, sizeof(ClientState));
 }
 
-void DestroyClient(uint32_t client_id) {
+static void DestroyClient(uint32_t client_id) {
+    // Find the client matching the client id and destroy it
+    for (int i = 0; i < MAX_CLIENTS - 1; i++) {
+        ClientState *client = state.m_clients[i];
+
+        if (client && client->client_id == client_id) {
+            TraceLog(LOG_INFO, "Destroy disconnected client (ID: %d)", client->client_id);
+
+            free(client);
+            state.m_clients[i] = NULL;
+            state.m_clientCount--;
+
+            return;
+        }
+    }
+}
+
+static void DestroyDisconnectedClients(void) {
     /*
      * Loop over all remote client states and remove the one that have not
      * been updated with the last received game state.
@@ -181,37 +202,7 @@ void DestroyClient(uint32_t client_id) {
     }
 }
 
-void DestroyDisconnectedClients(void) {}
-
-void HandleGameStateMessage(GameStateMessage *msg) {
-    if (!state.m_spawned)
-        return;
-
-    // Start by resetting the updated client ids array
-    for (int i = 0; i < MAX_CLIENTS; i++)
-        state.m_updatedIds[i] = -1;
-
-    // Loop over the received client states
-    for (unsigned int i = 0; i < msg->client_count; i++) {
-        ClientState client_state = msg->client_states[i];
-
-        // Ignore the state of the local client
-        if (client_state.client_id != state.m_localClientState.client_id) {
-            // If the client already exists we update it with the latest received state
-            if (ClientExists(client_state.client_id))
-                UpdateClient(client_state);
-            else // If the client does not exist, we create it
-                CreateClient(client_state);
-
-            state.m_updatedIds[i] = client_state.client_id;
-        }
-    }
-
-    // Destroy disconnected clients
-    DestroyDisconnectedClients();
-}
-
-void HandleGameStateMessage(Roar::NetBuffer &buffer) {
+static void HandleGameStateMessage(Roar::NetBuffer &buffer) {
     if (!state.m_spawned)
         return;
 
@@ -236,7 +227,7 @@ void HandleGameStateMessage(Roar::NetBuffer &buffer) {
     DestroyDisconnectedClients();
 }
 
-void HandleReceivedMessages(void) {
+static void HandleReceivedMessages(void) {
     Roar::NetBuffer buffer;
 
     while (client->Receive(buffer) > 0) {
@@ -265,7 +256,7 @@ void HandleReceivedMessages(void) {
     }
 }
 
-int SendConnectRequest(void) {
+static int SendConnectRequest(void) {
     Roar::NetBuffer buffer;
     buffer.WriteUInt8(MSG_CONNECT_REQUEST);
 
@@ -277,7 +268,7 @@ int SendConnectRequest(void) {
     return 0;
 }
 
-int SendPositionUpdate(void) {
+static int SendPositionUpdate(void) {
     if (!state.m_connected || state.m_disconnected)
         return 0;
 
@@ -298,7 +289,7 @@ int SendPositionUpdate(void) {
     return 0;
 }
 
-void SendHeartbeat(void) {
+static void SendHeartbeat(void) {
     if (!state.m_connected || state.m_disconnected)
         return;
 
@@ -307,7 +298,7 @@ void SendHeartbeat(void) {
     client->Send(buffer);
 }
 
-int UpdateGameplay(void) {
+static int UpdateGameplay(void) {
     if (!state.m_spawned)
         return 0;
 
@@ -341,7 +332,7 @@ int UpdateGameplay(void) {
     return 0;
 }
 
-void DrawClient(ClientState *client_state, bool is_local) {
+static void DrawClient(ClientState *client_state, bool is_local) {
     float frameWidth = 32;
     float frameHeight = 22.0f;
     Rectangle sourceRec = {0.0f, 30.0f, frameWidth, frameHeight};
@@ -359,15 +350,23 @@ void DrawClient(ClientState *client_state, bool is_local) {
         DrawRectangleLinesEx(rec, 3, DARKBROWN);
 }
 
-void DrawHUD(void) {
+static void DrawHUD(void) {
     DrawText(TextFormat("FPS: %d", GetFPS()), 450, 350, 32, MAROON);
     DrawText(TextFormat("Client ID: %d", state.m_localClientId), 450, 400, 32, MAROON);
     DrawText(TextFormat("Connected: %s", state.m_connected ? "Yes" : "No"), 450, 450, 32, MAROON);
 }
 
-void DrawBackground(void) {}
+static void DrawBackground(void) {
+    float frameWidth = GAME_WIDTH / 4;
+    float frameHeight = GAME_HEIGHT / 4;
+    Rectangle source_rect = { 0.0f, 0.0f, (float)frameWidth, (float)frameHeight };
+    Rectangle dest_rect = { 0.0f , 0.0f, GAME_WIDTH, GAME_HEIGHT};
+    Vector2 origin = { 0.0f, 0.0f };
 
-void DrawGameplay(void) {
+    DrawTexturePro(state.m_background, source_rect, dest_rect, origin, 0.0f, WHITE);
+}
+
+static void DrawGameplay(void) {
     // Update parallax animation
     float deltaTime = GetFrameTime();
 
@@ -388,6 +387,9 @@ void DrawGameplay(void) {
                 DrawClient(state.m_clients[i], false);
         }
 
+        // Draw the local client
+        DrawClient(&state.m_localClientState, true);
+
         DrawMissiles();
 
         if (state.m_displayHUD) {
@@ -398,7 +400,7 @@ void DrawGameplay(void) {
     }
 }
 
-void UpdateAndDraw(void) {
+static void UpdateAndDraw(void) {
     switch (state.m_currentScreen) {
     case TITLE: {
         if (IsKeyPressed(KEY_ENTER) || IsGestureDetected(GESTURE_TAP)) {
@@ -489,6 +491,7 @@ void InitClient(char *serverIp) {
         TraceLog(LOG_WARNING, "Failed to connect to server at %s:%d", serverIp, PORT);
         state.m_disconnected = true;
         state.m_serverCloseCode = -1;
+        Roar::StopApp();
         return;
     }
 
@@ -562,9 +565,9 @@ void DrawMissiles(void) {
     }
 }
 
-void frame() { UpdateAndDraw(); }
+static void frame() { UpdateAndDraw(); }
 
-void cleanup() {
+static void cleanup() {
 
     UnloadTexture(state.m_player);
     UnloadTexture(state.m_background);

@@ -12,6 +12,9 @@ class CompressorRecipe(ConanFile):
         self.requires("spdlog/1.16.0")
         self.requires("glm/1.0.1")
         self.requires("raylib/5.5")
+
+    def configure(self):
+        self.options["raylib"].shared = True
     
     def layout(self):
         cmake_layout(self)
