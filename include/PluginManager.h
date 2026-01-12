@@ -1,5 +1,9 @@
 #pragma once
 
+#include "framework.h"
+
+#include "IPlugin.h"
+
 #include <filesystem>
 #include <iostream>
 #include <string>
@@ -14,6 +18,7 @@ typedef HMODULE LibraryHandle;
 #include <dlfcn.h>
 typedef void *LibraryHandle;
 #endif
+#include <RoarEngine.h>
 
 #if defined(_MSC_VER)
 #define PLUGIN_EXPORT __declspec(dllexport)
@@ -30,12 +35,6 @@ class LibraryLoader {
     static LibraryHandle Load(const std::string &path);
     static void Unload(LibraryHandle handle);
     template <typename T> static T GetFunction(LibraryHandle handle, const std::string &funcName);
-};
-
-class IPlugin {
-  public:
-    virtual ~IPlugin() = default;
-    virtual const char *GetID() const = 0;
 };
 
 class ITestPlugin : public IPlugin {
@@ -122,7 +121,8 @@ class PluginRegistry {
 };
 
 extern std::vector<std::string> g_Plugins;
-extern PluginRegistry *registry;
+
+PluginRegistry *GetRegistry();
 
 namespace PluginSystem {
 

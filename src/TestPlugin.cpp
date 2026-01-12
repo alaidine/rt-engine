@@ -1,4 +1,6 @@
 #include "PluginManager.h"
+#include "IPlugin.h"
+
 #include <iostream>
 
 namespace Roar {

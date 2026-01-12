@@ -2,22 +2,16 @@ add_library(RoarEngine SHARED
     ../include/framework.h
     ../include/RoarEngine.h
     ../include/Common.h
-    ../include/Event.h
-    ../include/Entrypoint.h
-    ../include/InputEvents.h
-    Window.cpp
-    ../include/Window.h
-    ../include/WindowEvents.h
-    Application.cpp
-    Layer.cpp
     PluginManager.cpp
     RoarEngine.cpp
     ../include/PluginManager.h)
 target_include_directories(RoarEngine PUBLIC ${CMAKE_SOURCE_DIR}/include)
 target_link_libraries(RoarEngine PUBLIC raylib spdlog::spdlog glm::glm)
 
+target_compile_definitions(RoarEngine PRIVATE ENGINE_EXPORTS)
+
 # ECS plugin
-add_library(ecs SHARED
+add_library(ECSPlugin SHARED
     ../include/ECS.h
     ../include/Component.h
     ../include/GuiSystem.h
@@ -30,39 +24,50 @@ add_library(ecs SHARED
     TextureSystem.cpp
     RenderSystem.cpp
     ../include/RenderSystem.h)
-target_include_directories(ecs PUBLIC ${CMAKE_SOURCE_DIR}/include)
-target_link_libraries(ecs PUBLIC raylib asio::asio glm::glm spdlog::spdlog)
+target_include_directories(ECSPlugin PUBLIC ${CMAKE_SOURCE_DIR}/include)
+target_link_libraries(ECSPlugin PUBLIC raylib asio::asio glm::glm spdlog::spdlog)
 
 # Networking plugin
-add_library(networking SHARED Networking.cpp ../include/Networking.h)
-target_include_directories(networking PUBLIC ${CMAKE_SOURCE_DIR}/include)
-target_link_libraries(networking PUBLIC asio::asio)
+add_library(NetworkPlugin SHARED Networking.cpp ../include/INetwork.h ../include/Networking.h)
+target_include_directories(NetworkPlugin PUBLIC ${CMAKE_SOURCE_DIR}/include)
+target_link_libraries(NetworkPlugin PUBLIC RoarEngine)
 if(WIN32)
-    target_link_libraries(networking PUBLIC ws2_32)
+    target_link_libraries(NetworkPlugin PUBLIC ws2_32)
 elseif(UNIX AND NOT APPLE)
-    target_link_libraries(networking PUBLIC pthread)
+    target_link_libraries(NetworkPlugin PUBLIC pthread)
 endif()
 
 # Test plugin
 add_library(TestPlugin SHARED TestPlugin.cpp)
 target_include_directories(TestPlugin PUBLIC ${CMAKE_SOURCE_DIR}/include)
+target_link_libraries(TestPlugin PUBLIC RoarEngine)
+
+# Physics plugin
+add_library(PhysicsPlugin SHARED PhysicsPlugin.cpp ../include/IPhysics.h)
+target_include_directories(PhysicsPlugin PUBLIC ${CMAKE_SOURCE_DIR}/include)
+target_link_libraries(PhysicsPlugin PUBLIC RoarEngine)
+
+# Audio plugin
+add_library(AudioPlugin SHARED AudioPlugin.cpp ../include/IAudio.h)
+target_include_directories(AudioPlugin PUBLIC ${CMAKE_SOURCE_DIR}/include)
+target_link_libraries(AudioPlugin PUBLIC RoarEngine)
 
 # Test game
 add_executable(TestGame TestGame.cpp)
 target_include_directories(TestGame PUBLIC ${CMAKE_SOURCE_DIR}/include)
 target_link_libraries(TestGame RoarEngine)
 
-# pong
-add_executable(pong pong.cpp)
-target_include_directories(pong PUBLIC ${CMAKE_SOURCE_DIR}/include)
-target_link_libraries(pong RoarEngine)
+# Pong
+add_executable(Pong pong.cpp)
+target_include_directories(Pong PUBLIC ${CMAKE_SOURCE_DIR}/include)
+target_link_libraries(Pong RoarEngine)
 
 # R-Type client
-add_executable(r-type_client r-type_client.cpp r-type.cpp ${CMAKE_SOURCE_DIR}/include/r-type.h)
-target_include_directories(ecs PUBLIC ${CMAKE_SOURCE_DIR}/include)
-target_link_libraries(r-type_client RoarEngine)
+add_executable(R-Type_Client r-type_client.cpp r-type.cpp ${CMAKE_SOURCE_DIR}/include/r-type.h)
+target_include_directories(R-Type_Client PUBLIC ${CMAKE_SOURCE_DIR}/include)
+target_link_libraries(R-Type_Client RoarEngine)
 
 # R-Type server
-add_executable(r-type_server r-type_server.cpp r-type.cpp ${CMAKE_SOURCE_DIR}/include/r-type.h)
-target_include_directories(r-type_server PUBLIC ${CMAKE_SOURCE_DIR}/include)
-target_link_libraries(r-type_server RoarEngine)
+add_executable(R-Type_Server r-type_server.cpp r-type.cpp ${CMAKE_SOURCE_DIR}/include/r-type.h)
+target_include_directories(R-Type_Server PUBLIC ${CMAKE_SOURCE_DIR}/include)
+target_link_libraries(R-Type_Server RoarEngine)

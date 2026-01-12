@@ -1,4 +1,8 @@
-#include "Application.h"
+#pragma once
+
+#include "framework.h"
+#include "raylib.h"
+
 #include "Networking.h"
 #include "PluginManager.h"
 
@@ -13,6 +17,16 @@
 #define RO_LOG_ERR(...) spdlog::error(__VA_ARGS__)
 #define RO_LOG_DEBUG(...) spdlog::debug(__VA_ARGS__)
 #define RO_ASSERT(_EXPR) assert(_EXPR)
+
+#if defined(_WIN32)
+#if defined(ENGINE_EXPORTS)
+#define ENGINE_API __declspec(dllexport)
+#else
+#define ENGINE_API __declspec(dllimport)
+#endif
+#else
+#define ENGINE_API __attribute__((visibility("default")))
+#endif
 
 namespace Roar {
 

@@ -1,10 +1,15 @@
 #pragma once
 
+#include "framework.h"
+
 #include "PluginManager.h"
+#include "INetwork.h"
 
 #if defined(_WIN32)
-#define WIN32_LEAN_AND_MEAN
-#include <windows.h>
+#pragma comment(lib, "Ws2_32.lib")
+#endif
+
+#if defined(_WIN32)
 #include <winsock2.h>
 #include <ws2tcpip.h>
 typedef int socklen_t;
@@ -302,6 +307,7 @@ class NetClient {
     SOCKET_TYPE GetFd() const { return _socket.GetFd(); }
     bool IsConnected() const { return _connected; }
 };
+
 
 class INetwork : public IPlugin {
   public:

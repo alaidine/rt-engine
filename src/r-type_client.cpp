@@ -13,14 +13,6 @@ void DrawMissiles(void);
 void Fire(void);
 
 struct {
-    // Mob storage (received from server)
-    std::vector<MobState> m_mobs;
-
-    // Wave system info (received from server)
-    float m_countdownTimer;
-    unsigned int m_currentWave;
-    bool m_waveActive;
-
     // Networking
     bool m_clientInitialized;
     bool m_connected;              // Connected to the server
@@ -56,10 +48,10 @@ Roar::NetlibNetwork *net = nullptr;
 Roar::NetClient *client = nullptr;
 
 void init() {
-    Roar::PluginSystem::AddPlugin("networking");
+    Roar::PluginSystem::AddPlugin("NetworkPlugin");
     Roar::PluginSystem::Startup();
 
-    net = Roar::registry->GetSystem<Roar::NetlibNetwork>("NetlibNetwork");
+    net = Roar::GetRegistry()->GetSystem<Roar::NetlibNetwork>("NetlibNetwork");
     RO_LOG_INFO("Network plugin ID: {}", net->GetID());
 
     client = net->NewClient();
@@ -84,10 +76,6 @@ void init() {
     state.m_player = {0};
     state.m_background = {0};
     state.m_mob = {0};
-    // Wave system
-    state.m_countdownTimer = 0.0f;
-    state.m_currentWave = 0;
-    state.m_waveActive = false;
     state.m_missileAnimationRectangles.push_back({0, 128, 25, 22});
     state.m_missileAnimationRectangles.push_back({25, 128, 31, 22});
     state.m_missileAnimationRectangles.push_back({56, 128, 40, 22});

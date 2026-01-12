@@ -24,10 +24,10 @@ Roar::NetlibNetwork *net = nullptr;
 Roar::NetServer *server = nullptr;
 
 static void init() {
-    Roar::PluginSystem::AddPlugin("networking");
+    Roar::PluginSystem::AddPlugin("NetworkPlugin");
     Roar::PluginSystem::Startup();
 
-    net = Roar::registry->GetSystem<Roar::NetlibNetwork>("NetlibNetwork");
+    net = Roar::GetRegistry()->GetSystem<Roar::NetlibNetwork>("NetlibNetwork");
     server = net->NewServer(PORT);
 
     if (!server->Start()) {

@@ -3,19 +3,23 @@
 namespace Roar {
 
 std::vector<std::string> g_Plugins;
-PluginRegistry *registry = nullptr;
+static PluginRegistry *g_internalRegistry = nullptr;
 
 namespace PluginSystem {
 
 void AddPlugin(std::string pluginName) { g_Plugins.push_back(pluginName); }
 
-void Startup() {
-    registry = new PluginRegistry;
-    registry->LoadLibs(g_Plugins);
-}
+void Startup() { GetRegistry()->LoadLibs(g_Plugins); }
 
-void Shutdown() { registry->Shutdown(); }
+void Shutdown() { GetRegistry()->Shutdown(); }
 } // namespace PluginSystem
+
+PluginRegistry *GetRegistry() {
+    if (!g_internalRegistry) {
+        g_internalRegistry = new PluginRegistry();
+    }
+    return g_internalRegistry;
+}
 
 LibraryHandle LibraryLoader::Load(const std::string &path) {
 #if defined(_WIN32)
