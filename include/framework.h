@@ -103,5 +103,4 @@ typedef struct tagMSG *LPMSG;
 #include <time.h>
 #endif
 
-
 #endif

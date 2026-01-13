@@ -55,7 +55,7 @@ target_link_libraries(TestPlugin PUBLIC RoarEngine)
 # Physics plugin
 add_library(PhysicsPlugin SHARED PhysicsPlugin.cpp ../include/IPhysics.h)
 target_include_directories(PhysicsPlugin PUBLIC ${CMAKE_SOURCE_DIR}/include)
-target_link_libraries(PhysicsPlugin PUBLIC RoarEngine)
+target_link_libraries(PhysicsPlugin PUBLIC RoarEngine box2d::box2d)
 
 # Audio plugin
 add_library(AudioPlugin SHARED AudioPlugin.cpp ../include/IAudio.h)
@@ -71,6 +71,11 @@ target_link_libraries(TestGame RoarEngine)
 add_executable(Pong pong.cpp)
 target_include_directories(Pong PUBLIC ${CMAKE_SOURCE_DIR}/include)
 target_link_libraries(Pong RoarEngine)
+
+# Platformer
+add_executable(Platformer Platformer.cpp)
+target_include_directories(Platformer PUBLIC ${CMAKE_SOURCE_DIR}/include)
+target_link_libraries(Platformer RoarEngine)
 
 # R-Type client
 add_executable(R-Type_Client r-type_client.cpp r-type.cpp ${CMAKE_SOURCE_DIR}/include/r-type.h)

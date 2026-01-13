@@ -13,6 +13,7 @@ add_compile_definitions(USE_LIBTYPE_SHARED)
 
 find_package(spdlog REQUIRED)
 find_package(raylib REQUIRED)
+find_package(box2d REQUIRED)
 find_package(asio REQUIRED)
 find_package(glm REQUIRED)
 
