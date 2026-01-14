@@ -15,6 +15,7 @@ class CompressorRecipe(ConanFile):
 
     def configure(self):
         self.options["raylib"].shared = True
+        self.options["box2d"].shared = True
     
     def layout(self):
         cmake_layout(self)

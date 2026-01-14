@@ -4,25 +4,8 @@
 #include "box2d/box2d.h"
 #include "raylib.h"
 
-constexpr uint32_t GROUND_COUNT = 5;
-constexpr uint32_t BOX_COUNT = 5;
-
-uint32_t WIDTH = 1920;
-uint32_t HEIGHT = 1080;
-
-struct ShapeUserData {
-    float maxPush;
-    bool clipVelocity;
-};
-
-enum CollisionBits : uint64_t {
-    StaticBit = 0x0001,
-    MoverBit = 0x0002,
-    DynamicBit = 0x0004,
-    DebrisBit = 0x0008,
-
-    AllBits = ~0u,
-};
+constexpr uint32_t GROUND_COUNT = 14;
+constexpr uint32_t BOX_COUNT = 10;
 
 namespace Roar {
 namespace Physics {
@@ -44,6 +27,9 @@ class Box2DPhysics : public IPhysics {
     const char *GetID() const override { return "Box2DPhysics"; }
 
   private:
+    uint32_t WIDTH = 1920;
+    uint32_t HEIGHT = 1080;
+
     struct DemoData {
         Texture groundTexture;
         Texture boxTexture;
@@ -57,12 +43,6 @@ class Box2DPhysics : public IPhysics {
         b2Polygon boxPolygon;
         Entity groundEntities[GROUND_COUNT];
         Entity boxEntities[BOX_COUNT];
-        
-        // Character mover stuff
-        float throttle;
-        b2Capsule capsule;
-        b2BodyId capsuleId;
-        ShapeUserData friendlyShape;
     } demoData;
 
     b2WorldDef worldDef;

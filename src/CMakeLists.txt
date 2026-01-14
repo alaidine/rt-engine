@@ -57,6 +57,16 @@ add_library(Box2DPhysicsPlugin SHARED Box2DPhysics.cpp ../include/IPhysics.h ../
 target_include_directories(Box2DPhysicsPlugin PUBLIC ${CMAKE_SOURCE_DIR}/include)
 target_link_libraries(Box2DPhysicsPlugin PUBLIC RoarEngine box2d::box2d)
 
+if(WIN32)
+    add_custom_command(TARGET Box2DPhysicsPlugin POST_BUILD
+        COMMAND ${CMAKE_COMMAND} -E copy_if_different
+            $<TARGET_RUNTIME_DLLS:Box2DPhysicsPlugin>
+            $<TARGET_FILE_DIR:Box2DPhysicsPlugin>
+        COMMAND_EXPAND_LISTS
+        COMMENT "Copying dependency DLLs to output directory..."
+    )
+endif()
+
 # Audio plugin
 add_library(AudioPlugin SHARED AudioPlugin.cpp ../include/IAudio.h)
 target_include_directories(AudioPlugin PUBLIC ${CMAKE_SOURCE_DIR}/include)
