@@ -17,9 +17,11 @@ jobs:
       matrix:
         include:
           - os: windows-latest
+            conan-config: default
             conan-target: release
           - os: ubuntu-latest
             conan-target: release
+            conan-config: release
     steps:
       - uses: actions/checkout@v4
 
@@ -46,7 +48,7 @@ jobs:
         run: conan install . --output-folder build --build=missing -s compiler.cppstd=20 -c tools.system.package_manager:mode=install -c tools.system.package_manager:sudo=True
 
       - name: Configure CMake
-        run: cmake --preset conan-${{ matrix.conan-target }}
+        run: cmake --preset conan-${{ matrix.conan-config }}
 
       - name: Build
         run: cmake --build --preset conan-${{ matrix.conan-target }} --config Release
