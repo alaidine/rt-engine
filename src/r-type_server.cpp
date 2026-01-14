@@ -235,7 +235,7 @@ static void frame() {
 #if defined(_WIN32) || defined(_WIN64)
     Sleep((DWORD)(state.tick_dt * 1000));
 #else
-    long nanos = (long)(tick_dt * 1e9);
+    long nanos = (long)(state.tick_dt * 1e9);
     struct timespec t = {.tv_sec = nanos / 999999999, .tv_nsec = nanos % 999999999};
     nanosleep(&t, &t);
 #endif

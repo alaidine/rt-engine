@@ -6,7 +6,7 @@ RoarEngine.exe
 .vscode/
 out/
 
-samples/
+RoarEngine_Samples/
 
 mono/
 mono64.zip

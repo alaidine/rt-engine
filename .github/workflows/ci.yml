@@ -3,11 +3,15 @@ name: C++ CI
 on:
   push:
     branches: [main]
+    tags: ["v*"]
   pull_request:
     branches: [main]
 
+permissions:
+  contents: write
+
 jobs:
-  build-and-test:
+  build:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
@@ -25,7 +29,7 @@ jobs:
           python-version: "3.11"
 
       - name: Install Conan
-        run: pip install conan==2.*
+        run: pip install conan==2.* cmake
 
       - name: Cache Conan dependencies
         id: cache-conan
@@ -39,10 +43,33 @@ jobs:
         run: conan profile detect --force
 
       - name: Install deps (Conan)
-        run: conan install . --output-folder build --build=missing
+        run: conan install . --output-folder build --build=missing -s compiler.cppstd=20 -c tools.system.package_manager:mode=install -c tools.system.package_manager:sudo=True
 
       - name: Configure CMake
         run: cmake --preset conan-${{ matrix.conan-target }}
 
       - name: Build
-        run: cmake --build build --config Release
+        run: cmake --build --preset conan-${{ matrix.conan-target }} --config Release
+
+      - name: Package Release
+        shell: bash
+        run: |
+          mkdir -p dist/include
+          cp -r include/* dist/include/
+
+          if [ "${{ runner.os }}" == "Windows" ]; then
+            find build \( -name "*.exe" -o -name "*.lib" -o -name "*.dll" \) -not -path "*/CMakeFiles/*" -exec cp {} dist/ \;
+            cd dist && 7z a ../RoarEngine-Windows.zip *
+          else
+            find build -type f -executable -not -path "*/CMakeFiles/*" -not -name "CMake*" -not -name "*.cmake" -not -name "Makefile" -exec cp {} dist/ \;
+            find build \( -name "*.a" -o -name "*.so" \) -not -path "*/CMakeFiles/*" -exec cp {} dist/ \;
+            cd dist && tar -czvf ../RoarEngine-Linux.tar.gz *
+          fi
+
+      - name: Create Release
+        if: startsWith(github.ref, 'refs/tags/')
+        uses: softprops/action-gh-release@v1
+        with:
+          files: |
+            RoarEngine-Windows.zip
+            RoarEngine-Linux.tar.gz
