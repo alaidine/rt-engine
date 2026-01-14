@@ -14,7 +14,7 @@ typedef struct Entity {
     b2BodyId bodyId;
     b2Vec2 extent;
     Texture texture;
-};
+} Entity;
 
 class Box2DPhysics : public IPhysics {
   public:

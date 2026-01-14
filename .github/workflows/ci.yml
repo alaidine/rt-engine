@@ -45,7 +45,7 @@ jobs:
         run: conan profile detect --force
 
       - name: Install deps (Conan)
-        run: conan install . --output-folder build --build=missing -s compiler.cppstd=20 -c tools.system.package_manager:mode=install -c tools.system.package_manager:sudo=True --deployer=full_deploy -o spdlog/*:header_only=True
+        run: conan install . --output-folder build --build=missing -s compiler.cppstd=20 -c tools.system.package_manager:mode=install -c tools.system.package_manager:sudo=True --deployer=full_deploy -o spdlog/*:external_fmt=False
 
       - name: Configure CMake
         run: cmake --preset conan-${{ matrix.conan-config }}
