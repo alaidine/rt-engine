@@ -45,7 +45,7 @@ jobs:
         run: conan profile detect --force
 
       - name: Install deps (Conan)
-        run: conan install . --output-folder build --build=missing -s compiler.cppstd=20 -c tools.system.package_manager:mode=install -c tools.system.package_manager:sudo=True --deployer=full_deploy
+        run: conan install . --output-folder build --build=missing -s compiler.cppstd=20 -c tools.system.package_manager:mode=install -c tools.system.package_manager:sudo=True --deployer=full_deploy -o spdlog/*:header_only=True
 
       - name: Configure CMake
         run: cmake --preset conan-${{ matrix.conan-config }}
@@ -61,7 +61,14 @@ jobs:
 
           # Copy dependencies headers
           find build/full_deploy -type d -name include | while read dir; do
-            cp -r "$dir"/. dist/include/
+            cp -rL "$dir"/. dist/include/
+          done
+
+          # Copy dependencies licenses
+          find build/full_deploy -type f \( -iname "LICENSE*" -o -iname "COPYING*" -o -iname "Copyright*" \) | while read file; do
+            rel_path="${file#build/full_deploy/}"
+            mkdir -p "dist/licenses/$(dirname "$rel_path")"
+            cp "$file" "dist/licenses/$rel_path"
           done
 
           if [ "${{ runner.os }}" == "Windows" ]; then
