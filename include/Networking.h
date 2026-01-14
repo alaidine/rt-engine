@@ -2,8 +2,8 @@
 
 #include "framework.h"
 
-#include "PluginManager.h"
 #include "INetwork.h"
+#include "PluginManager.h"
 
 #if defined(_WIN32)
 #pragma comment(lib, "Ws2_32.lib")
@@ -35,7 +35,7 @@ typedef int socklen_t;
 
 namespace Roar {
 
-class NetBuffer {
+class NetBuffer : public INetBuffer {
   private:
     uint8_t *_data;
     size_t _size;
@@ -44,45 +44,44 @@ class NetBuffer {
 
   public:
     NetBuffer(size_t capacity = 4096) : _size(0), _capacity(capacity), _readPos(0) { _data = new uint8_t[capacity]; }
-
     ~NetBuffer() { delete[] _data; }
 
     // Write operations
-    void WriteUInt8(uint8_t value) {
+    void WriteUInt8(uint8_t value) override {
         if (_size + sizeof(uint8_t) > _capacity)
             return;
         _data[_size++] = value;
     }
 
-    void WriteUInt16(uint16_t value) {
+    void WriteUInt16(uint16_t value) override {
         if (_size + sizeof(uint16_t) > _capacity)
             return;
         memcpy(_data + _size, &value, sizeof(uint16_t));
         _size += sizeof(uint16_t);
     }
 
-    void WriteUInt32(uint32_t value) {
+    void WriteUInt32(uint32_t value) override {
         if (_size + sizeof(uint32_t) > _capacity)
             return;
         memcpy(_data + _size, &value, sizeof(uint32_t));
         _size += sizeof(uint32_t);
     }
 
-    void WriteInt32(int32_t value) {
+    void WriteInt32(int32_t value) override {
         if (_size + sizeof(int32_t) > _capacity)
             return;
         memcpy(_data + _size, &value, sizeof(int32_t));
         _size += sizeof(int32_t);
     }
 
-    void WriteFloat(float value) {
+    void WriteFloat(float value) override {
         if (_size + sizeof(float) > _capacity)
             return;
         memcpy(_data + _size, &value, sizeof(float));
         _size += sizeof(float);
     }
 
-    void WriteBytes(const void *data, size_t length) {
+    void WriteBytes(const void *data, size_t length) override {
         if (_size + length > _capacity)
             return;
         memcpy(_data + _size, data, length);
@@ -90,13 +89,13 @@ class NetBuffer {
     }
 
     // Read operations
-    uint8_t ReadUInt8() {
+    uint8_t ReadUInt8() override {
         if (_readPos + sizeof(uint8_t) > _size)
             return 0;
         return _data[_readPos++];
     }
 
-    uint16_t ReadUInt16() {
+    uint16_t ReadUInt16() override {
         if (_readPos + sizeof(uint16_t) > _size)
             return 0;
         uint16_t value;
@@ -105,7 +104,7 @@ class NetBuffer {
         return value;
     }
 
-    uint32_t ReadUInt32() {
+    uint32_t ReadUInt32() override {
         if (_readPos + sizeof(uint32_t) > _size)
             return 0;
         uint32_t value;
@@ -114,7 +113,7 @@ class NetBuffer {
         return value;
     }
 
-    int32_t ReadInt32() {
+    int32_t ReadInt32() override {
         if (_readPos + sizeof(int32_t) > _size)
             return 0;
         int32_t value;
@@ -123,7 +122,7 @@ class NetBuffer {
         return value;
     }
 
-    float ReadFloat() {
+    float ReadFloat() override {
         if (_readPos + sizeof(float) > _size)
             return 0.0f;
         float value;
@@ -132,7 +131,7 @@ class NetBuffer {
         return value;
     }
 
-    void ReadBytes(void *dest, size_t length) {
+    void ReadBytes(void *dest, size_t length) override {
         if (_readPos + length > _size)
             return;
         memcpy(dest, _data + _readPos, length);
@@ -140,21 +139,21 @@ class NetBuffer {
     }
 
     // Utility
-    void Clear() {
+    void Clear() override {
         _size = 0;
         _readPos = 0;
     }
 
-    void ResetRead() { _readPos = 0; }
+    void ResetRead() override { _readPos = 0; }
 
-    uint8_t *GetData() { return _data; }
-    const uint8_t *GetData() const { return _data; }
-    size_t GetSize() const { return _size; }
-    size_t GetReadPos() const { return _readPos; }
-    bool CanRead(size_t bytes) const { return _readPos + bytes <= _size; }
+    uint8_t *GetData() override { return _data; }
+    const uint8_t *GetData() const override { return _data; }
+    size_t GetSize() const override { return _size; }
+    size_t GetReadPos() const override { return _readPos; }
+    bool CanRead(size_t bytes) const override { return _readPos + bytes <= _size; }
 
     // Load data from external buffer
-    void LoadData(const uint8_t *data, size_t size) {
+    void LoadData(const uint8_t *data, size_t size) override {
         if (size > _capacity)
             return;
         memcpy(_data, data, size);
@@ -163,7 +162,7 @@ class NetBuffer {
     }
 };
 
-class NetSocket {
+class NetSocket : public INetSocket {
   private:
     SOCKET_TYPE _sockfd;
     sockaddr_in _addr;
@@ -194,7 +193,7 @@ class NetSocket {
 #endif
     }
 
-    bool Bind(uint16_t port) {
+    bool Bind(uint16_t port) override {
         memset(&_addr, 0, sizeof(_addr));
         _addr.sin_family = AF_INET;
         _addr.sin_addr.s_addr = INADDR_ANY;
@@ -218,13 +217,13 @@ class NetSocket {
         return true;
     }
 
-    bool SendTo(const NetBuffer &buffer, const sockaddr_in &dest) {
+    bool SendTo(const INetBuffer &buffer, const sockaddr_in &dest) override {
         int sent =
             sendto(_sockfd, (const char *)buffer.GetData(), (int)buffer.GetSize(), 0, (struct sockaddr *)&dest, sizeof(dest));
         return sent > 0;
     }
 
-    bool SendTo(const NetBuffer &buffer, const char *ip, uint16_t port) {
+    bool SendTo(const INetBuffer &buffer, const char *ip, uint16_t port) override {
         sockaddr_in dest;
         memset(&dest, 0, sizeof(dest));
         dest.sin_family = AF_INET;
@@ -234,7 +233,7 @@ class NetSocket {
         return SendTo(buffer, dest);
     }
 
-    int ReceiveFrom(NetBuffer &buffer, sockaddr_in &from) {
+    int ReceiveFrom(INetBuffer &buffer, sockaddr_in &from) override {
         char temp[4096];
         socklen_t fromLen = sizeof(from);
 
@@ -248,28 +247,24 @@ class NetSocket {
         return received; // 0 or -1
     }
 
-    SOCKET_TYPE GetFd() const { return _sockfd; }
-    bool IsBound() const { return _bound; }
+    SOCKET_TYPE GetFd() const override { return _sockfd; }
+    bool IsBound() const override { return _bound; }
 };
 
-class NetServer {
+class NetServer : public INetServer {
   private:
     NetSocket _socket;
     uint16_t _port;
 
   public:
     NetServer(uint16_t port) : _port(port) {}
-
-    bool Start() { return _socket.Bind(_port); }
-
-    int Receive(NetBuffer &buffer, sockaddr_in &from) { return _socket.ReceiveFrom(buffer, from); }
-
-    bool SendTo(const NetBuffer &buffer, const sockaddr_in &dest) { return _socket.SendTo(buffer, dest); }
-
-    SOCKET_TYPE GetFd() const { return _socket.GetFd(); }
+    bool Start() override { return _socket.Bind(_port); }
+    int Receive(INetBuffer &buffer, sockaddr_in &from) override { return _socket.ReceiveFrom(buffer, from); }
+    bool SendTo(const INetBuffer &buffer, const sockaddr_in &dest) override { return _socket.SendTo(buffer, dest); }
+    SOCKET_TYPE GetFd() const override { return _socket.GetFd(); }
 };
 
-class NetClient {
+class NetClient : public INetClient {
   private:
     NetSocket _socket;
     sockaddr_in _serverAddr;
@@ -278,7 +273,7 @@ class NetClient {
   public:
     NetClient() : _connected(false) {}
 
-    bool Connect(const char *ip, uint16_t port) {
+    bool Connect(const char *ip, uint16_t port) override {
         // Bind to any port
         if (!_socket.Bind(0)) {
             return false;
@@ -293,35 +288,27 @@ class NetClient {
         return true;
     }
 
-    bool Send(const NetBuffer &buffer) {
+    bool Send(const INetBuffer &buffer) override {
         if (!_connected)
             return false;
         return _socket.SendTo(buffer, _serverAddr);
     }
 
-    int Receive(NetBuffer &buffer) {
+    int Receive(INetBuffer &buffer) override {
         sockaddr_in from;
         return _socket.ReceiveFrom(buffer, from);
     }
 
-    SOCKET_TYPE GetFd() const { return _socket.GetFd(); }
-    bool IsConnected() const { return _connected; }
-};
-
-
-class INetwork : public IPlugin {
-  public:
-    virtual NetClient *NewClient() = 0;
-    virtual NetServer *NewServer(uint16_t port) = 0;
-    virtual NetBuffer *NewBuffer() = 0;
+    SOCKET_TYPE GetFd() const override { return _socket.GetFd(); }
+    bool IsConnected() const override { return _connected; }
 };
 
 class NetlibNetwork : public INetwork {
   public:
-    NetClient *NewClient() { return new NetClient(); }
-    NetServer *NewServer(uint16_t port) { return new NetServer(port); }
-    NetBuffer *NewBuffer() { return new NetBuffer(); }
-    const char *GetID() const { return "NetlibNetwork"; }
+    INetClient *NewClient() override { return new NetClient(); }
+    INetServer *NewServer(uint16_t port) override { return new NetServer(port); }
+    INetBuffer *NewBuffer() override { return new NetBuffer(); }
+    const char *GetID() const override { return "NetlibNetwork"; }
 };
 
 } // namespace Roar

@@ -1,3 +1,4 @@
+#include "framework.h"
 #include "RoarEngine.h"
 #include "r-type.h"
 #include <algorithm>
@@ -54,7 +55,7 @@ static void init() {
     net = Roar::GetRegistry()->GetSystem<Roar::NetlibNetwork>("NetlibNetwork");
     RO_LOG_INFO("Network plugin ID: {}", net->GetID());
 
-    client = net->NewClient();
+    client = static_cast<Roar::NetClient*>(net->NewClient());
 
     state.m_clientInitialized = false;
     state.m_connected = false;
@@ -485,8 +486,6 @@ static void UpdateAndDraw(void) {
 }
 
 void InitClient(char *serverIp) {
-    client = net->NewClient();
-
     if (!client->Connect(serverIp, PORT)) {
         TraceLog(LOG_WARNING, "Failed to connect to server at %s:%d", serverIp, PORT);
         state.m_disconnected = true;

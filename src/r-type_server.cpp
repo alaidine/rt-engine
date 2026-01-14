@@ -1,3 +1,4 @@
+#include "framework.h"
 #include "RoarEngine.h"
 #include "r-type.h"
 
@@ -28,7 +29,7 @@ static void init() {
     Roar::PluginSystem::Startup();
 
     net = Roar::GetRegistry()->GetSystem<Roar::NetlibNetwork>("NetlibNetwork");
-    server = net->NewServer(PORT);
+    server = static_cast<Roar::NetServer*>(net->NewServer(PORT));
 
     if (!server->Start()) {
         RO_LOG_ERR("Failed to start server on port {}", PORT);

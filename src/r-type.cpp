@@ -7,7 +7,7 @@
 
 // Serialization functions using NetBuffer
 
-void SerializeMissile(Roar::NetBuffer &buffer, const Missile &missile) {
+void SerializeMissile(Roar::INetBuffer &buffer, const Missile &missile) {
     buffer.WriteFloat(missile.pos.x);
     buffer.WriteFloat(missile.pos.y);
     buffer.WriteFloat(missile.rect.x);
@@ -19,7 +19,7 @@ void SerializeMissile(Roar::NetBuffer &buffer, const Missile &missile) {
     buffer.WriteUInt32(missile.framesCounter);
 }
 
-Missile DeserializeMissile(Roar::NetBuffer &buffer) {
+Missile DeserializeMissile(Roar::INetBuffer &buffer) {
     Missile missile;
     missile.pos.x = buffer.ReadFloat();
     missile.pos.y = buffer.ReadFloat();
@@ -33,7 +33,7 @@ Missile DeserializeMissile(Roar::NetBuffer &buffer) {
     return missile;
 }
 
-void SerializeUpdateStateMessage(Roar::NetBuffer &buffer, const UpdateStateMessage &msg) {
+void SerializeUpdateStateMessage(Roar::INetBuffer &buffer, const UpdateStateMessage &msg) {
     buffer.WriteInt32(msg.x);
     buffer.WriteInt32(msg.y);
     buffer.WriteUInt32(msg.missile_count);
@@ -43,7 +43,7 @@ void SerializeUpdateStateMessage(Roar::NetBuffer &buffer, const UpdateStateMessa
     }
 }
 
-UpdateStateMessage DeserializeUpdateStateMessage(Roar::NetBuffer &buffer) {
+UpdateStateMessage DeserializeUpdateStateMessage(Roar::INetBuffer &buffer) {
     UpdateStateMessage msg;
     msg.x = buffer.ReadInt32();
     msg.y = buffer.ReadInt32();
@@ -59,7 +59,7 @@ UpdateStateMessage DeserializeUpdateStateMessage(Roar::NetBuffer &buffer) {
     return msg;
 }
 
-void SerializeClientState(Roar::NetBuffer & buffer, const ClientState &state) {
+void SerializeClientState(Roar::INetBuffer & buffer, const ClientState &state) {
     buffer.WriteUInt32(state.client_id);
     buffer.WriteInt32(state.x);
     buffer.WriteInt32(state.y);
@@ -70,7 +70,7 @@ void SerializeClientState(Roar::NetBuffer & buffer, const ClientState &state) {
     }
 }
 
-ClientState DeserializeClientState(Roar::NetBuffer &buffer) {
+ClientState DeserializeClientState(Roar::INetBuffer &buffer) {
     ClientState state;
     state.client_id = buffer.ReadUInt32();
     state.x = buffer.ReadInt32();
@@ -87,14 +87,14 @@ ClientState DeserializeClientState(Roar::NetBuffer &buffer) {
     return state;
 }
 
-void SerializeMobState(Roar::NetBuffer &buffer, const MobState &mob) {
+void SerializeMobState(Roar::INetBuffer &buffer, const MobState &mob) {
     buffer.WriteUInt32(mob.mob_id);
     buffer.WriteFloat(mob.x);
     buffer.WriteFloat(mob.y);
     buffer.WriteUInt8(mob.active ? 1 : 0);
 }
 
-MobState DeserializeMobState(Roar::NetBuffer &buffer) {
+MobState DeserializeMobState(Roar::INetBuffer &buffer) {
     MobState mob;
     mob.mob_id = buffer.ReadUInt32();
     mob.x = buffer.ReadFloat();
@@ -103,7 +103,7 @@ MobState DeserializeMobState(Roar::NetBuffer &buffer) {
     return mob;
 }
 
-void SerializeGameStateMessage(Roar::NetBuffer &buffer, const GameStateMessage &msg) {
+void SerializeGameStateMessage(Roar::INetBuffer &buffer, const GameStateMessage &msg) {
     buffer.WriteUInt32(msg.client_count);
 
     for (unsigned int i = 0; i < msg.client_count; i++) {
@@ -116,7 +116,7 @@ void SerializeGameStateMessage(Roar::NetBuffer &buffer, const GameStateMessage &
     buffer.WriteUInt8(msg.wave_active ? 1 : 0);
 }
 
-GameStateMessage DeserializeGameStateMessage(Roar::NetBuffer &buffer) {
+GameStateMessage DeserializeGameStateMessage(Roar::INetBuffer &buffer) {
     GameStateMessage msg;
     msg.client_count = buffer.ReadUInt32();
 
@@ -135,13 +135,13 @@ GameStateMessage DeserializeGameStateMessage(Roar::NetBuffer &buffer) {
     return msg;
 }
 
-void SerializeConnectAcceptData(Roar::NetBuffer &buffer, const ConnectAcceptData &data) {
+void SerializeConnectAcceptData(Roar::INetBuffer &buffer, const ConnectAcceptData &data) {
     buffer.WriteUInt32(data.client_id);
     buffer.WriteInt32(data.spawn_x);
     buffer.WriteInt32(data.spawn_y);
 }
 
-ConnectAcceptData DeserializeConnectAcceptData(Roar::NetBuffer &buffer) {
+ConnectAcceptData DeserializeConnectAcceptData(Roar::INetBuffer &buffer) {
     ConnectAcceptData data;
     data.client_id = buffer.ReadUInt32();
     data.spawn_x = buffer.ReadInt32();

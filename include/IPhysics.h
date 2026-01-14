@@ -12,15 +12,10 @@ class IPhysics : public IPlugin {
     virtual void InitDemo(uint32_t width, uint32_t height) = 0;
     virtual void UpdateDemo() = 0;
     virtual void CleanupDemo() = 0;
-};
 
-class Box2DPhysics : public IPhysics {
-  public:
-    void InitDemo(uint32_t width, uint32_t height) override;
-    void UpdateDemo() override;
-    void CleanupDemo() override;
-
-    const char *GetID() const override { return "Box2DPhysics"; }
+    virtual void Startup() = 0;
+    virtual void Step() = 0;
+    virtual void Shutdown() = 0;
 };
 
 } // namespace Physics

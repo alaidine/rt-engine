@@ -1,7 +1,7 @@
 #pragma once
 
 #include "framework.h"
-#include "Networking.h"
+#include "INetwork.h"
 #include "raylib.h"
 
 #define PROTOCOL_NAME "rt-protocol"
@@ -111,20 +111,20 @@ typedef struct {
 } ConnectAcceptData;
 
 // Serialization functions using NetBuffer
-void SerializeMissile(Roar::NetBuffer &buffer, const Missile &missile);
-Missile DeserializeMissile(Roar::NetBuffer &buffer);
+void SerializeMissile(Roar::INetBuffer &buffer, const Missile &missile);
+Missile DeserializeMissile(Roar::INetBuffer &buffer);
 
-void SerializeUpdateStateMessage(Roar::NetBuffer &buffer, const UpdateStateMessage &msg);
-UpdateStateMessage DeserializeUpdateStateMessage(Roar::NetBuffer &buffer);
+void SerializeUpdateStateMessage(Roar::INetBuffer &buffer, const UpdateStateMessage &msg);
+UpdateStateMessage DeserializeUpdateStateMessage(Roar::INetBuffer &buffer);
 
-void SerializeClientState(Roar::NetBuffer &buffer, const ClientState &state);
-ClientState DeserializeClientState(Roar::NetBuffer &buffer);
+void SerializeClientState(Roar::INetBuffer &buffer, const ClientState &state);
+ClientState DeserializeClientState(Roar::INetBuffer &buffer);
 
-void SerializeMobState(Roar::NetBuffer &buffer, const MobState &mob);
-MobState DeserializeMobState(Roar::NetBuffer &buffer);
+void SerializeMobState(Roar::INetBuffer &buffer, const MobState &mob);
+MobState DeserializeMobState(Roar::INetBuffer &buffer);
 
-void SerializeGameStateMessage(Roar::NetBuffer &buffer, const GameStateMessage &msg);
-GameStateMessage DeserializeGameStateMessage(Roar::NetBuffer &buffer);
+void SerializeGameStateMessage(Roar::INetBuffer &buffer, const GameStateMessage &msg);
+GameStateMessage DeserializeGameStateMessage(Roar::INetBuffer &buffer);
 
-void SerializeConnectAcceptData(Roar::NetBuffer &buffer, const ConnectAcceptData &data);
-ConnectAcceptData DeserializeConnectAcceptData(Roar::NetBuffer &buffer);
+void SerializeConnectAcceptData(Roar::INetBuffer &buffer, const ConnectAcceptData &data);
+ConnectAcceptData DeserializeConnectAcceptData(Roar::INetBuffer &buffer);

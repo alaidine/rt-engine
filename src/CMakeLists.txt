@@ -52,10 +52,10 @@ add_library(TestPlugin SHARED TestPlugin.cpp)
 target_include_directories(TestPlugin PUBLIC ${CMAKE_SOURCE_DIR}/include)
 target_link_libraries(TestPlugin PUBLIC RoarEngine)
 
-# Physics plugin
-add_library(PhysicsPlugin SHARED PhysicsPlugin.cpp ../include/IPhysics.h)
-target_include_directories(PhysicsPlugin PUBLIC ${CMAKE_SOURCE_DIR}/include)
-target_link_libraries(PhysicsPlugin PUBLIC RoarEngine box2d::box2d)
+# Box2D Physics plugin
+add_library(Box2DPhysicsPlugin SHARED Box2DPhysics.cpp ../include/IPhysics.h ../include/Box2DPhysics.h)
+target_include_directories(Box2DPhysicsPlugin PUBLIC ${CMAKE_SOURCE_DIR}/include)
+target_link_libraries(Box2DPhysicsPlugin PUBLIC RoarEngine box2d::box2d)
 
 # Audio plugin
 add_library(AudioPlugin SHARED AudioPlugin.cpp ../include/IAudio.h)
