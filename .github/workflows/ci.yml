@@ -45,7 +45,7 @@ jobs:
         run: conan profile detect --force
 
       - name: Install deps (Conan)
-        run: conan install . --output-folder build --build=missing -s compiler.cppstd=20 -c tools.system.package_manager:mode=install -c tools.system.package_manager:sudo=True
+        run: conan install . --output-folder build --build=missing -s compiler.cppstd=20 -c tools.system.package_manager:mode=install -c tools.system.package_manager:sudo=True --deployer=full_deploy
 
       - name: Configure CMake
         run: cmake --preset conan-${{ matrix.conan-config }}
@@ -59,12 +59,27 @@ jobs:
           mkdir -p dist/include
           cp -r include/* dist/include/
 
+          # Copy dependencies headers
+          for dir in build/full_deploy/host/*/include; do
+            if [ -d "$dir" ]; then
+              cp -r "$dir"/* dist/include/
+            fi
+          done
+
           if [ "${{ runner.os }}" == "Windows" ]; then
-            find build \( -name "*.exe" -o -name "*.lib" -o -name "*.dll" \) -not -path "*/CMakeFiles/*" -exec cp {} dist/ \;
+            # Copy dependencies binaries
+            for dir in build/full_deploy/host/*/bin; do [ -d "$dir" ] && cp "$dir"/*.dll dist/ 2>/dev/null || : ; done
+            for dir in build/full_deploy/host/*/lib; do [ -d "$dir" ] && cp "$dir"/*.lib dist/ 2>/dev/null || : ; done
+
+            find build \( -name "*.exe" -o -name "*.lib" -o -name "*.dll" \) -not -path "*/CMakeFiles/*" -not -path "*/full_deploy/*" -exec cp {} dist/ \;
             cd dist && 7z a ../RoarEngine-Windows.zip *
           else
-            find build -type f -executable -not -path "*/CMakeFiles/*" -not -name "CMake*" -not -name "*.cmake" -not -name "Makefile" -exec cp {} dist/ \;
-            find build \( -name "*.a" -o -name "*.so" \) -not -path "*/CMakeFiles/*" -exec cp {} dist/ \;
+            # Copy dependencies binaries
+            for dir in build/full_deploy/host/*/lib; do [ -d "$dir" ] && cp "$dir"/*.a dist/ 2>/dev/null || : ; done
+            for dir in build/full_deploy/host/*/lib; do [ -d "$dir" ] && cp "$dir"/*.so dist/ 2>/dev/null || : ; done
+
+            find build -type f -executable -not -path "*/CMakeFiles/*" -not -path "*/full_deploy/*" -not -name "CMake*" -not -name "*.cmake" -not -name "Makefile" -exec cp {} dist/ \;
+            find build \( -name "*.a" -o -name "*.so" \) -not -path "*/CMakeFiles/*" -not -path "*/full_deploy/*" -exec cp {} dist/ \;
             cd dist && tar -czvf ../RoarEngine-Linux.tar.gz *
           fi
 
