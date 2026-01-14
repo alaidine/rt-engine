@@ -60,23 +60,21 @@ jobs:
           cp -r include/* dist/include/
 
           # Copy dependencies headers
-          for dir in build/full_deploy/*/include; do
-            if [ -d "$dir" ]; then
-              cp -r "$dir"/* dist/include/
-            fi
+          find build/full_deploy -type d -name include | while read dir; do
+            cp -r "$dir"/. dist/include/
           done
 
           if [ "${{ runner.os }}" == "Windows" ]; then
             # Copy dependencies binaries
-            for dir in build/full_deploy/*/bin; do [ -d "$dir" ] && cp "$dir"/*.dll dist/ 2>/dev/null || : ; done
-            for dir in build/full_deploy/*/lib; do [ -d "$dir" ] && cp "$dir"/*.lib dist/ 2>/dev/null || : ; done
+            find build/full_deploy -type d -name bin | while read dir; do cp "$dir"/*.dll dist/ 2>/dev/null || : ; done
+            find build/full_deploy -type d -name lib | while read dir; do cp "$dir"/*.lib dist/ 2>/dev/null || : ; done
 
             find build \( -name "*.exe" -o -name "*.lib" -o -name "*.dll" \) -not -path "*/CMakeFiles/*" -not -path "*/full_deploy/*" -exec cp {} dist/ \;
             cd dist && 7z a ../RoarEngine-Windows.zip *
           else
             # Copy dependencies binaries
-            for dir in build/full_deploy/*/lib; do [ -d "$dir" ] && cp "$dir"/*.a dist/ 2>/dev/null || : ; done
-            for dir in build/full_deploy/*/lib; do [ -d "$dir" ] && cp "$dir"/*.so dist/ 2>/dev/null || : ; done
+            find build/full_deploy -type d -name lib | while read dir; do cp "$dir"/*.a dist/ 2>/dev/null || : ; done
+            find build/full_deploy -type d -name lib | while read dir; do cp "$dir"/*.so dist/ 2>/dev/null || : ; done
 
             find build -type f -executable -not -path "*/CMakeFiles/*" -not -path "*/full_deploy/*" -not -name "CMake*" -not -name "*.cmake" -not -name "Makefile" -exec cp {} dist/ \;
             find build \( -name "*.a" -o -name "*.so" \) -not -path "*/CMakeFiles/*" -not -path "*/full_deploy/*" -exec cp {} dist/ \;
