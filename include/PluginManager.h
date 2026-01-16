@@ -1,8 +1,9 @@
 #pragma once
 
 #include "framework.h"
-
 #include "IPlugin.h"
+#include "RoarEngine.h"
+#include "spdlog/spdlog.h"
 
 #include <filesystem>
 #include <iostream>
@@ -18,7 +19,6 @@ typedef HMODULE LibraryHandle;
 #include <dlfcn.h>
 typedef void *LibraryHandle;
 #endif
-#include <RoarEngine.h>
 
 #if defined(_MSC_VER)
 #define PLUGIN_EXPORT __declspec(dllexport)
@@ -67,34 +67,7 @@ class PluginRegistry {
         }
     }
 
-    void LoadSingle(const std::string &path) {
-        LibraryHandle handle;
-
-#if defined(_WIN32)
-        handle = LibraryLoader::Load(path + ".dll");
-#else
-        handle = LibraryLoader::Load(path + ".so");
-#endif
-
-        if (!handle)
-            return;
-
-        auto creator = LibraryLoader::GetFunction<CreatePluginFunc>(handle, "CreatePlugin");
-
-        if (creator) {
-            IPlugin *plugin = creator();
-
-            std::string id = plugin->GetID();
-
-            if (m_plugins.find(id) == m_plugins.end()) {
-                m_plugins[id] = plugin;
-                m_loadedLibraries.push_back(handle);
-                std::cout << "Registered Plugin: " << id << std::endl;
-            } else {
-                std::cerr << "Conflict: Plugin " << id << " already loaded!" << std::endl;
-            }
-        }
-    }
+    void LoadSingle(const std::string &path);
 
     // The user asks for a specific Interface (T) and the ID string
     template <typename T> T *GetSystem(const std::string &id) {
@@ -127,7 +100,9 @@ PluginRegistry *GetRegistry();
 namespace PluginSystem {
 
 void AddPlugin(std::string pluginName);
+
 void Startup();
+
 void Shutdown();
 
 } // namespace PluginSystem

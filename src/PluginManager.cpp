@@ -28,13 +28,13 @@ LibraryHandle LibraryLoader::Load(const std::string &path) {
     // before loading!
     LibraryHandle handle = LoadLibraryA(path.c_str());
     if (!handle)
-        std::cerr << "Win32 Load Error: " << GetLastError() << std::endl;
+        ROAR_CORE_ERROR("Win32 Load Error: {}", GetLastError());
     return handle;
 #else
     // RTLD_NOW loads all symbols immediately
     LibraryHandle handle = dlopen(path.c_str(), RTLD_NOW);
     if (!handle)
-        std::cerr << "Linux Load Error: " << dlerror() << std::endl;
+        ROAR_CORE_ERROR("Linux Load Error: {}", dlerror());
     return handle;
 #endif
 }
@@ -44,7 +44,7 @@ void LibraryLoader::Unload(LibraryHandle handle) {
         return;
 #if defined(_WIN32)
     FreeLibrary(handle);
-    std::cout << "Library freed\n";
+    ROAR_CORE_INFO("Library freed");
 #else
     dlclose(handle);
 #endif
@@ -57,6 +57,35 @@ template <typename T> T LibraryLoader::GetFunction(LibraryHandle handle, const s
 #else
     return reinterpret_cast<T>(dlsym(handle, funcName.c_str()));
 #endif
+}
+
+void PluginRegistry::LoadSingle(const std::string &path) {
+    LibraryHandle handle;
+
+#if defined(_WIN32)
+    handle = LibraryLoader::Load(path + ".dll");
+#else
+    handle = LibraryLoader::Load("lib" + path + ".so");
+#endif
+
+    if (!handle)
+        return;
+
+    auto creator = LibraryLoader::GetFunction<CreatePluginFunc>(handle, "CreatePlugin");
+
+    if (creator) {
+        IPlugin *plugin = creator();
+
+        std::string id = plugin->GetID();
+
+        if (m_plugins.find(id) == m_plugins.end()) {
+            m_plugins[id] = plugin;
+            m_loadedLibraries.push_back(handle);
+            ROAR_CORE_INFO("Registered Plugin");
+        } else {
+            ROAR_CORE_ERROR("Conflict: Plugin {} already loaded!!!", id);
+        }
+    }
 }
 
 } // namespace Roar

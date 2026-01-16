@@ -2,7 +2,7 @@
 
 bool running = true;
 
-void CustomTraceLog(int msgType, const char *text, va_list args) {
+static void CustomTraceLog(int msgType, const char *text, va_list args) {
     // Calculate the length of the final string
     // We must copy args because vsnprintf "consumes" the list
     va_list args_copy;
@@ -24,16 +24,16 @@ void CustomTraceLog(int msgType, const char *text, va_list args) {
     // We use "{}", buffer.data() to be safe in case the message contains brace characters
     switch (msgType) {
     case LOG_INFO:
-        spdlog::info("{}", buffer.data());
+        ROAR_CORE_INFO("{}", buffer.data());
         break;
     case LOG_ERROR:
-        spdlog::error("{}", buffer.data());
+        ROAR_CORE_ERROR("{}", buffer.data());
         break;
     case LOG_WARNING:
-        spdlog::warn("{}", buffer.data());
+        ROAR_CORE_WARN("{}", buffer.data());
         break;
     case LOG_DEBUG:
-        spdlog::debug("{}", buffer.data());
+        ROAR_CORE_DEBUG("{}", buffer.data());
         break;
     default:
         break;
@@ -42,10 +42,30 @@ void CustomTraceLog(int msgType, const char *text, va_list args) {
 
 namespace Roar {
 
+std::shared_ptr<spdlog::logger> Log::s_CoreLogger;
+std::shared_ptr<spdlog::logger> Log::s_ClientLogger;
+
+void Log::Init() {
+    spdlog::set_pattern("%^[%H:%M:%S %z] [%L] %n: %v%$");
+
+    s_CoreLogger = spdlog::stdout_color_mt("ROAR");
+    s_CoreLogger->set_level(spdlog::level::trace);
+
+    s_ClientLogger = spdlog::stdout_color_mt("APP");
+    s_ClientLogger->set_level(spdlog::level::trace);
+}
+
+std::shared_ptr<spdlog::logger> &Log::GetCoreLogger() { return s_CoreLogger; }
+
+std::shared_ptr<spdlog::logger> &Log::GetClientLogger() { return s_ClientLogger; }
+
 void StopApp() { running = false; }
+
 bool IsAppRunning() { return running; }
 
 void AppRun(AppData appdata) {
+    Log::Init();
+
     SetTraceLogCallback(CustomTraceLog);
 
     if (!appdata.headless)

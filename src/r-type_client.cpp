@@ -53,7 +53,7 @@ static void init() {
     Roar::PluginSystem::Startup();
 
     net = Roar::GetRegistry()->GetSystem<Roar::NetlibNetwork>("NetlibNetwork");
-    RO_LOG_INFO("Network plugin ID: {}", net->GetID());
+    ROAR_INFO("Network plugin ID: {}", net->GetID());
 
     client = static_cast<Roar::NetClient*>(net->NewClient());
 

@@ -1,15 +1,9 @@
 #include "Box2DPhysics.h"
 
-#include "box2d/box2d.h"
-#include "raylib.h"
-
-#include <cassert>
-#include <cmath>
-
 namespace Roar {
 namespace Physics {
 
-void DrawEntity(const Entity *entity) {
+static void DrawEntity(const Entity *entity) {
     // The boxes were created centered on the bodies, but raylib draws textures starting at the top left corner.
     // b2Body_GetWorldPoint gets the top left corner of the box accounting for rotation.
     b2Vec2 p = b2Body_GetWorldPoint(entity->bodyId, b2Vec2{-entity->extent.x, -entity->extent.y});
@@ -17,7 +11,10 @@ void DrawEntity(const Entity *entity) {
     float radians = b2Rot_GetAngle(rotation);
 
     Vector2 ps = {p.x, p.y};
-    DrawTextureEx(entity->texture, ps, RAD2DEG * radians, 1.0f, WHITE);
+    Rectangle rect = {p.x, p.y, entity->extent.x * 2, entity->extent.y * 2};
+    //DrawTextureEx(entity->texture, ps, RAD2DEG * radians, 1.0f, WHITE);
+
+    DrawRectanglePro(rect, Vector2{0.0f, 0.0f}, RAD2DEG * radians, entity->color);
 
     // I used these circles to ensure the coordinates are correct
     // DrawCircleV(ps, 5.0f, BLACK);
@@ -65,6 +62,7 @@ void Box2DPhysics::InitDemo(uint32_t width, uint32_t height) {
         entity->bodyId = b2CreateBody(demoData.worldId, &bodyDef);
         entity->extent = demoData.groundExtent;
         entity->texture = demoData.groundTexture;
+        entity->color = ORANGE;
         b2ShapeDef shapeDef = b2DefaultShapeDef();
         b2CreatePolygonShape(entity->bodyId, &shapeDef, &demoData.groundPolygon);
     }
@@ -84,6 +82,7 @@ void Box2DPhysics::InitDemo(uint32_t width, uint32_t height) {
             entity->bodyId = b2CreateBody(demoData.worldId, &bodyDef);
             entity->texture = demoData.boxTexture;
             entity->extent = demoData.boxExtent;
+            entity->color = GREEN;
             b2ShapeDef shapeDef = b2DefaultShapeDef();
             b2CreatePolygonShape(entity->bodyId, &shapeDef, &demoData.boxPolygon);
 
@@ -100,6 +99,38 @@ void Box2DPhysics::InitDemo(uint32_t width, uint32_t height) {
 void Box2DPhysics::UpdateDemo(void) {
     if (IsKeyPressed(KEY_P)) {
         demoData.pause = !demoData.pause;
+    }
+
+    if (IsKeyDown(KEY_W)) {
+        for (int i = 0; i < BOX_COUNT; ++i) {
+            Entity *entity = demoData.boxEntities + i;
+        }
+    }
+
+    if (IsKeyDown(KEY_D)) {
+        for (int i = 0; i < BOX_COUNT; ++i) {
+            Entity *entity = demoData.boxEntities + i;
+            b2Vec2 currentVelocity = b2Body_GetLinearVelocity(entity->bodyId);
+            currentVelocity.x += 10.0f;
+            b2Body_SetLinearVelocity(entity->bodyId, currentVelocity);
+            b2Vec2 newVelocity = b2Body_GetLinearVelocity(entity->bodyId);
+
+            ROAR_INFO("Old velocity of entity {}: x = {}, y = {}", i, currentVelocity.x, currentVelocity.y);
+            ROAR_INFO("New velocity of entity {}: x = {}, y = {}", i, newVelocity.x, newVelocity.y);
+        }
+    }
+
+    if (IsKeyDown(KEY_A)) {
+        for (int i = 0; i < BOX_COUNT; ++i) {
+            Entity *entity = demoData.boxEntities + i;
+            b2Vec2 currentVelocity = b2Body_GetLinearVelocity(entity->bodyId);
+            currentVelocity.x -= 10.0f;
+            b2Body_SetLinearVelocity(entity->bodyId, currentVelocity);
+            b2Vec2 newVelocity = b2Body_GetLinearVelocity(entity->bodyId);
+
+            ROAR_INFO("Old velocity of entity {}: x = {}, y = {}", i, currentVelocity.x, currentVelocity.y);
+            ROAR_INFO("New velocity of entity {}: x = {}, y = {}", i, newVelocity.x, newVelocity.y);
+        }
     }
 
     if (demoData.pause == false) {

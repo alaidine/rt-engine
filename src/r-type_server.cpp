@@ -32,7 +32,7 @@ static void init() {
     server = static_cast<Roar::NetServer*>(net->NewServer(PORT));
 
     if (!server->Start()) {
-        RO_LOG_ERR("Failed to start server on port {}", PORT);
+        ROAR_ERROR("Failed to start server on port {}", PORT);
     }
 
     state.m_spawns = {{50, 50}, {GAME_WIDTH - 100, 50}, {50, GAME_HEIGHT - 100}, {GAME_WIDTH - 100, GAME_HEIGHT - 100}};

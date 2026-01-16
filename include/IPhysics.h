@@ -4,7 +4,6 @@
 #include "RoarEngine.h"
 
 namespace Roar {
-
 namespace Physics {
 
 class IPhysics : public IPlugin {
@@ -19,5 +18,4 @@ class IPhysics : public IPlugin {
 };
 
 } // namespace Physics
-
 } // namespace Roar

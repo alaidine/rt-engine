@@ -4,6 +4,9 @@
 #include "box2d/box2d.h"
 #include "raylib.h"
 
+#include <cassert>
+#include <cmath>
+
 constexpr uint32_t GROUND_COUNT = 14;
 constexpr uint32_t BOX_COUNT = 10;
 
@@ -14,6 +17,7 @@ typedef struct Entity {
     b2BodyId bodyId;
     b2Vec2 extent;
     Texture texture;
+    Color color;
 } Entity;
 
 class Box2DPhysics : public IPhysics {
