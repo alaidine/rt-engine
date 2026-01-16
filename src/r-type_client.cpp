@@ -584,7 +584,8 @@ static void cleanup() {
 }
 
 int main(int argc, char *argv) {
-    Roar::AppRun(Roar::AppData{.name = "r-type_client",
+    Roar::AppRun(Roar::AppData{
+        .name = "R-Type (Client)",
                                .width = WIDTH,
                                .height = HEIGHT,
                                .headless = false,

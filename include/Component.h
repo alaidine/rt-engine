@@ -1,52 +1,95 @@
 #pragma once
+#include <array>
+#include <cstdint>
+#include <raylib.h>
+#ifndef MAX
+#define MAX(a, b) (((a) > (b)) ? (a) : (b))
+#endif
 
-#include <filesystem>
-#include <string>
+#ifndef MIN
+#define MIN(a, b) (((a) < (b)) ? (a) : (b))
+#endif
 
-namespace Roar {
+#define GAME_WIDTH 800
+#define GAME_HEIGHT 600
 
-struct ButtonComponent {
-    std::string text;
-    bool clicked;
+#define TARGET_FPS 100
+
+using ComponentType = std::uint8_t;
+
+const ComponentType MAX_COMPONENTS = 32;
+
+struct Gravity {
+    float force;
 };
 
-struct InputComponent {
-    std::string text;
+struct Position {
+    Vector2 position;
 };
 
-struct ClientComponent {
-    uint32_t addr;
-    uint16_t port;
+struct Velocity {
+    float speedX;
+    float speedY;
 };
 
-struct ServerComponent {
-    uint16_t port;
+struct Sprite {
+    Color color;
 };
 
-struct TextureComponent {
-    std::string path;
-    int x;
-    int y;
-    int width;
-    int height;
+struct PlayerSprite {
+    Texture2D texture;
 };
 
-struct Vec2 {
-    float x;
-    float y;
+struct EnemySprite {
+    Texture2D texture;
 };
 
-struct TransformComponent {
-    Vec2 size;
-    Vec2 pos;
+struct Collider {
+    Rectangle rect;
+    bool isPlayer;
 };
 
-struct RectangleComponent {
-    unsigned char color[4];
+struct AnimationComponent {
+    Rectangle rect;
+    std::array<Rectangle, 5> _animationRectangle;
+    int _current_frame;
+    int _frameCounter;
+    int _frameSpeed;
 };
 
-struct ScriptComponent {
-    std::string name;
+struct InputController {};
+
+struct Tag {
+    bool isPlayer;
 };
 
-} // namespace Roar
+struct EnemyTag {
+    bool isEnemy;
+};
+
+struct MissileTag {};
+
+struct playerCooldown {
+    bool canFire;
+};
+
+struct CameraComponent {
+    Vector2 position;
+    Vector2 target;
+    Vector2 offset;
+    float zoom;
+    float rotation;
+    bool mainCamera;
+};
+
+// Networked client component for multiplayer
+struct NetworkedClient {
+    uint32_t client_id;
+    bool is_local;
+};
+
+// Tag to identify local player entity
+struct LocalPlayerTag {};
+
+// Tag to identify remote player entities
+struct RemotePlayerTag {};

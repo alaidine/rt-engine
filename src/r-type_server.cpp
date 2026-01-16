@@ -248,7 +248,7 @@ static void cleanup() {
 
 int main(int argc, char *argv) {
     (void)argc, (void)argv;
-    Roar::AppRun(Roar::AppData{.name = "r-type_server",
+    Roar::AppRun(Roar::AppData{.name = "R-Type (Server)",
                                .width = 1280,
                                .height = 720,
                                .headless = true,

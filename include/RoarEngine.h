@@ -31,7 +31,7 @@
 namespace Roar {
 
 typedef struct AppData {
-    std::string name = "name";
+    const char *name = nullptr;
     uint32_t width = 1280;
     uint32_t height = 720;
     bool headless = false;

@@ -49,7 +49,7 @@ void AppRun(AppData appdata) {
     SetTraceLogCallback(CustomTraceLog);
 
     if (!appdata.headless)
-        InitWindow(appdata.width, appdata.height, appdata.name.c_str());
+        InitWindow(appdata.width, appdata.height, appdata.name == nullptr ? "Name" : appdata.name);
 
     appdata.init();
 

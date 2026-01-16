@@ -22,20 +22,29 @@ endif()
 
 # ECS plugin
 add_library(ECSPlugin SHARED
-    ../include/ECS.h
+    Prefab.cpp
+    ../include/Prefab.h
+    ../include/Builder.h
     ../include/Component.h
-    ../include/GuiSystem.h
-    GuiSystem.cpp
-    ../include/ServerSystem.h
-    ServerSystem.cpp
-    ../include/ClientSystem.h
-    ClientSystem.cpp
-    ../include/TextureSystem.h
-    TextureSystem.cpp
-    RenderSystem.cpp
-    ../include/RenderSystem.h)
+    ../include/ComponentArray.h
+    ../include/ComponentManager.h
+    ../include/Entity.h
+    ../include/EntityManager.h
+    ../include/CollisionSystem.h
+    ../include/GravitySystem.h
+    ../include/PhysicCore.h
+    ../include/VelocitySystem.h
+    ../include/CameraSystem.h
+    ../include/RenderSystem.h
+    ../include/ClientRenderSystem.h
+    ../include/InputControllerSystem.h
+    ../include/MissileSystem.h
+    ../include/Scene.h
+    ../include/System.h
+    ../include/SystemManager.h
+    ../include/Signature.h)
 target_include_directories(ECSPlugin PUBLIC ${CMAKE_SOURCE_DIR}/include)
-target_link_libraries(ECSPlugin PUBLIC raylib asio::asio glm::glm spdlog::spdlog)
+target_link_libraries(ECSPlugin PUBLIC RoarEngine)
 
 # Networking plugin
 add_library(NetworkPlugin SHARED Networking.cpp ../include/INetwork.h ../include/Networking.h)
@@ -71,6 +80,11 @@ endif()
 add_library(AudioPlugin SHARED AudioPlugin.cpp ../include/IAudio.h)
 target_include_directories(AudioPlugin PUBLIC ${CMAKE_SOURCE_DIR}/include)
 target_link_libraries(AudioPlugin PUBLIC RoarEngine)
+
+# ECS Demo
+add_executable(ECSDemo ECSDemo.cpp)
+target_include_directories(ECSDemo PUBLIC ${CMAKE_SOURCE_DIR}/include)
+target_link_libraries(ECSDemo ECSPlugin)
 
 # Test game
 add_executable(TestGame TestGame.cpp)
