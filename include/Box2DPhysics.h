@@ -16,7 +16,6 @@ namespace Physics {
 typedef struct Entity {
     b2BodyId bodyId;
     b2Vec2 extent;
-    Texture texture;
     Color color;
 } Entity;
 
@@ -35,8 +34,6 @@ class Box2DPhysics : public IPhysics {
     uint32_t HEIGHT = 1080;
 
     struct DemoData {
-        Texture groundTexture;
-        Texture boxTexture;
         bool pause;
         float lengthUnitsPerMeter;
         b2WorldDef worldDef;

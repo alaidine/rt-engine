@@ -12,7 +12,7 @@ static void DrawEntity(const Entity *entity) {
 
     Vector2 ps = {p.x, p.y};
     Rectangle rect = {p.x, p.y, entity->extent.x * 2, entity->extent.y * 2};
-    //DrawTextureEx(entity->texture, ps, RAD2DEG * radians, 1.0f, WHITE);
+    // DrawTextureEx(entity->texture, ps, RAD2DEG * radians, 1.0f, WHITE);
 
     DrawRectanglePro(rect, Vector2{0.0f, 0.0f}, RAD2DEG * radians, entity->color);
 
@@ -40,11 +40,8 @@ void Box2DPhysics::InitDemo(uint32_t width, uint32_t height) {
     demoData.worldDef.gravity.y = 9.8f * lengthUnitsPerMeter;
     demoData.worldId = b2CreateWorld(&demoData.worldDef);
 
-    demoData.groundTexture = LoadTexture("resources/sprites/ground.png");
-    demoData.boxTexture = LoadTexture("resources/sprites/box.png");
-
-    demoData.groundExtent = {0.5f * demoData.groundTexture.width, 0.5f * demoData.groundTexture.height};
-    demoData.boxExtent = {0.5f * demoData.boxTexture.width, 0.5f * demoData.boxTexture.height};
+    demoData.groundExtent = {0.5f * 128.0f, 0.5f * 128.0f};
+    demoData.boxExtent = {0.5f * 128.0f, 0.5f * 128.0f};
 
     // These polygons are centered on the origin and when they are added to a body they
     // will be centered on the body position.
@@ -61,7 +58,6 @@ void Box2DPhysics::InitDemo(uint32_t width, uint32_t height) {
 
         entity->bodyId = b2CreateBody(demoData.worldId, &bodyDef);
         entity->extent = demoData.groundExtent;
-        entity->texture = demoData.groundTexture;
         entity->color = ORANGE;
         b2ShapeDef shapeDef = b2DefaultShapeDef();
         b2CreatePolygonShape(entity->bodyId, &shapeDef, &demoData.groundPolygon);
@@ -80,7 +76,6 @@ void Box2DPhysics::InitDemo(uint32_t width, uint32_t height) {
             bodyDef.type = b2_dynamicBody;
             bodyDef.position = b2Vec2{x, y};
             entity->bodyId = b2CreateBody(demoData.worldId, &bodyDef);
-            entity->texture = demoData.boxTexture;
             entity->extent = demoData.boxExtent;
             entity->color = GREEN;
             b2ShapeDef shapeDef = b2DefaultShapeDef();
@@ -153,10 +148,7 @@ void Box2DPhysics::UpdateDemo(void) {
     }
 }
 
-void Box2DPhysics::CleanupDemo(void) {
-    UnloadTexture(demoData.groundTexture);
-    UnloadTexture(demoData.boxTexture);
-}
+void Box2DPhysics::CleanupDemo(void) {}
 
 void Box2DPhysics::Startup(void) {
     lengthUnitsPerMeter = 128.0f;

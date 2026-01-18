@@ -110,3 +110,13 @@ target_link_libraries(R-Type_Client RoarEngine)
 add_executable(R-Type_Server r-type_server.cpp r-type.cpp ${CMAKE_SOURCE_DIR}/include/r-type.h)
 target_include_directories(R-Type_Server PUBLIC ${CMAKE_SOURCE_DIR}/include)
 target_link_libraries(R-Type_Server RoarEngine)
+
+# R-Type client (with ECS Plugin)
+add_executable(R-Type_ClientECS r-type_client_ecs.cpp ${CMAKE_SOURCE_DIR}/include/r-type.h)
+target_include_directories(R-Type_ClientECS PUBLIC ${CMAKE_SOURCE_DIR}/include)
+target_link_libraries(R-Type_ClientECS RoarEngine)
+
+# R-Type server (with ECS Plugin)
+add_executable(R-Type_ServerECS r-type_server_ecs.cpp ${CMAKE_SOURCE_DIR}/include/r-type.h)
+target_include_directories(R-Type_ServerECS PUBLIC ${CMAKE_SOURCE_DIR}/include)
+target_link_libraries(R-Type_ServerECS RoarEngine)
